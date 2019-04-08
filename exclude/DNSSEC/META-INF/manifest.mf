@@ -1,0 +1,74 @@
+Manifest-Version: 1.0
+
+Name: dnssec.js
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: nskWdtbDJH5VHcU8Mw1p1Q==
+SHA1-Digest: YNGsglJmzTo53N+ob3euS0gyl1Y=
+SHA256-Digest: a/C5lx8FL3QhaLB7sz7WNoPMuonoetpXw8GV2CtWGZA=
+
+Name: manifest.json
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: 0TgFH2HQJvBjR0Way4Cxmg==
+SHA1-Digest: koCcn8nagZkvKmnrHlUZzaGhwFU=
+SHA256-Digest: Bd8gl0ZVz6QXnMb8WL75MQZVPXr1fovLcBx376KD918=
+
+Name: options.html
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: kpZKgdGl5lscgiKCOj9yTA==
+SHA1-Digest: stuwbXlH8ChK0By2JSH2WB+eMhQ=
+SHA256-Digest: KsPE6ZfH33Td8rP4kJgyt7mVE8kjYC127ueg3xiboTI=
+
+Name: options.js
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: ooSLR488yCL71fabgwMsfQ==
+SHA1-Digest: XjYuf/Z1XRJPbfT9kdBmt83jRf4=
+SHA256-Digest: aBjvgJ2wEmFpzBdFktNUuvBHzaG3ZJHo+xk8agblgac=
+
+Name: button/dns-insecure-64.png
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: LCX6BTRbMrNVx2wSRUSSuA==
+SHA1-Digest: x8WfpSbQNIbWjcuEKdGD00rUYMA=
+SHA256-Digest: VocAjrK7nO0hDfHY1IxUyDkQnfXADlKHbiVXVO2jk6c=
+
+Name: button/dns-secure-64.png
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: HmkI9go9d68ZxXpGVtqsOg==
+SHA1-Digest: D6zNwZWCvS5I6a6SGjqHgXcO5ZA=
+SHA256-Digest: kgHNtcPhtL/lNIygDF4wFTsVbQAQoB8i6Hifk6+jpeM=
+
+Name: popup/dnssec.css
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: fYMsqL0bSMUTgA7LLIl58w==
+SHA1-Digest: Dxhcvcdz/3On0GoSIWie6i+pOCo=
+SHA256-Digest: 19jGNfC7yq9h32LbNFOTvhhouqibxubazPfPnleoPTw=
+
+Name: popup/dnssec.js
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: DW0ZGIPlwAfVs04tqnFUJg==
+SHA1-Digest: /cxUY5h1TVRPfaUvUWd6mWSUjFw=
+SHA256-Digest: nhHnt6uYs92bzy2L1bERgKj4J7Db+pEMDk0kqowJEK0=
+
+Name: popup/error.png
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: 3Gbi3kE/8C+XPf+PRF3KAQ==
+SHA1-Digest: 863CGxZ8dEIsWuDF1JLLiCDda7E=
+SHA256-Digest: gmtktK1tbKwzQeq3wLyOKvexglUAAOsttAh0VfWnTaA=
+
+Name: popup/insecure.html
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: t3F1DrelND6Xe2suzH7h6Q==
+SHA1-Digest: M3fspk6ebrJm+kXW/314hoYLTdk=
+SHA256-Digest: HfEVQcY2y56upZ7tM24vBE+VBPUKNY84ra5u2N3VmDQ=
+
+Name: popup/secure.html
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: 3jSEzKrgNA8F0wZD2YSqjA==
+SHA1-Digest: pOI11ppWavaAwDW3xEGmffN4Pk4=
+SHA256-Digest: 5xlzF9YtRs86IIyoix0VtECvgJwz3syjD8N74ZXaUaA=
+
+Name: popup/success.png
+Digest-Algorithms: MD5 SHA1 SHA256
+MD5-Digest: 6xmDjl2LaIGVwTsHPLw1FQ==
+SHA1-Digest: abNoC2YVWUeIZE8myyp485UV8S0=
+SHA256-Digest: RbbmJ8Mh8qItZ7FJPoFud5C2xhSRn+++DExJYgxdZ5g=
+

@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="dnssec.css" />
+  </head>
+  
+  <body>
+    <header>
+      <div id="icon">
+        <img src="success.png" />
+      </div>
+      <div>
+        <p class="domain">{domain}</p>
+        <p id="status" class="secure">secure by DNSSEC</p>
+      </div>
+    </header>
+    
+    <p id="status_description">Domain <b class="domain">{domain}</b> is properly secure through DNSSEC. <span id="http">Please note than you are still prone to man-in-the-middle attacks because connection is not encrypted.</span></p>
+    
+    <p id="info">You can learn more about <a href="https://en.wikipedia.org/wiki/Domain_Name_System_Security_Extensions">DNSSEC on Wikipedia</a>.</p>
+    
+    <script type="text/javascript" src="dnssec.js"></script>
+  </body>
+</html>

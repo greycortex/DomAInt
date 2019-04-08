@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <style type="text/css">
+      body {
+        padding: 16px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+      }
+
+      .group {
+        display: block;
+        margin: 4px 0;
+      }
+
+      button {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form>
+      <label>DNS over HTTPS service:</label>
+
+      <div class="group">
+        <input type="radio" name="service" value="cloudflare" /> Cloudflare (1.1.1.1)
+      </div>
+      <div class="group">
+        <input type="radio" name="service" value="google" /> Google Public DNS
+      </div>
+
+      <button type="submit">Save</button>
+    </form>
+
+    <script src="options.js"></script>
+  </body>
+</html>

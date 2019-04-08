@@ -1,0 +1,49 @@
+body {
+  padding: 16px;
+  width: 350px;
+}
+
+a {
+  color: black;
+}
+
+p {
+  margin: 0;
+}
+
+header {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+header #icon {
+  margin-right: 8px;
+}
+
+header #icon img {
+  width: 50px;
+}
+
+p.domain {
+  font-size: 1.2em;
+}
+
+p#status {
+  font-size: 1.1em;
+}
+
+p#status.secure { color: #16a085; }
+p#status.insecure { color: #c0392b; }
+
+p#status_description, p#info {
+  color: #484848;
+}
+
+p#status_description {
+  margin-bottom: 8px;
+}
+
+span#http {
+  display: none;
+}

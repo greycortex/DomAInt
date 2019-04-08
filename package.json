@@ -1,0 +1,24 @@
+{
+  "name": "DomAIn",
+  "version": "2019.0.0",
+  "author": "P3 @ GREYCORTEX Research",
+  "contributors": [],
+  "license": "GNU General Public License 2+",
+  "keywords": [
+    "domain",
+    "research",
+    "badness",
+    "artificial intelligence",
+    "machine learning",
+    "browser",
+    "Firefox",
+    "Chrome",
+    "extension"
+  ],
+  "dependencies": {
+    "punycode": "2.1.1"
+  },
+  "scripts": {
+    "start": "node main.js test"
+  }
+}
