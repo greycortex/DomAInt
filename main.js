@@ -121,6 +121,9 @@ if (args.main.length == 0 || args.help) {
 
 // test ////////////////////////////////////////////////////////////////////////
 if (args.main.includes("test") || args.main.includes("test-main")) {
+    // here all the modules produce their tests...
+    
+    console.log();
     console.log("GREYCORTEX Research DomAIn test ... ");
     // do some more tests... all units are included automatically :)
     console.log("... all tests passed!");

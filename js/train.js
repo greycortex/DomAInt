@@ -209,6 +209,7 @@ function eval(testSet, network) {
  * $> node train.js test
  */
 function unitTest() {
+    console.log();
     console.log("TRAIN test ...");
 
     // training XOR test

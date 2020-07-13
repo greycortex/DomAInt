@@ -1,6 +1,8 @@
 node_modules/
 /dicts
+/exclude
 /models
+/nbproject/private
 /samples
 /suffixes
 

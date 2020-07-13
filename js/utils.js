@@ -1,6 +1,6 @@
 /*
  * GREYCORTEX Research DomAIn
- * Main file for node.js.
+ * Utils file for node.js.
  * 
  * Copyright (c) GREYCORTEX Research 2019
  * @author p3

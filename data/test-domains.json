@@ -1,6 +1,9 @@
 [
     "### initial tests",
     "greycortex.com",
+    "*.compute.amazonaws.com",
+    "klika.*.compute.amazonaws.com",
+    "klika.cloud-123.compute.amazonaws.com",
     "bbcamerica.co",
     "edgtwd.com",
     "gjpwejpwpf.bd",
@@ -16,13 +19,15 @@
     "prase.iam",
     "Eachlabelmaycontainuptosixtythreecharacterssowecantrimiteasily.Totallyitistwohundredandfiftyfivecharacters",
 
-    "### check invalid",
+    "### check invalid or so",
+    "185.28.22.206:8080",
+    "servername.info:88",
     ".test",
     "10.2.3.456",
     "EachlabelmaycontainuptosixtythreecharacterssowecantrimiteasilyTotallyitistwohundredandfiftyfivecharacters.EachlabelmaycontainuptosixtythreecharacterssowecantrimiteasilyTotallyitistwohundredandfiftyfivecharacters.Eachlabelmaycontainuptosixtythreecharacterssowecantrimiteasily.Totallyitistwohundredandfiftyfivecharacters",
     "Internet-Archive-xn--j1aef.xn--p1ai",
 
-    "### cyrillic DNA-like domains",
+    "### cyrillic DNA-like domains (.ру is invalid)",
     "зшагпшыип.рф",
     "пукрпшршщю.рф",
     "тищттш-ущущц.рф",

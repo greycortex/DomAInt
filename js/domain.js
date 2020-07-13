@@ -2,10 +2,11 @@
  * GREYCORTEX Research domAIn
  * Processes domain name in node.js and browser.
  * 
- * Note: Domain class servers as DomainFeatures and DomainSuffix (mendel.common) Java classes.
+ * Note: Domain class servers as Domain (and DomainSuffix in mendel.common) Java classes.
  * 
  * // TODO: https://en.wikipedia.org/wiki/IDN_homograph_attack
  * //  see: https://github.com/nchah/url-alert
+ * // TODO: detection of cyrilic (fake-latin-like) characters  а, е, о, р, с, у, х as !
  * 
  * Copyright (C) 2019 GreyCortex s.r.o.
  * @author p3
@@ -47,8 +48,8 @@ const SUFFIX = "data/suffix.json";
 var suffixes = null;
 // TODO: replace dictionary
 const DICT = "data/dict.json"; // <> words-bs2.dict???
-var dict = JSON.parse(FS.readFileSync(DICT, "utf8"));
-console.log(DICT +": "+ Object.keys(dict).length);
+var dictionary = JSON.parse(FS.readFileSync(DICT, "utf8"));
+console.log(DICT +": "+ Object.keys(dictionary).length);
 
 /** Stub type enum */
 const StubType = {"DOT":0, "DASH":1, "NUMBER":2, "LATIN":3, "BS":4};
@@ -113,7 +114,7 @@ class Stub {
     }
     
     /** 
-     * Strings to CSV 
+     * Strings toString/CSV 
      * @returns {string} CSV
      */
     toCSV() {
@@ -127,7 +128,7 @@ class Stub {
 
 
 /**
- * This class represents Java (mendel.common) DomainFeatures.
+ * This class represents Java (mendel.common) Domain.
  * 
  * @property {string} name nice UTF-8
  * @property {boolean} idn
@@ -141,11 +142,12 @@ class Domain {
     
     // throws
     constructor(domain) {
+        if (!domain || domain.length == 0) throw "The the domain is null";  
         
-/** Sufix string (in fact it is a domain, but there is no such class here :) */
-// var suffix = undefined; // str.split(DOT_REGEX).reverse(.join(".");
-    
-        var ascii = PUNYCODE.toASCII(domain.trim().toLowerCase());
+        // get the ascii/latin name w/o port
+        var ports = domain.trim().toLowerCase().split(":");
+        domain = ports[0];
+        var ascii = PUNYCODE.toASCII(domain);
         if (BS_REGEX.test(ascii)) {
             throw "DOMAIN.validate(): The domain doesn't comply to RFC1034 or so: "+ domain;
         } 
@@ -187,7 +189,7 @@ class Domain {
                 // process what is left in front of found
                 if ((start - last_end) > 0) {
                     // split Digit, _- and nonsense here
-                    var stub = this.getStrings(sub, i, sub.substring(last_end, start)); // List<DomainFeatures.Stub>
+                    var stub = this.getStrings(sub, i, sub.substring(last_end, start)); // List<Domain.Stub>
                     this.putStub(1, i, stub);
                     if (this.part2) this.putStub(2, i, stub);
                 }
@@ -228,7 +230,7 @@ class Domain {
             // process what is left at the end
             if ((sub.length - last_end) > 0) {
                 // split Digit, _- and nonsense here
-                var stub = this.getStrings(sub, i, sub.substring(last_end, sub.length)); // List<DomainFeatures.Stub>
+                var stub = this.getStrings(sub, i, sub.substring(last_end, sub.length)); // List<Domain.Stub>
                 this.putStub(1, i, stub);
                 if (this.part2) this.putStub(2, i, stub);
             }
@@ -356,7 +358,7 @@ class Domain {
             var substr = str.substring(0, e); // was b, e, String
 
             // if "found" or desperate (no strs, no Stub), try second
-            if ((words.length == 0 && e == 1) || dict[substr]) { // CHECK: subParts.isEmpty() && strs.isEmpty()
+            if ((words.length == 0 && e == 1) || dictionary[substr]) { // CHECK: subParts.isEmpty() && strs.isEmpty()
                 words.push(substr);
                 if (e < str.length) {
                     var rest = this.getRest(str.substring(e));
@@ -410,7 +412,7 @@ class Domain {
             var substr = str.substring(0, e); // was b, e, string
             
             // if "found" or desperate (no strs), try second
-            if ((words.length == 0 && e == 1) || dict[substr]) {
+            if ((words.length == 0 && e == 1) || dictionary[substr]) {
                 words.push(substr);
                 if (e < str.length) {
                     var rest = this.getRest(str.substring(e));
@@ -515,6 +517,11 @@ class Domain {
 
         return suffix;
     }
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////
+    
     
     
     /**
@@ -677,6 +684,7 @@ function genBigrams() {
  */
 function unitTest() {
     // test (run this file as c)
+    console.log();
     console.log("DOMAIN test ...");
     
     // test replaceChars
@@ -722,6 +730,7 @@ function unitTest() {
             var domain = new Domain(td);
             console.log(domain.toCSV());
             // console.log(JSON.stringify(domain));
+            
         } catch (e) {
             // console.error("Exception: The domain was not processed: "+ td);
             console.log(e +" - "+ e.stack);
