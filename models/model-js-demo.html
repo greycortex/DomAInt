@@ -4,10 +4,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/domain-web"></script>
 <script>
     async function run(){
-        const MODEL_URL = './model.json';
+        const MODEL_URL = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json';
         const model = await tf.loadLayersModel(MODEL_URL);
         console.log(model.summary());
-        const input = tf.tensor([317,  26, 487, 608, 562, 561,   0,   0,   0,   0,   0,   0,   0,  0,  0,  0,  0,  0,  0,  0]);
+        const input = tf.tensor([[317,  26, 487, 608, 562, 561,   0,   0,   0,   0,   0,   0,   0,  0,  0,  0,  0,  0,  0,  0]]);
+	console.log(input.shape);
+        // const x = input.reshape([, 20]).print();
+
         const result = model.predict(input);
         alert(result);
     }

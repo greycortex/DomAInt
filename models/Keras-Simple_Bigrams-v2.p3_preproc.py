@@ -148,7 +148,7 @@ model.compile(optimizer='rmsprop', loss='binary_crossentropy')
 # Training
 # TODO: more epochs, like 100?
 BATCH = 100
-model.fit(X_train, y_train, epochs=10, batch_size=BATCH)
+model.fit(X_train, y_train, epochs=1, batch_size=BATCH)
 
 # prediction
 y_predict = model.predict_classes(X_test)
