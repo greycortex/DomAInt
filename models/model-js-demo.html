@@ -1,8 +1,9 @@
 <html>
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/domain-web"></script>
-<script>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/domain-web"></script>
+  <script>
     async function run(){
 	// Dummy model M0
         const MODEL_URL = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json';
@@ -29,7 +30,7 @@
 				     0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0]]);
 
         const result_LSTM = model_LSTM.predict(input2);
-        alert("LSTM: " + result);
+        alert("LSTM: " + result_LSTM);
 
 	// GRU model
         const MODEL_URL_GRU = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model_GRU32/model_GRU32.json';
@@ -37,7 +38,7 @@
         console.log(model_GRU.summary());
 
         const result_GRU = model_GRU.predict(input2);
-        alert("GRU: " + result);
+        alert("GRU: " + result_GRU);
     }
     run();
 //<!--
@@ -56,7 +57,7 @@
 //    });
 //});
 //-->
-</script>
+  </script>
 </head>
 <body></body>
 </html>
