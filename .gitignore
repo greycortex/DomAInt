@@ -4,4 +4,5 @@ node_modules/
 /nbproject/private
 /samples
 /suffixes
+/data/samples-nn1-bs2_uniq.csv
 

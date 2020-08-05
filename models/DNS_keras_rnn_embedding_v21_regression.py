@@ -17,12 +17,12 @@ import sklearn.metrics as ms
 from matplotlib import pyplot as plt
 
 
-PATH = '/home/marina/py_progs/Domains/DomAIn-mine/new_rawdata/'
+PATH = '../data/'
 # Load data (list of domains with labels) from csv file   
 data = pd.read_csv(PATH + 'samples-nn1-bs2_uniq.csv')
 	#'merged_marked_top1m_ETI.blacklist.uniq-uR.csv', header = None)
 
-PATH2 = '/home/marina/py_progs/Domains/DomAIn-mine/Experiments/'
+PATH2 = '../data/'
 ### load bigram vocabulary
 bigrams_vocab2 = {}
 with open(PATH2 + 'bigram_vocabulary2.json') as json_file: 
