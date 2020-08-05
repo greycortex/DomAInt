@@ -106,6 +106,9 @@ X_padded = pad_sequences(X_int, maxlen=max_length, padding='post')
 
 y_arr = y0.values
 
+# X_padded - array with features, length = 44, elements are integers
+# y_arr - array with labels (targets)
+# this function randomly split these two arrays to train set (75%) and test set (25%)
 X_train, X_test, y_train, y_test = train_test_split(X_padded, y_arr, test_size=0.25)
 
 ### using mask_zero=True in embedding layer allow flexible input length 
@@ -173,19 +176,39 @@ print('test MAE: ', test_mae)
 #print (ms.classification_report(y_test, y_predict))
 #print (ms.confusion_matrix(y_test, y_predict))
 
-## save model:
-#import time
-#saved_model_path = "/tmp/saved_models{}".format(int(time.time()))
+
+# Reverse lookup
 #
+# print(X[X.index(X_test[i]])) - something like this prints the domain.
+#
+# def int2bigram(features):
+#     bigram_letters = []
+#     for item in features:
+#          if item in bigrams_vocab.value():
+#               bigram_letters.append(bigrams_vocab[item])
+#          else:
+#              bigram_letters.append('OOV')
+#     return bigram_letters
+# 10:52
+# features = X_test
+
+# print the tests
+#for i in range(y_test.length):
+#    print(X_test[i], y_test[i], y_predict_lstm32_adadelta[i], y_predict_gru32_rmsprop[i], sep = '; ', file='test.csv')
+
+
+
+
+### Save the model:
+import time
+saved_model_path = "model-{}".format(int(time.time()))
+
 ## for Tensorflow2.0 use:
-#tf.saved_model.save(model, saved_model_path)
+tf.saved_model.save(model_gru32_rmsprop, saved_model_path)
 
 # for tensorflow 1.x use this:
 #tf.contrib.saved_model.save_keras_model(model, saved_model_path)
 
-## convert saved model into tensorflowjs format. out is json
-#!tensorflowjs_converter \
-#	--input_format=keras_saved_model \
-#	/tmp/saved_models/<timestamp> \
-#	/tmp/linear #output directory where jsom will be saved
+### convert saved model into tensorflowjs format.
+#$ tensorflowjs_converter --input_format=keras_saved_model model-<timestamp> model-<timestamp>
 
