@@ -1,0 +1,73 @@
+{
+    "name": "GREYCORTEX Research DomAIn",
+    "description": "The first AI based browser extension - predicts badness of domains.",
+    "author": "P3 @ GREYCORTEX Research",
+    "manifest_version": 2,
+    "version": "2019.0.0",
+    "homepage_url": "https://www.greycortex.com",
+    "icons": {
+        "16": "img/gy_16.png",
+        "48": "img/gy.png"
+    },
+
+    "applications": {
+        "gecko": {
+            "id": "domain@greycortex.com",
+            "strict_min_version": "59.0"
+        }
+    },
+    "minimum_chrome_version": "49.0", 
+    "minimum_opera_version": "36.0",     
+
+    "permissions": [
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking", 
+        "webNavigation",
+        "tabs",
+        "storage",
+        "unlimitedStorage", 
+        "notifications"
+    ],
+
+    "browser_action": {
+        "default_icon": {
+            "16": "img/gy_16.png",
+            "48": "img/gy.png"
+        },
+        "default_title": "GREYCORTEX Research DomAIn",
+        "default_popup": "popup.html",
+        "browser_style": true
+    },
+
+    "page_action": {
+        "default_icon": "img/gy.png",
+        "default_title": "GREYCORTEX Research DomAIn",
+        "default_popup": "popup.html",        
+        "browser_style": true
+    },    
+
+    "options_ui": {
+        "page": "options.html",
+        "browser_style": true
+    },
+
+    "background": {
+        "scripts": ["js/browser.js"]
+    },
+
+    "content_scripts": [
+        {
+            "all_frames": true, 
+            "js": [
+                "js/content.js"
+            ], 
+            "match_about_blank": true, 
+            "matches": [
+                "http://*/*", 
+                "https://*/*"
+            ], 
+            "run_at": "document_start"
+        }
+    ]
+}

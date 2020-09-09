@@ -1,17 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>GREYCORTEX Research DomAIn</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/popup.css" />
     </head>
     <body>
-        <div><img src="img/gcx.png"></div>
-        <div>Research <b>DomAIn</b></div>
-        <p>
-            DomAIn is a free extension made by GREYCORTEX Research. 
-            The first AI based browser plugin to classify the badness of an 
-            active domain that sends no data anywhere.
-        </p>
+        <div class="image"><img src="img/gcx.png"></div>
+        <div class="center"><b>DomAIn</b></div>
+        <hr />
+
+        <div class="switchElem">
+            <label class="switch"> 
+                <input type="checkbox" id="toggleButton" name="toggleButton">
+                <span class="slider round"></span>
+            </label>
+            <span class="tooltiptext">Turn on/off autoclose</span>
+        </div>
+
+        <!-- TODO: cim je toto vygenerovane??? -->
+        <figure class="item">
+            <svg id="cDomain" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-shield-fill-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 .5c-.662 0-1.77.249-2.813.525a61.11 61.11 0 0 0-2.772.815 1.454 1.454 0 0 0-1.003 1.184c-.573 4.197.756 7.307 2.368 9.365a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586a11.191 11.191 0 0 0 2.418-2.3c1.611-2.058 2.94-5.168 2.367-9.365a1.454 1.454 0 0 0-1.003-1.184 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5zM8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z"/>
+            </svg>
+            <span>Add to blacklist</span>
+        </figure>
+
+        <figure class="item">
+            <svg id="options" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-toggles" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7h-7zm7 6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm2.45 0A3.49 3.49 0 0 1 8 3.5 3.49 3.49 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5H6.95zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7z"/>
+            </svg>
+            <span>Open options</span>
+        </figure>
+
+        <figure class="item">
+            <svg id="clear" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-shield-slash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.357 3.478c-.42 3.969.87 6.928 2.423 8.911a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586.466-.32.983-.74 1.502-1.263L1.357 3.478zm11.787 7.545c1.145-1.984 1.902-4.644 1.444-8a1.454 1.454 0 0 0-1.003-1.183 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5c-.662 0-1.77.249-2.813.525-.548.145-1.1.303-1.59.45l9.547 9.548z"/>
+            <path fill-rule="evenodd" d="M14.646 15.354l-14-14 .708-.708 14 14-.707.707z"/>
+            </svg>
+            <span>Clear blacklist</span>
+        </figure>
+
+        <script src="popup.js"></script>
     </body>
 </html>

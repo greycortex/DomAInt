@@ -1,0 +1,31 @@
+body {
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.nav {
+    -webkit-box-shadow: 0 8px 6px -6px #999;
+    -moz-box-shadow: 0 8px 6px -6px #999;
+    box-shadow: 0 8px 6px -6px #999;
+    margin-bottom: 100px;
+    
+}
+
+.image {
+    text-align: center;
+    padding-top: 7px;
+  }
+
+.center { 
+      text-align: center;
+  }
+
+.optionsText { 
+    text-align: center;
+    font-size: 12px;
+    padding-bottom: 10px;
+}
+
+.right {
+    float: left;
+}
+
