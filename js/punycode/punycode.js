@@ -414,7 +414,7 @@ const toASCII = function(input) {
 
 /*--------------------------------------------------------------------------*/
 // Node.js only section
-if (typeof browser === "undefined") {
+
 
     /** Define the public API */
     const punycode = {
@@ -439,7 +439,8 @@ if (typeof browser === "undefined") {
             'encode': encode,
             'toASCII': toASCII,
             'toUnicode': toUnicode
-    };
+	};
+	if (typeof browser === "undefined") {
 
     module.exports = punycode;
 }
