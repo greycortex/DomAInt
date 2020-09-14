@@ -13,6 +13,7 @@
 
     "background": {
         "scripts": [
+            "js/browser-polyfill.js",
             "js/tfjs.js",
             "js/punycode/punycode.js",
             "js/storage.js",
