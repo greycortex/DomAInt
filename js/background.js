@@ -900,6 +900,7 @@ var suffixes = null;
       let Result;
   
       
+     
       // code is executed whenever new browser tab is active/clicked
       browser.tabs.onUpdated.addListener(async function () {
         

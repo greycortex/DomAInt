@@ -1,7 +1,9 @@
 let blackListdiv = document.getElementById("blackList");
 let form = document.getElementById("form");
+let toggleButton = document.getElementById("toggleButton");
 
 form.addEventListener("submit", addSite);
+toggleButton.addEventListener("click", toggle);
 
 function showBlacklistedSites() {
   let blackList = browser.storage.local.get("blackList");
@@ -36,6 +38,16 @@ function addSite() {
       .replace("www.", "")
       .split(/[/?#]/)[0];
 
+    for (let i = 0; i < blackListedSites.length; i++) {
+      if (
+        blackListedSites[i]["domain"] == domain ||
+        blackListedSites[i]["regex"] == regDom
+      ) {
+        console.log("this site is already being blocked");
+        return;
+      }
+    }
+
     const object = {
       domain: domain,
       regex: regDom,
@@ -54,4 +66,43 @@ function addSite() {
   });
 }
 
+function toggle() {
+  console.log("toggle");
+  let autoClose = browser.storage.local.get("autoClose");
+  autoClose.then((res) => {
+    let settings = browser.storage.local.set({
+      autoClose: toggleButton.checked,
+    });
+    settings.then(function () {
+      updateButton();
+    });
+  });
+}
+
+// function update button is called to display current value (is autoclose turned on/off) and shows certain icon
+function updateButton() {
+  let buttonVal = browser.storage.local.get("autoClose");
+
+  buttonVal.then((val) => {
+    if (!val.autoClose || val.autoClose == null) {
+      toggleButton.checked = false;
+
+      /*
+          browser.browserAction.setIcon({
+              path: "icon/enabled.png"
+          });
+          */
+    } else {
+      toggleButton.checked = true;
+
+      /*
+          browser.browserAction.setIcon({
+              path: "icon/disabled.png"
+          });
+          */
+    }
+  });
+}
+
+updateButton();
 showBlacklistedSites();
