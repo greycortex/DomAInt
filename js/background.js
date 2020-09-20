@@ -773,7 +773,6 @@ var suffixes = null;
           // push current pair array to main array, so we get 2 dimensional array
           slicedDomain.push(letters);
         }
-        console.log(slicedDomain);
         // return 2 dimensional array of split URL pairs
         return slicedDomain;
       }
@@ -890,26 +889,31 @@ var suffixes = null;
       function resetIcon resets icon, when on a page, that is not supposed to be tested 
     */
       function resetIcon() {
+        // set popup icon title to the base one
         browser.browserAction.setTitle({title: "DomAIn by GreyCortex"});
+        // change icon to the base one
         browser.browserAction.setIcon({
           path: "img/base.png",
         });
       }
 
+      // variable storing last visited URL (used not to run code, when not necessary)
       let cachedURL;
+      // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary) 
       let Result;
-  
-      
      
       // code is executed whenever new browser tab is active/clicked
+      // TODO chrome compatibility
       browser.tabs.onUpdated.addListener(async function () {
         
         // get URL of current tab
         let tab = await getCurrentURL();
+        // run code only if a new site is visited else change icon according to cached URL
         if (tab != cachedURL) {
           cachedURL = tab;
-          // parse the URL to string we need == https://www.example.com -> example.com
+          // prevent code from running on special sites (extension::, ...)
           if (tab.includes("http://") || tab.includes("https://")) {
+            // parse the URL to string we need == https://www.example.com -> example.com
             let adress = tab
             .replace("http://", "")
             .replace("https://", "")
@@ -917,24 +921,20 @@ var suffixes = null;
             .split(/[/?#]/)[0];
           // create new object of class Domain from changed URL
           let domain = new Domain(adress);
-          // test object
-          console.log(domain);
-          console.log(domain.name);
-          console.log(domain.toCSV());
-          console.log(JSON.stringify(domain));
 
           // regex domain, having replaced certain values replaced for model usage
           // slice domain, so we can create model input
           let sliced = findBigrams(domain.name);
-          console.log(sliced);
           // from sliced URL, generate model input
          modelInput = bigramsToInt(sliced);
-          console.log(modelInput);
-          // get model output
+          // run model and get model prediction
           let output = runModel(modelInput);
           output.then((res) => {
+            // log prediction
             console.log(res);
+            // set cached result
             Result = res;
+            // change icon according to the Result (danger icon, ...)
             changeIcon(Result);
           });
 
@@ -953,11 +953,15 @@ var suffixes = null;
           }
           */
           } else {
+            // if on a special site change icon to the base one
             resetIcon();
           }
         } else {
+          // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
           if(Result){
+            // log cached result
           console.log(Result);
+          // change icon according to the cached result
           changeIcon(Result);
           }
         }
