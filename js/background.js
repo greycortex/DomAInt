@@ -49,8 +49,9 @@ const IP_REGEX = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
 const IDN_REGEX = /xn--/;
 const BS_REGEX = /[^\.\-_0-9a-z]/g;
 // load and prepare the model from github
-const MODEL_PATH =
-"https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
+const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
+
+const MODEL_BIGRAMS = 
 
 // static suffixes
 
