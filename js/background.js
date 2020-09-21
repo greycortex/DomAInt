@@ -54,6 +54,23 @@ const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAIn/master/m
 // path to model of up to 44 overlapping bigrams trained 
 const MODEL_BIGRAMS44_GRU = "";
 
+// global variable for model loading 
+let model;
+
+        /**
+         * function loadModel is used to load tfjs model
+         */
+async function loadModel() {
+  console.log("loading model...");
+  model = await tf.loadLayersModel(MODEL_PATH);
+}
+
+// run model at the start, so it can be used
+loadModel();
+
+// load model each 4 hours in case it has been updated to a newer version
+setInterval(loadModel, 4000 * 60 * 60);
+
 
 // static suffixes
 
@@ -835,8 +852,6 @@ var suffixes = null;
        */
 
       async function runModel(inputArray) {
-        // await model loading
-        const model = await tf.loadLayersModel(MODEL_PATH);
         // create tensor input from inputArray param
         const input = tf.tensor([inputArray]);
         // create result from model prediction
