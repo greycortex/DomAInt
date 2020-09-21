@@ -1,18 +1,30 @@
 // getting DOM elements from popup.html
+
+// get toggleButton (used to enable/disable autoClose)
 let toggleButton = document.getElementById("toggleButton");
+// get cDomain button (used to add current site to the blacklist)
 let cDomain = document.getElementById("cDomain");
+// get options button (used to open extension's options page on a new tab)
 let options = document.getElementById("options");
+// get clear button (used to clear the whole blackList)
 let clear = document.getElementById("clear");
 
-// adding listeners to DOM elements
+// adding listeners to DOM elements triggering their responsible functions
 toggleButton.addEventListener("click", toggle);
 cDomain.addEventListener("click", addCurrent);
 options.addEventListener("click", openOptions);
 clear.addEventListener("click", clearBLackList);
 
+/**
+       *function openOptions opens extension's settings page on a new tab
+       */
 function openOptions() {
   browser.runtime.openOptionsPage();
 }
+
+/**
+       *function clearBlacklist clear the whole URL UblackList
+       */
 
 function clearBLackList() {
   let empty = [];
@@ -20,10 +32,16 @@ function clearBLackList() {
   browser.storage.local.set({
     blackList: parsed,
   });
+  console.log("successfully cleared BlackList");
 }
 
-// toggle function is responsible for turning off/on blacklist site autoclose
-// and saving the value to the local storage
+/**
+       *function showBlacklistedSites is used to sh
+
+       *toggle function is responsible for turning off/on blacklist site autoclose
+/      *and saving the value to the local storage
+       */
+
 function toggle() {
   console.log("toggle");
   let autoClose = browser.storage.local.get("autoClose");
@@ -60,6 +78,7 @@ function addCurrent() {
     currentDomain.then((tab) => {
       const domain = tab[0].url;
 
+      if(domain.startsWith("http")) {
       // use regex to parse the url, so we can use it for comparing
       let regDom = domain
         .replace("http://", "")
@@ -91,6 +110,10 @@ function addCurrent() {
         blackList: parsed,
       });
       console.log("succesfully added site to blacklist");
+    } else {
+      console.log("this site can't be blocked");
+      return;
+    }
     });
   });
 }
