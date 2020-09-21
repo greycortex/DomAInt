@@ -12,7 +12,7 @@
  * //  see: https://github.com/nchah/url-alert
  * // TODO: detection of cyrilic (fake-latin-like) characters  а, е, о, р, с, у, х as !
  *
- * Copyright (C) 2019 GreyCortex s.r.o.
+ * Copyright (C) 2019-20 GreyCortex s.r.o.
  * @author p3
  */
 
@@ -51,7 +51,9 @@ const BS_REGEX = /[^\.\-_0-9a-z]/g;
 // load and prepare the model from github
 const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
 
-const MODEL_BIGRAMS = 
+// path to model of up to 44 overlapping bigrams trained 
+const MODEL_BIGRAMS44_GRU = "";
+
 
 // static suffixes
 
