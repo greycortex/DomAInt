@@ -743,6 +743,7 @@ var suffixes = null;
 
 
       function getCurrentURL() {
+        let currentTab;
         // returns promise, so we can await the value
         return new Promise((resolve) => {
           try{
@@ -751,7 +752,8 @@ var suffixes = null;
             .query({ currentWindow: true, active: true })
             //after we get info about current tab, resolve it's URL adress
             .then((tabs) => {
-              let currentTab = tabs[0].url;
+              currentTab = tabs[0].url;
+              
               if (currentTab.startsWith("http")) {
                 resolve(currentTab);
               } else {
@@ -914,20 +916,16 @@ var suffixes = null;
           path: "img/base.png",
         });
       }
-
-      // variable storing last visited URL (used not to run code, when not necessary)
+      
+      async function runCode() {
+        // variable storing last visited URL (used not to run code, when not necessary)
       let cachedURL;
       // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary) 
       let Result;
-     
-      // code is executed whenever new browser tab is active/clicked
-      // TODO chrome compatibility
-      browser.tabs.onUpdated.addListener(async function () {
-        
-        // get URL of current tab
         let tab = await getCurrentURL();
+        // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
-        if (tab != cachedURL) {
+        if (tab && tab !== cachedURL) {
           cachedURL = tab;
           // prevent code from running on special sites (extension::, ...)
           if (tab.includes("http://") || tab.includes("https://")) {
@@ -983,7 +981,22 @@ var suffixes = null;
           changeIcon(Result);
           }
         }
-      });
+      }
+
+      
+     
+      // code is executed whenever new browser tab is active/clicked
+      
+        browser.tabs.onUpdated.addListener( function (tabId, info, status) {
+          if(status.status == "complete"){
+          runCode();
+          }
+        });
+
+        browser.tabs.onActivated.addListener( function () {
+          runCode();
+        });
+   
     });
   });
 });
