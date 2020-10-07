@@ -28,8 +28,21 @@
           <input type="checkbox" id="toggleButton" name="toggleButton" />
           <span class="slider round"></span>
         </label>
-        <span class="tooltiptext">turn on/off autoclose</span>
+        <span class="tooltiptext">turn on/off autoclosing blacklisted sites</span>
       </div>
+    
+  
+
+      
+        <div class="switchElem">
+          <label class="switch">
+            <input type="checkbox" id="autoBlacklist" name="autoBlacklist" />
+            <span class="slider round"></span>
+          </label>
+          <span class="tooltiptext">turn on/off auto blacklisting dangerous sites</span>
+        </div>
+      </div>
+
 
       <figure id="clear">
         <svg
@@ -61,13 +74,30 @@
             <input type="text" name="url" placeholder="https://example.com/" required/>
           <input  type="submit" value="enter URL to blacklist"/>
         </form>
-
-        <div class="blacklist" id="blackList"></div>
       </div>
     </div>
+
+    <div class="center">
+      <div>
+        <form id="whitelistForm">
+          <label> Add domain to your whitelist </label><br />
+
+            <input type="text" name="whitelistUrl" placeholder="https://example.com/" required/>
+          <input  type="submit" value="enter URL to whitelist"/>
+        </form>
+        blacklist:
+        <div class="blacklist" id="blacklist"></div>
+        whitelist:
+        <div class="whitelist" id="whitelist"></div>
+      </div>
+    </div>
+
     <p class="footer">
       Copyright (C) 2019 GreyCortex s.r.o.
   </p> 
+    <script src="js/browser-polyfill.js"></script>
+    <script src="js/mergedSettings.js"></script>
     <script src="js/options.js"></script>
+    
   </body>
 </html>
