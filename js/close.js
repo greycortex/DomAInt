@@ -33,8 +33,6 @@ function onReq(req) {
 
           // compare each blacklisted sites to the one being accessed
           blackList.forEach((site) => {
-            // log each blacklisted site
-            console.log(site);
             // compare blacklisted site to the one being accessed
             if (
               url.toLowerCase() == site.regex ||
