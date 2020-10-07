@@ -880,6 +880,7 @@ var suffixes = null;
           browser.browserAction.setIcon({
             path: "img/green.png",
           });
+
           // if result is bigget than 0.5 = 50%
         } else if (modelResult > 0.5) {
           browser.browserAction.setTitle({title: "Warning: this page might not be safe!"});
@@ -895,6 +896,14 @@ var suffixes = null;
           browser.browserAction.setIcon({
             path: "img/red.png",
           });
+                // get autoclose function settings from browser storage
+  browser.storage.local.get("autoBlacklist").then((res) => {
+    // if autoClose is enabled by the user continue, else stop
+    if (res.autoBlacklist == true) {
+      console.log("should be added");
+      addCurrent();
+    }
+  });
         } else {
           browser.browserAction.setTitle({title: "DomAIn by GreyCortex"});
           // if model didnt predict or an error has occured
@@ -916,7 +925,103 @@ var suffixes = null;
           path: "img/base.png",
         });
       }
+
+      // if user clicks add current domain to blacklist on popup.html, this function is called
+// this function parses url to regex used while comparing current url to the blacklisted ones
+function addCurrent() {
+    // get current url
+    let currentDomain = browser.tabs.query({
+      currentWindow: true,
+      active: true,
+    });
+    currentDomain.then((tab) => {
+      const domain = tab[0].url;
+
+      if (domain.startsWith("http")) {
+        // use regex to parse the url, so we can use it for comparing
+        let regDom = domain
+          .replace("http://", "")
+          .replace("https://", "")
+          .replace("www.", "")
+          .split(/[/?#]/)[0];
+
+          let domainList = checkForDuplicates(domain, regDom, function(domainList) {
+            console.log(domainList)
+          
+
+          if(domainList) {
+        // create object constisting of full url and the parsed one
+        let object = {
+          domain: domain,
+          regex: regDom,
+        };
+
+        // add it to the blacklisted list and save it to local storage
+        domainList.push(object);
+
+        let parsed = JSON.stringify(domainList);
+        console.log(parsed);
+        browser.storage.local.set({
+          blackList: parsed,
+        });
+        console.log("succesfully added site to blacklist");
+      } else {
+        console.log("nah");
+        return;
+      }
+    });
+      }
+    });
+}
+function checkForDuplicates(domain, regDom, callback) {
+  let blackListedSites;
+  let whiteListedSites;
+ 
+    // get blackListed sites from browser storage
+    let blackList = browser.storage.local.get("blackList");
+    blackList.then((res) => {
+      // check if there are any blacklisted sites
+      if (!res.blackList || res.blackList.left < 1) {
+        blackListedSites = [];
+        // parse blackListed sites to object
+      } else {
+        blackListedSites = JSON.parse(res.blackList);
+      }
+       // get whiteListed sites from browser storage
+     let whiteList = browser.storage.local.get("whiteList");
+     whiteList.then((res) => {
+       // check if there are any blacklisted sites
+       if (!res.whiteList || res.whiteList.left < 1) {
+         whiteListedSites = [];
+         // parse blackListed sites to object
+       } else {
+         whiteListedSites = JSON.parse(res.whiteList);
+       }
       
+        //check if site, user wishes to block is not already blocked
+     if (blackListedSites.some(e => e["domain"] === domain) || blackListedSites.some(x => x["regex"] === regDom) ) {
+       //log if so
+         //TODO create some sort of flash message to popup and options page
+         console.log("this site is already being blocked");
+         return;
+     }
+     else{
+       for(let j = 0; j < whiteListedSites.length; j++) {
+         if(whiteListedSites[j]["domain"] == domain || whiteListedSites[j]["regex"] == regDom){
+           return;
+         }
+       }
+     }  
+     
+     
+     console.log(blackListedSites);
+     callback(blackListedSites);
+    });
+   });
+ 
+ }
+ 
+
       async function runCode() {
         // variable storing last visited URL (used not to run code, when not necessary)
       let cachedURL;
