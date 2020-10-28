@@ -2,10 +2,6 @@
 
 // get toggleButton (used to enable/disable autoClose)
 let toggleButton = document.getElementById("toggleButton");
-// get toggleButton (used to enable/disable autoClose)
-let autoBlacklistButton = document.getElementById("autoBlacklist");
-// get clear button (used to clear the whole blackList)
-let clear = document.getElementById("clear");
 //let clearWhitelist = document.getElementById("clearWhiteList");
 
 let blackListdiv = document.getElementById("blacklist");
@@ -13,9 +9,6 @@ let whiteListdiv = document.getElementById("whitelist");
 
 // adding listeners to DOM elements triggering their responsible functions
 toggleButton.addEventListener("click", toggle);
-autoBlacklistButton.addEventListener("click", autoBlacklist);
-clear.addEventListener("click", clearBLackList);
-//clearWhitelist.addEventListener("click", clearWhiteList);
 
 /**
 
@@ -38,22 +31,6 @@ function toggle() {
   });
 }
 
-function autoBlacklist() {
-  console.log("autoBlacklist"); 
-  // get autoBlacklist and its values from browser storage
-  let autoBlacklist = browser.storage.local.get("autoBlacklist");
-  autoBlacklist.then((res) => {
-    // set the setting to the html value
-    let settings = browser.storage.local.set({
-      autoBlacklist: autoBlacklistButton.checked
-    });
-    //after settings are saved, update the html button's value to the set one
-    settings.then(function () {
-      updateButtonAuto();
-    });
-  });
-}
-
 /**
  * function updateButton is called when on optionsPage, when the autoClose settings are changed
  */
@@ -71,45 +48,6 @@ function updateButton() {
   });
 }
 
-function updateButtonAuto() {
-  //get the value from browser storage
-  let buttonVal = browser.storage.local.get("autoBlacklist");
-  buttonVal.then((val) => {
-    // if autoClose is not enabled yet or does not exist, disable it by default
-    if (!val.autoBlacklist || val.autoBlacklist == null) {
-      autoBlacklistButton.checked = false;
-      //otherwise set it enable it
-    } else {
-      autoBlacklistButton.checked = true;
-    }
-  });
-}
-
-/**
- *function clearBlacklist clear the whole URL UblackList
- */
-
-function clearBLackList() {
-  let empty = [];
-  browser.storage.local.set({
-    blackList: JSON.stringify(empty),
-  });
-  console.log("successfully cleared BlackList");
-  if(blackListdiv){
-  blackListdiv.innerText = "";
-  }
-}
-
-function clearWhiteList() {
-  let empty = [];
-  browser.storage.local.set({
-    whiteList: JSON.stringify(empty),
-  });
-  console.log("successfully cleared whiteList");
-  if(whiteListdiv){
-  whiteListdiv.innerText = "";
-  }
-}
 
 function checkForDuplicates(domain, regDom, callback) {
  let blackListedSites;
@@ -221,4 +159,3 @@ function checkForDuplicatesWhitelist(domain, regDom, callback) {
  
 
 updateButton();
-updateButtonAuto();

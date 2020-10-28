@@ -1,23 +1,15 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
-  overflow: hidden;
 }
 
 .nav {
   -webkit-box-shadow: 0 8px 6px -6px #999;
   -moz-box-shadow: 0 8px 6px -6px #999;
   box-shadow: 0 8px 6px -6px #999;
-  margin-bottom: 100px;
-}
-
-.image {
-  text-align: center;
-  padding-top: 7px;
-}
-
-.center {
+  margin-bottom: 20px;
   text-align: center;
 }
+
 
 .footer {
   position: fixed;
@@ -27,22 +19,6 @@ body {
   text-align: center;
 }
 
-
-.optionsText {
-  text-align: center;
-  font-size: 12px;
-  padding-bottom: 10px;
-}
-
-.left {
-  margin-top: -80px;
-  display: flex;
-  justify-content: space-evenly;
-}
-
-#clear {
-  margin-top: 0px;
-}
 
 /* The switch - the box around the slider */
 .switch {
@@ -114,4 +90,183 @@ svg:hover {
   -webkit-transition: 0.4s;
   transition: 0.4s;
   cursor: pointer;
+}
+
+input[type='text'] {
+  width: 520px;
+  height: 44px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border: solid 1px #d8d8d8;
+}
+
+input[type='submit'] {
+  width: 100px;
+  height: 44px;
+  border-radius: 4px;
+  background-color: #c43030 !important;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.28);
+  display: inline-block !important;
+  margin-left: 29px;
+  background-image: none !important;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #ffffff;
+}
+
+input[type='submit']:disabled{
+  color: #BABABA;
+  cursor: auto;
+  box-shadow: none;
+  background-color: #EFEFE9 !important;
+}
+
+.favicon {
+  margin-right: 12px;
+  vertical-align: bottom;
+}
+
+.list-group {
+  border-radius: 4px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border-width: 0;
+}
+
+.list-group-item {
+  width: 652px;
+  height: 43px;
+  border-radius: 4px;
+  background-color: #f6f6f6;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border: solid 1px #d8d8d8;
+  margin-bottom: 10px;
+}
+
+.glyphicon-remove {
+  width: 12px;
+  height: 12px;
+  color: #9b9b9b;
+  cursor: pointer;
+  float: right;
+  margin-top: 3px;
+}
+
+.glyphicon-remove:hover {
+  color: black;
+}
+
+.domain {
+  height: 19px;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 18px;
+  letter-spacing: normal;
+  color: #39393a;
+  max-width: 550px;
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.container {
+  width: 1024px;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url(fonts/Roboto.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+* {
+  font-family: "Roboto", serif;
+}
+.panel {
+  border: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.linksPanel {
+  margin-left: 78px;
+  margin-top: 5px;
+}
+
+.linksPanel .list-group .list-group-item {
+  display: flex;
+  width: 220px;
+  border-radius: 5px !important;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border: solid 1px #d8d8d8 !important;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.linksPanel .list-group-item:hover {
+  background-color: #ccc;
+}
+
+.linksPanel .glyphicon {
+  color: #3381a9;
+  font-size: 18px;
+  vertical-align: sub;
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
+}
+
+.linksPanel .glyphicon:before{
+  width: 18px !important;
+  height: 18px !important;
+  display: block;
+}
+.linksPanel .list-group-item span:nth-child(2){
+  width: 140px;
+  text-align: center;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#overlay-panel{
+  position:relative;
+}
+
+.overlay_block {
+  position: absolute;
+  width: 106%;
+  height: 106%;
+  left: -3%;
+  top: -3%;
+  background: #808080b3;
+  padding: 5px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-size: 24px;
+  text-shadow: 0px 1px #0b0707;
+}
+
+.col-md-8 .panel-info:first-child{
+  margin-top: 35px;
+}
+.col-md-4{
+  margin-top: 40px;
 }

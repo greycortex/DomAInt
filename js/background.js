@@ -49,17 +49,18 @@ const IP_REGEX = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
 const IDN_REGEX = /xn--/;
 const BS_REGEX = /[^\.\-_0-9a-z]/g;
 // load and prepare the model from github
-const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
+const MODEL_PATH =
+  "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
 
-// path to model of up to 44 overlapping bigrams trained 
+// path to model of up to 44 overlapping bigrams trained
 const MODEL_BIGRAMS44_GRU = "";
 
-// global variable for model loading 
+// global variable for model loading
 let model;
 
-        /**
-         * function loadModel is used to load tfjs model
-         */
+/**
+ * function loadModel is used to load tfjs model
+ */
 async function loadModel() {
   console.log("loading model...");
   model = await tf.loadLayersModel(MODEL_PATH);
@@ -71,26 +72,22 @@ loadModel();
 // load model each 4 hours in case it has been updated to a newer version
 setInterval(loadModel, 4000 * 60 * 60);
 
-
 // static suffixes
 
 // TODO: replace dictionary
 
-loadJSON("../data/dict.json", function(dictionaryy) {
+loadJSON("../data/dict.json", function (dictionaryy) {
   // Parse JSON string into object
-     let dictionary = JSON.parse(dictionaryy);
+  let dictionary = JSON.parse(dictionaryy);
 
-// TODO: replace dictionary
+  // TODO: replace dictionary
 
-loadJSON("../data/suffix.json", function(SUFFIXx) {
-  // Parse JSON string into object
+  loadJSON("../data/suffix.json", function (SUFFIXx) {
+    // Parse JSON string into object
     let suffix = JSON.parse(SUFFIXx);
 
-    loadJSON("../data/bigram_vocabulary2.json", function(bigramDict) {
-
-var suffixes = null;
-
- 
+    loadJSON("../data/bigram_vocabulary2.json", function (bigramDict) {
+      var suffixes = null;
 
       /** Stub type enum */
       const StubType = { DOT: 0, DASH: 1, NUMBER: 2, LATIN: 3, BS: 4 };
@@ -162,7 +159,6 @@ var suffixes = null;
           // return ret;
         }
       }
- 
 
       /**
        * This class represents Java (mendel.common) Domain.
@@ -175,7 +171,7 @@ var suffixes = null;
        * @property {null|Stub[]} part2 alternate Stubs
        *
        */
-      
+
       class Domain {
         // throws
         constructor(domain) {
@@ -544,7 +540,7 @@ var suffixes = null;
          * @param {type} ascii
          * @returns {string} Domain.suffix
          */
-       getSuffix(ascii) {
+        getSuffix(ascii) {
           if (!suffixes) {
             try {
               suffixes = JSON.parse(SUFFIXx);
@@ -656,15 +652,15 @@ var suffixes = null;
       const substitute = {
         //    ".",
         _: "-",
-        "1": "0",
-        "2": "0",
-        "3": "0",
-        "4": "0",
-        "5": "0",
-        "6": "0",
-        "7": "0",
-        "8": "0",
-        "9": "0",
+        1: "0",
+        2: "0",
+        3: "0",
+        4: "0",
+        5: "0",
+        6: "0",
+        7: "0",
+        8: "0",
+        9: "0",
         //    "a",
         k: "c",
         b: "d",
@@ -741,26 +737,25 @@ var suffixes = null;
        * @returns {string} current URL
        */
 
-
       function getCurrentURL() {
         let currentTab;
         // returns promise, so we can await the value
         return new Promise((resolve) => {
-          try{
-          //query current browser tab
-          browser.tabs
-            .query({ currentWindow: true, active: true })
-            //after we get info about current tab, resolve it's URL adress
-            .then((tabs) => {
-              currentTab = tabs[0].url;
-              
-              if (currentTab.startsWith("http")) {
-                resolve(currentTab);
-              } else {
-                resetIcon()
-              }
-            });
-          } catch(err) {
+          try {
+            //query current browser tab
+            browser.tabs
+              .query({ currentWindow: true, active: true })
+              //after we get info about current tab, resolve it's URL adress
+              .then((tabs) => {
+                currentTab = tabs[0].url;
+
+                if (currentTab.startsWith("http")) {
+                  resolve(currentTab);
+                } else {
+                  resetIcon();
+                }
+              });
+          } catch (err) {
             console.log(err);
           }
         });
@@ -810,40 +805,37 @@ var suffixes = null;
         let modelInput = [];
         // load bigram Dictionary from browser storage
 
-        
-          // Parse JSON string into object
-          // parse bigram dict to JSON object
-          const parsedBigramDict = JSON.parse(bigramDict);
+        // Parse JSON string into object
+        // parse bigram dict to JSON object
+        const parsedBigramDict = JSON.parse(bigramDict);
 
-          // foreach array from slicedDomain
-          slicedDomain.forEach((e) => {
-            e.forEach((item) => {
-              // if bigram dictionary contains current combination
-              if (item in parsedBigramDict) {
-                // push the value to model input variable
-                modelInput.push(parsedBigramDict[item]);
-              } else {
-                // if current combination is not in bigram Dictionary, push Number 0
-                modelInput.push(0);
-              }
-            });
-          });
-       
-
-          // make sure the input's length is 20
-
-          // if input is shorter, push Number 0, foreach blank space
-          if (modelInput.length < 20) {
-            for (let i = modelInput.length; i < 20; i++) {
+        // foreach array from slicedDomain
+        slicedDomain.forEach((e) => {
+          e.forEach((item) => {
+            // if bigram dictionary contains current combination
+            if (item in parsedBigramDict) {
+              // push the value to model input variable
+              modelInput.push(parsedBigramDict[item]);
+            } else {
+              // if current combination is not in bigram Dictionary, push Number 0
               modelInput.push(0);
             }
+          });
+        });
+
+        // make sure the input's length is 20
+
+        // if input is shorter, push Number 0, foreach blank space
+        if (modelInput.length < 20) {
+          for (let i = modelInput.length; i < 20; i++) {
+            modelInput.push(0);
           }
-          // slice the input, so the length is 20
-          modelInput = modelInput.slice(0, 20);
+        }
+        // slice the input, so the length is 20
+        modelInput = modelInput.slice(0, 20);
 
         // return the input
         return modelInput;
-     
       }
 
       /**
@@ -873,45 +865,60 @@ var suffixes = null;
        */
 
       function changeIcon(modelResult) {
-        // if result is bigget than 0.85 = 85%
-        if (modelResult > 0.85) {
-          browser.browserAction.setTitle({title: "This page is safe!"});
-          // set extension icon to green
-          browser.browserAction.setIcon({
-            path: "img/green.png",
-          });
+        let greenThreshold;
+        let orangeThreshold;
+        let redThreshold;
 
-          // if result is bigget than 0.5 = 50%
-        } else if (modelResult > 0.5) {
-          browser.browserAction.setTitle({title: "Warning: this page might not be safe!"});
-          // set extension icon to orange
-          browser.browserAction.setIcon({
-            path: "img/yellow.png",
-          });
-          // if result is bigger than 0 or is 0
-        } else if (modelResult >= 0) {
-          browser.browserAction.setTitle({title: "Warning: This page is dangerous!"});
-          browser.browserAction.setBadgeBackgroundColor({color: "red"});
-          // set extension icon to red
-          browser.browserAction.setIcon({
-            path: "img/red.png",
-          });
-                // get autoclose function settings from browser storage
-  browser.storage.local.get("autoBlacklist").then((res) => {
-    // if autoClose is enabled by the user continue, else stop
-    if (res.autoBlacklist == true) {
-      console.log("should be added");
-      addCurrent();
-    }
-  });
-        } else {
-          browser.browserAction.setTitle({title: "DomAIn by GreyCortex"});
-          // if model didnt predict or an error has occured
-          // set extension icon to grey
-          browser.browserAction.setIcon({
-            path: "img/grey.png",
-          });
-        }
+        let threshold = browser.storage.local.get("threshold");
+        threshold.then((res) => {
+          // if theres no site being blacklisted
+          if (!res.threshold || res.threshold.length < 1) {
+            greenThreshold = 0.85;
+            orangeThreshold = 0.5;
+            redThreshold = 0;
+          } else {
+            let threshold = JSON.parse(res.threshold);
+
+            redThreshold = threshold.red == 0 ? 0 : threshold.red / 100;
+            orangeThreshold = threshold.orange;
+            greenThreshold = threshold.green;
+          }
+
+          console.log(greenThreshold, orangeThreshold, greenThreshold);
+
+          // if result is bigget than 0.85 = 85%
+          if (modelResult >= greenThreshold) {
+            browser.browserAction.setTitle({ title: "This page is safe!" });
+            // set extension icon to green
+            browser.browserAction.setIcon({
+              path: "img/green.png",
+            });
+
+            // if result is bigget than 0.5 = 50%
+          } else if (modelResult >= orangeThreshold) {
+            browser.browserAction.setTitle({
+              title: "Warning: this page might not be safe!",
+            });
+            // set extension icon to orange
+            browser.browserAction.setIcon({
+              path: "img/yellow.png",
+            });
+            // if result is bigger than 0 or is 0
+          } else if (modelResult >= redThreshold) {
+            browser.browserAction.setBadgeBackgroundColor({ color: "red" });
+            // set extension icon to red
+            browser.browserAction.setIcon({
+              path: "img/red.png",
+            });
+          } else {
+            browser.browserAction.setTitle({ title: "DomAIn by GreyCortex" });
+            // if model didnt predict or an error has occured
+            // set extension icon to grey
+            browser.browserAction.setIcon({
+              path: "img/grey.png",
+            });
+          }
+        });
       }
 
       /*
@@ -919,115 +926,108 @@ var suffixes = null;
     */
       function resetIcon() {
         // set popup icon title to the base one
-        browser.browserAction.setTitle({title: "DomAIn by GreyCortex"});
+        browser.browserAction.setTitle({ title: "DomAIn by GreyCortex" });
         // change icon to the base one
         browser.browserAction.setIcon({
           path: "img/base.png",
         });
       }
-
-      // if user clicks add current domain to blacklist on popup.html, this function is called
-// this function parses url to regex used while comparing current url to the blacklisted ones
-function addCurrent() {
-    // get current url
-    let currentDomain = browser.tabs.query({
-      currentWindow: true,
-      active: true,
-    });
-    currentDomain.then((tab) => {
-      const domain = tab[0].url;
-
-      if (domain.startsWith("http")) {
-        // use regex to parse the url, so we can use it for comparing
-        let regDom = domain
-          .replace("http://", "")
-          .replace("https://", "")
-          .replace("www.", "")
-          .split(/[/?#]/)[0];
-
-          let domainList = checkForDuplicates(domain, regDom, function(domainList) {
-            console.log(domainList)
-          
-
-          if(domainList) {
-        // create object constisting of full url and the parsed one
-        let object = {
-          domain: domain,
-          regex: regDom,
-        };
-
-        // add it to the blacklisted list and save it to local storage
-        domainList.push(object);
-
-        let parsed = JSON.stringify(domainList);
-        console.log(parsed);
-        browser.storage.local.set({
-          blackList: parsed,
-        });
-        console.log("succesfully added site to blacklist");
-      } else {
-        console.log("nah");
-        return;
-      }
-    });
-      }
-    });
-}
-function checkForDuplicates(domain, regDom, callback) {
-  let blackListedSites;
-  let whiteListedSites;
- 
-    // get blackListed sites from browser storage
-    let blackList = browser.storage.local.get("blackList");
-    blackList.then((res) => {
-      // check if there are any blacklisted sites
-      if (!res.blackList || res.blackList.left < 1) {
-        blackListedSites = [];
-        // parse blackListed sites to object
-      } else {
-        blackListedSites = JSON.parse(res.blackList);
-      }
-       // get whiteListed sites from browser storage
-     let whiteList = browser.storage.local.get("whiteList");
-     whiteList.then((res) => {
-       // check if there are any blacklisted sites
-       if (!res.whiteList || res.whiteList.left < 1) {
-         whiteListedSites = [];
-         // parse blackListed sites to object
-       } else {
-         whiteListedSites = JSON.parse(res.whiteList);
-       }
       
-        //check if site, user wishes to block is not already blocked
-     if (blackListedSites.some(e => e["domain"] === domain) || blackListedSites.some(x => x["regex"] === regDom) ) {
-       //log if so
-         //TODO create some sort of flash message to popup and options page
-         console.log("this site is already being blocked");
-         return;
-     }
-     else{
-       for(let j = 0; j < whiteListedSites.length; j++) {
-         if(whiteListedSites[j]["domain"] == domain || whiteListedSites[j]["regex"] == regDom){
-           return;
-         }
-       }
-     }  
-     
-     
-     console.log(blackListedSites);
-     callback(blackListedSites);
-    });
-   });
- 
- }
- 
 
       async function runCode() {
         // variable storing last visited URL (used not to run code, when not necessary)
-      let cachedURL;
-      // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary) 
-      let Result;
+        let cachedURL;
+        // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
+        let Result;
         let tab = await getCurrentURL();
+
+        let adress = tab
+              .replace("http://", "")
+              .replace("https://", "")
+              .replace("www.", "")
+              .split(/[/?#]/)[0];
+
+            let domainControl = tab
+              .replace("http://", "")
+              .replace("https://", "")
+              .replace("www.", "");
+
+
+        browser.storage.local.get("blackList").then((res) => {
+          // if blacklist exists
+          if (res.blackList) {
+            // parse blacklist to object
+            const blackList = JSON.parse(res.blackList);
+
+            // compare each blacklisted sites to the one being accessed
+            blackList.forEach((site) => {
+              // compare blacklisted site to the one being accessed
+              if (
+                adress.toLowerCase() == site.regex ||
+                domainControl.toLowerCase() == site.regex
+                // if accesed site is blacklisted, use close function to close it
+              ) {
+                // get autoclose function settings from browser storage
+                browser.storage.local.get("autoClose").then((res) => {
+                  // if autoClose is enabled by the user continue, else stop
+                  if (res.autoClose == true) {
+                    // get array of blacklisted sites
+                    let currentDomain = browser.tabs.query({
+                      currentWindow: true,
+                      active: true,
+                    });
+                    currentDomain.then((tab) => {
+                      const closeSite = tab[0].id;
+                      return closeTab(closeSite);
+                    });
+                    // return if autoClose is not enabled
+                  }
+                  browser.browserAction.setTitle({
+                    title: "This site is blacklisted",
+                  });
+                  // set extension icon to green
+                  browser.browserAction.setIcon({
+                    path: "img/gb.png",
+                  });
+                  return;
+                });
+              }
+            });
+            // return if there's no blacklist
+          }
+          return;
+        });
+
+        browser.storage.local.get("whiteList").then((res) => {
+          // if blacklist exists
+          if (res.whiteList) {
+            // parse blacklist to object
+            const whiteList = JSON.parse(res.whiteList);
+
+            // compare each blacklisted sites to the one being accessed
+            whiteList.forEach((site) => {
+              // compare blacklisted site to the one being accessed
+              if (
+                adress.toLowerCase() == site.regex ||
+                domainControl.toLowerCase() == site.regex
+                // if accesed site is blacklisted, use close function to close it
+              ) {
+                // get autoclose function settings from browser storage
+                  browser.browserAction.setTitle({
+                    title: "This site is whitelisted",
+                  });
+                  // set extension icon to green
+                  browser.browserAction.setIcon({
+                    path: "img/base.png",
+                  });
+                  return;
+              }
+            });
+            return;
+          }
+        
+
+
         // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
         if (tab && tab !== cachedURL) {
@@ -1035,29 +1035,24 @@ function checkForDuplicates(domain, regDom, callback) {
           // prevent code from running on special sites (extension::, ...)
           if (tab.includes("http://") || tab.includes("https://")) {
             // parse the URL to string we need == https://www.example.com -> example.com
-            let adress = tab
-            .replace("http://", "")
-            .replace("https://", "")
-            .replace("www.", "")
-            .split(/[/?#]/)[0];
-          // create new object of class Domain from changed URL
-          let domain = new Domain(adress);
+            // create new object of class Domain from changed URL
+            let domain = new Domain(adress);
 
-          // regex domain, having replaced certain values replaced for model usage
-          // slice domain, so we can create model input
-          let sliced = findBigrams(domain.name);
-          // from sliced URL, generate model input
-         modelInput = bigramsToInt(sliced);
-          // run model and get model prediction
-          let output = runModel(modelInput);
-          output.then((res) => {
-            // log prediction
-            console.log(res);
-            // set cached result
-            Result = res;
-            // change icon according to the Result (danger icon, ...)
-            changeIcon(Result);
-          });
+            // regex domain, having replaced certain values replaced for model usage
+            // slice domain, so we can create model input
+            let sliced = findBigrams(domain.name);
+            // from sliced URL, generate model input
+            modelInput = bigramsToInt(sliced);
+            // run model and get model prediction
+            let output = runModel(modelInput);
+            output.then((res) => {
+              // log prediction
+              console.log(res);
+              // set cached result
+              Result = res;
+              // change icon according to the Result (danger icon, ...)
+              changeIcon(Result);
+            });
 
             /*
           const inp =
@@ -1079,29 +1074,27 @@ function checkForDuplicates(domain, regDom, callback) {
           }
         } else {
           // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
-          if(Result){
+          if (Result) {
             // log cached result
-          console.log(Result);
-          // change icon according to the cached result
-          changeIcon(Result);
+            console.log(Result);
+            // change icon according to the cached result
+            changeIcon(Result);
           }
         }
+      });
       }
 
-      
-     
       // code is executed whenever new browser tab is active/clicked
-      
-        browser.tabs.onUpdated.addListener( function (tabId, info, status) {
-          if(status.status == "complete"){
-          runCode();
-          }
-        });
 
-        browser.tabs.onActivated.addListener( function () {
+      browser.tabs.onUpdated.addListener(function (tabId, info, status) {
+        if (status.status == "complete") {
           runCode();
-        });
-   
+        }
+      });
+
+      browser.tabs.onActivated.addListener(function () {
+        runCode();
+      });
     });
   });
 });

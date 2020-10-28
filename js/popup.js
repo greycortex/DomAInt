@@ -71,9 +71,7 @@ function addCurrent() {
  
 
 
-function addToWhiteList() {
- 
-   
+function addToWhiteList() {  
     // get current url
     let currentDomain = browser.tabs.query({
       currentWindow: true,
