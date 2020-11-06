@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/options.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <title>Options</title>
   </head>
   <body>
@@ -11,39 +12,54 @@
       <div class="image">
         <img src="img/gcx.png" alt="GreycortexLogo" id="logo" />
       </div>
-      <div class="center">DomAIn</div>
+      <div class="center">DomAInt</div>
       <div class="optionsText">options</div>
       <p class="center">
-        DomAIn is a free extension made by GREYCORTEX Research. The first AI
+        DomAInt is a free extension made by GREYCORTEX Research. The first AI
         based browser plugin to classify the badness of domains that sends no
         data anywhere.
       </p>
     </nav>
-    <div class="container"> 
+  <div class="container"> 
 
-      <div class="list-group" id="links">
-        <a href="" class="list-group-item" id="rate-options">
-          <span class="glyphicon glyphicon-star"></span>
-          <span data-translate="rateLink">Rate us 5 stars</span>
+      <div  id="links">
+        <a href="" class="leftlink" id="rate-options">
+          <svg class="glyphicon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+          </svg>
+          <span>Rate us 5 stars</span>
         </a>
-        <a href="" class="list-group-item" id="github-options">
-          <span class="glyphicon glyphicon-github"></span>
+        <a href="" class="leftlink" id="github-options">
+          <svg class="glyphicon git" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
           <span data-translate="contribute">Contribute</span>
         </a>
-        <a href="" class="list-group-item" id="greycortex-options">
-          <span class="glyphicon glyphicon-greycortex"></span>
-          <span data-translate="Visit us">Contribute</span>
+        <a href="" class="leftlink" id="greycortex-options">
+          <svg class="glyphicon eye" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-eye-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+            <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+          </svg>
+          <span data-translate="Visit us">Visit us</span>
         </a>
       </div>
-
-    <h1>Notification settings</h1>
-    <hr>
-
-    <h1>Auto close settings</h1>
-    <hr>
-
-
-
+      <div class="bottommargin">
+      <div class="bottomborder">
+        <h1>Notification settings</h1>
+      </div>
+      <div class="switchElem">
+        <label class="switch">
+          <input type="checkbox" id="toggleButton" name="toggleButton" />
+          <span class="slider round"></span>
+        </label>
+        <span class="tooltiptext"
+          >turn ON/OFF popup notifications</span
+        >
+      </div>
+    </div>
+    
+    <div class="bottommargin">
+      <div class="bottomborder">
+        <h1>Auto close settings</h1>
+      </div>
 
 
     <div class="left">
@@ -53,9 +69,10 @@
           <span class="slider round"></span>
         </label>
         <span class="tooltiptext"
-          >turn on/off autoclosing blacklisted sites</span
+          >turn ON/OFF autoclosing blacklisted sites</span
         >
       </div>
+    
 
       <figure id="clear">
         <svg
@@ -98,32 +115,17 @@
         <span>Clear whitelist</span>
       </figure>
     </div>
+  </div>
 
-    <h1>Blacklisted Sites</h1>
-    <hr>  
-    <div class="center">
-      <div>
-        <form id="form">
-          <label> Add domain to your blacklist </label><br />
-
-          <input
-            type="text"
-            name="url"
-            placeholder="https://example.com/"
-            required
-          />
-          <input type="submit" value="Add" />
-        </form>
-      </div>
+  <div class="bottommargin">
+    <div class="bottomborder">
+      <h1>Whitelisted Sites</h1>
     </div>
-    <div class="blacklist" id="blacklist"></div>
+    
 
-    <h1>Whitelisted Sites</h1>
-    <hr>
     <div class="center">
       <div>
         <form id="whitelistForm">
-          <label> Add domain to your whitelist </label><br />
 
           <input
             type="text"
@@ -136,11 +138,37 @@
       </div>
     </div>
     <div class="list-group" id="whitelist"></div>
-    <br />
+    <br/>
+  </div>
+
+  <div class="bottommargin">
+    <div class="bottomborder">
+      <h1>Blacklisted Sites</h1>
+    </div>
+    
     <div class="center">
       <div>
+        <form id="form">
+
+          <input
+            type="text"
+            name="url"
+            placeholder="https://example.com/"
+            required
+          />
+          <input type="submit" value="Add" />
+        </form>
+      </div>
+    </div>
+    <div class="blacklist" id="blacklist"></div>
+  </div>
+
+    <div class="thresholddiv">
+      <div>
         <form id="thresholdForm">
-          <label> Configure AI percentual settings </label><br />
+          <div class="bottomborder">
+            <h1>Configure AI percentual settings</h1>
+          </div>
           <div class="slidecontainer">
             red:
             <input
@@ -148,7 +176,7 @@
               name="redRange"
               id="redRange"
               min="0"
-              max="97"
+              max="98"
             />
             <span id="redVal"></span>
             <br />
@@ -173,7 +201,7 @@
             <span id="greenVal"></span>
             <br />
           </div>
-          <input type="submit" value="Save" />
+          <input type="submit" class="savebutton" value="Save" />
         </form>
       </div>
     </div>
