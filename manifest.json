@@ -14,7 +14,7 @@
     "background": {
         "scripts": [
             "js/browser-polyfill.js",
-            "js/tfjs.js",
+            "js/tf.min.js",
             "js/punycode/punycode.js",
             "js/storage.js",
             "js/background.js",

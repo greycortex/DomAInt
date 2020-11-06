@@ -48,12 +48,9 @@ const WWW_REGEX = /w+[0-9]*/;
 const IP_REGEX = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
 const IDN_REGEX = /xn--/;
 const BS_REGEX = /[^\.\-_0-9a-z]/g;
-// load and prepare the model from github
-const MODEL_PATH =
-  "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
-
-// path to model of up to 44 overlapping bigrams trained
-const MODEL_BIGRAMS44_GRU = "";
+// load and prepare the model of up to 44 overlapping bigrams trained from github 
+const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/master/models/bigrams_model_GRU64/model.json"
+// "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
 
 // global variable for model loading
 let model;
@@ -76,7 +73,14 @@ setInterval(loadModel, 4000 * 60 * 60);
 
 // TODO: replace dictionary
 
+/**
+ * Load JSON dictionaries 
+ * 
+ * @param {type} dictionaryy
+ * @returns {undefined}
+ */
 loadJSON("../data/dict.json", function (dictionaryy) {
+
   // Parse JSON string into object
   let dictionary = JSON.parse(dictionaryy);
 
@@ -86,7 +90,8 @@ loadJSON("../data/dict.json", function (dictionaryy) {
     // Parse JSON string into object
     let suffix = JSON.parse(SUFFIXx);
 
-    loadJSON("../data/bigram_vocabulary2.json", function (bigramDict) {
+    // ../data/bigram_vocabulary2.json
+    loadJSON("../models/bigrams_model_GRU64/bigram_vocabulary_all.json", function (bigramDict) { 
       var suffixes = null;
 
       /** Stub type enum */
@@ -772,7 +777,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
       function findBigrams(domainName) {
         let slicedDomain = [];
         // query through domain name
-        for (let i = 0; i < domainName.length; i += 2) {
+        for (let i = 0; i < domainName.length-1; i++) {
           // create an empty array each query for every pair of URL letters
           let letters = [];
           // declare string variable = create a pair of current letters
@@ -817,22 +822,22 @@ loadJSON("../data/dict.json", function (dictionaryy) {
               // push the value to model input variable
               modelInput.push(parsedBigramDict[item]);
             } else {
-              // if current combination is not in bigram Dictionary, push Number 0
-              modelInput.push(0);
+              // if current combination is not in bigram Dictionary, push Number 1
+              modelInput.push(1);
             }
           });
         });
 
-        // make sure the input's length is 20
+        // make sure the input's length is 44
 
         // if input is shorter, push Number 0, foreach blank space
-        if (modelInput.length < 20) {
-          for (let i = modelInput.length; i < 20; i++) {
+        if (modelInput.length < 44) {
+          for (let i = modelInput.length; i < 44; i++) {
             modelInput.push(0);
           }
         }
-        // slice the input, so the length is 20
-        modelInput = modelInput.slice(0, 20);
+        // slice the input, so the length is 44
+        modelInput = modelInput.slice(0, 44);
 
         // return the input
         return modelInput;
