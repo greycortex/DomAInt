@@ -36,8 +36,6 @@ function showBlacklistedSites() {
   blackList.then((res) => {
     // if theres no site being blacklisted
     if (!res.blackList || res.blackList.length < 1) {
-      // set html div text:
-      blackListdiv.innerText = "No blacklisted sites yet";
       // if there are blacklisted sites
     } else {
       // parse blacklisted sites to object

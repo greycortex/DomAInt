@@ -282,9 +282,6 @@ input[type='submit']:hover {
   cursor: pointer;  
 }
 
-.leftlink span {
- 
-}
 
 .leftlink:hover {
   background-color: #ccc;
@@ -296,13 +293,15 @@ input[type='submit']:hover {
 
 .slidecontainer {
   float: left;
-  margin-right: 340px;
+  margin-right: 261px;
 }
 
 .thresholddiv {
   margin-bottom: 100px;
 }
 
+
+/*
 input[type=range]{
   -webkit-appearance: none;
 }
@@ -332,3 +331,4 @@ input[type=range]:focus {
 input[type=range]:focus::-webkit-slider-runnable-track {
   background: #ccc;
 }
+*/
