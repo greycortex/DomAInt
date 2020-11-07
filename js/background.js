@@ -50,8 +50,7 @@ const IDN_REGEX = /xn--/;
 const BS_REGEX = /[^\.\-_0-9a-z]/g;
 
 // load and prepare the model of up to 44 overlapping bigrams trained from github 
-const MODEL_PATH = "https://gitlab.greycortex.com/p3/domain/-/raw/rnn/models/domain_bigrams.js/model.json";
-// const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/rnn/models/domain_bigrams.js/model.json";
+const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/rnn/models/domain_bigrams.js/model.json";
 // "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
 
 // global variable for model loading
