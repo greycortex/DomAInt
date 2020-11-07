@@ -884,13 +884,12 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             redThreshold = 0;
           } else {
             let threshold = JSON.parse(res.threshold);
-
             redThreshold = threshold.red == 0 ? 0 : threshold.red / 100;
             orangeThreshold = threshold.orange;
             greenThreshold = threshold.green;
           }
 
-          console.log(greenThreshold, orangeThreshold, greenThreshold);
+          console.log(greenThreshold, orangeThreshold, redThreshold);
 
           // if result is bigget than 0.85 = 85%
           if (modelResult >= greenThreshold) {
@@ -912,6 +911,9 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             // if result is bigger than 0 or is 0
           } else if (modelResult >= redThreshold) {
             browser.browserAction.setBadgeBackgroundColor({ color: "red" });
+            browser.browserAction.setTitle({
+              title: "Warning: this page might be dangerous!",
+            });
             // set extension icon to red
             browser.browserAction.setIcon({
               path: "img/red.png",
@@ -941,6 +943,8 @@ loadJSON("../data/dict.json", function (dictionaryy) {
       
 
       async function runCode() {
+
+        let next = true;
         // variable storing last visited URL (used not to run code, when not necessary)
         let cachedURL;
         // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
@@ -995,13 +999,12 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                   browser.browserAction.setIcon({
                     path: "img/gb.png",
                   });
-                  return;
+                  next = false;
                 });
               }
             });
             // return if there's no blacklist
           }
-          return;
         });
 
         browser.storage.local.get("whiteList").then((res) => {
@@ -1026,14 +1029,14 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                   browser.browserAction.setIcon({
                     path: "img/base.png",
                   });
+                  next = false;
                   return;
               }
             });
-            return;
           }
         
 
-
+          if(next) {
         // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
         if (tab && tab !== cachedURL) {
@@ -1087,6 +1090,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             changeIcon(Result);
           }
         }
+      }
       });
       }
 
