@@ -934,6 +934,43 @@ loadJSON("../data/dict.json", function (dictionaryy) {
           path: "img/base.png",
         });
       }
+
+      function postVirustotalAPIRequest(url) {
+        const body = new FormData();
+        body.append("url", url);
+      
+        const data = new URLSearchParams();
+        for (const pair of body) {
+          data.append(pair[0], pair[1]);
+        }
+      
+        fetch("https://www.virustotal.com/api/v3/urls", {
+          body: data,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Apikey":
+              "81a1519190a2a86179bd9fb4543a8a00755bb099bb178b13af603b3a0562f1f0"
+          },
+          method: "POST",
+        })
+          .then((response) => response.json())
+          .then((data) => getVirustotalAPIResults(data.data.id));
+      }
+      
+      
+      function getVirustotalAPIResults(id) {
+      
+          fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
+              headers: {
+                  "X-Apikey":
+                    "81a1519190a2a86179bd9fb4543a8a00755bb099bb178b13af603b3a0562f1f0",
+                },
+              method: "GET",
+            })
+            .then((response) => response.json())
+            .then((data) => console.log(data));
+      
+      }
       
 
       async function runCode() {
