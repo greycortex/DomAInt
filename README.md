@@ -1,4 +1,4 @@
-GREYCORTEX Research DomAIn
+#GREYCORTEX Research DomAIn
 
 ![DomAInt Brain](https://raw.githubusercontent.com/greycortex/DomAInt/rnn/img/brain.png)
 
