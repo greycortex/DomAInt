@@ -17,6 +17,8 @@ let redVal = document.getElementById("redVal");
 let orangeVal = document.getElementById("orangeVal");
 let greenVal = document.getElementById("greenVal");
 
+let meaning = document.getElementById("meaning");
+
 // add event listener on new submited url to be blacklisted
 blacklistForm.addEventListener("submit", addSite);
 // add event listener on new submited url to be whitelisted
@@ -211,13 +213,13 @@ function showThreshold() {
     // if theres no site being blacklisted
     if (!res.threshold || res.threshold.length < 1) {
       red.value = 0;
-      redVal.innerText = 0 + " %";
+      redVal.innerText = 0 + "%";
 
       orange.value = 50;
-      orangeVal.innerText = 50 + " %";
+      orangeVal.innerText = 50 + "%";
 
       green.value = 85;
-      greenVal.innerText = 85 + " %";
+      greenVal.innerText = 85 + "%";
     } else {
       // parse blacklisted sites to object
       let threshold = JSON.parse(res.threshold);
@@ -225,45 +227,60 @@ function showThreshold() {
       console.log(threshold);
 
       red.value = threshold.red;
-      redVal.innerText = red.value + " %";
+      redVal.innerText = red.value + "%";
 
       orange.value = threshold.orange;
-      orangeVal.innerText = orange.value + " %";
+      orangeVal.innerText = orange.value + "%";
 
       green.value = threshold.green;
-      greenVal.innerText = green.value + " %";
+      greenVal.innerText = green.value + "%";
+
     }
+    editMeaning();
   });
+}
+
+function editMeaning() {
+meaning.innerHTML = "<br>";
+meaning.innerText += 
+                      `According to these settings, model will work as following: 
+                      from ${red.value}% to ${orange.value}% the site will be rated as dangerous,
+                      from ${orange.value}% to ${green.value}% the site will be rated as potencional dangerous, 
+                      from ${green.value}% the site will be rated as safe`;
+
 }
 
 showBlacklistedSites();
 showWhitelistedSites();
 showThreshold();
 
+
 red.oninput = function () {
-  redVal.innerText = red.value + " %";
+  redVal.innerText = red.value + "%";
   if (+red.value > +orange.value) {
     orange.value = +red.value + 1;
-    orangeVal.innerText = orange.value + " %";
+    orangeVal.innerText = orange.value + "%";
   }
   if (+orange.value > +green.value && +green.value <= 99) {
     green.value = +orange.value + 1;
-    greenVal.innerText = green.value + " %";
+    greenVal.innerText = green.value + "%";
   }
+  editMeaning();
 };
 
 orange.oninput = function () {
-  orangeVal.innerText = orange.value + " %";
+  orangeVal.innerText = orange.value + "%";
 
   if (+orange.value > +green.value) {
     green.value = +orange.value + 1;
-    greenVal.innerText = green.value + " %";
+    greenVal.innerText = green.value + "%";
   }
 
   if (+orange.value < +red.value) {
     red.value = orange.value - 1;
-    redVal.innerText = red.value + " %";
+    redVal.innerText = red.value + "%";
   }
+  editMeaning();
 };
 
 green.oninput = function () {
@@ -276,4 +293,6 @@ green.oninput = function () {
     red.value = +orange.value - 1;
     redVal.innerText = red.value + " %";
   }
+  editMeaning();
 };
+

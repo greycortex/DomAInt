@@ -879,13 +879,13 @@ loadJSON("../data/dict.json", function (dictionaryy) {
           } else {
             let threshold = JSON.parse(res.threshold);
             redThreshold = threshold.red == 0 ? 0 : threshold.red / 100;
-            orangeThreshold = threshold.orange;
-            greenThreshold = threshold.green;
+            orangeThreshold = threshold.orange / 100;
+            greenThreshold = threshold.green / 100;
           }
 
           console.log(greenThreshold, orangeThreshold, redThreshold);
 
-          // if result is bigget than 0.85 = 85%
+          // if result is bigger than 0.85 = 85%
           if (modelResult >= greenThreshold) {
             browser.browserAction.setTitle({ title: "This page is safe!" });
             // set extension icon to green
