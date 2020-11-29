@@ -9,6 +9,15 @@ let clear = document.getElementById("clear");
 // get clear button (used to clear the whole whiteList)
 let clearWhitelist = document.getElementById("clearWhite");
 
+
+
+
+
+
+
+
+
+
 const red = document.getElementById("redRange");
 const orange = document.getElementById("orangeRange");
 const green = document.getElementById("greenRange");
@@ -29,6 +38,7 @@ thresholdForm.addEventListener("submit", configureThreshold);
 clear.addEventListener("click", clearBLackList);
 clearWhitelist.addEventListener("click", clearWhiteList);
 
+
 /**
  *function showBlacklistedSites is used to show sites that are being blacklisted on the settings page
  */
@@ -44,6 +54,7 @@ function showBlacklistedSites() {
       let blackListArray = JSON.parse(res.blackList);
       // log the blacklisted sites
       // foreach blacklisted site
+      let i = 0;
       blackListArray.forEach((site) => {
         // show what sites are being blocked in the html div
         blackListdiv.innerHTML += `<div class = "list-group-item">
@@ -51,12 +62,69 @@ function showBlacklistedSites() {
         <span class="domain">
         ${site.regex} 
         </span>
-        <span class="removeButtonwhiteListList glyphicon glyphicon-remove">
+        <span class="removeFromListBlacklist" id="${i}">
+        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+        </span>
         </div>`;
+        i++;
       });
+      let removeFromList = document.getElementsByClassName("removeFromListBlacklist");
+      console.log(removeFromList.length);
+      for(let i = 0; i<removeFromList.length; i++) {
+        console.log(removeFromList[i]);
+        removeFromList[i].addEventListener("click", function() {
+          console.log(removeFromList[i]);
+          removeSiteFromLists("blacklist", removeFromList[i].id);
+        })
+      }
     }
   });
 }
+
+function removeSiteFromLists(type, id) {
+  if(type == "whitelist") {
+  let whiteListedSites;
+
+  // get blackListed sites from browser storage
+  let whiteList = browser.storage.local.get("whiteList");
+  whiteList.then((res) => {
+    // check if there are any blacklisted sites
+    if (!res.whiteList || res.whiteList.left < 1) {
+      whiteListedSites = [];
+      // parse blackListed sites to object
+    } else {
+      whiteListedSites = JSON.parse(res.whiteList);
+    }
+    whiteListedSites.splice(id, 1);
+    browser.storage.local.set({
+      whiteList: JSON.stringify(whiteListedSites),
+    });
+  });
+}
+else if(type == "blacklist") {
+  let blackListedSites;
+
+  // get blackListed sites from browser storage
+  let blackList = browser.storage.local.get("blackList");
+  blackList.then((res) => {
+    // check if there are any blacklisted sites
+    if (!res.blackList || res.blackList.left < 1) {
+      blackListedSites = [];
+      // parse blackListed sites to object
+    } else {
+      blackListedSites = JSON.parse(res.blackList);
+    }
+    blackListedSites.splice(id, 1);
+    browser.storage.local.set({
+      blackList: JSON.stringify(blackListedSites),
+    });
+  });
+}
+  location.reload();
+}
+
 
 /**
  *function clearBlacklist clear the whole URL UblackList
@@ -97,16 +165,30 @@ function showWhitelistedSites() {
       let whiteListArray = JSON.parse(res.whiteList);
       // log the blacklisted sites
       // foreach blacklisted site
+      let i = 0;
       whiteListArray.forEach((site) => {
         // show what sites are being blocked in the html div
         whiteListdiv.innerHTML += `<div class = "list-group-item">
-        <img class = "favicon" src = "https://www.google.com/s2/favicons?domain=${site.regex}">
-        <span class="domain">
+        <img class = "favicon" src = "https://www.google.com/s2/favicons?domain=${site.regex}"> <span class="domain">
         ${site.regex} 
         </span>
-        <span class="removeButtonwhiteListList glyphicon glyphicon-remove">
+        <span class="removeFromList" id="${i}">
+        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+        </span>
         </div>`;
+        i++;
       });
+      let removeFromList = document.getElementsByClassName("removeFromList");
+      console.log(removeFromList.length);
+      for(let i = 0; i<removeFromList.length; i++) {
+        console.log(removeFromList[i]);
+        removeFromList[i].addEventListener("click", function() {
+          console.log(removeFromList[i]);
+          removeSiteFromLists("whitelist", removeFromList[i].id);
+        })
+      }
     }
   });
 }
@@ -168,9 +250,7 @@ function addToWhiteList() {
     .replace("www.", "")
     .split(/[/?#]/)[0];
 
-  let whiteListedSites = checkForDuplicatesWhitelist(domain, regDom, function (
-    whiteListedSites
-  ) {
+  let whiteListedSites = checkForDuplicatesWhitelist(domain, regDom, function (whiteListedSites) {
     console.log(whiteListedSites);
 
     if (whiteListedSites) {
@@ -284,15 +364,19 @@ orange.oninput = function () {
 };
 
 green.oninput = function () {
-  greenVal.innerText = green.value + " %";
+  greenVal.innerText = green.value + "%";
   if (+green.value < +orange.value && +orange.value > 1) {
     orange.value = +green.value - 1;
-    orangeVal.innerText = orange.value + " %";
+    orangeVal.innerText = orange.value + "%";
   }
   if (+orange.value < +red.value && +red.value > 1) {
     red.value = +orange.value - 1;
-    redVal.innerText = red.value + " %";
+    redVal.innerText = red.value + "%";
   }
   editMeaning();
 };
+
+
+  
+
 
