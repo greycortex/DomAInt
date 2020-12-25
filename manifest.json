@@ -9,7 +9,7 @@
         "48": "img/base.png"
     },
 
-    "permissions": ["activeTab", "tabs", "storage", "webNavigation"],
+    "permissions": ["activeTab", "tabs", "storage", "webNavigation", "contextMenus"],
 
     "background": {
         "scripts": [

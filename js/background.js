@@ -883,7 +883,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             greenThreshold = threshold.green / 100;
           }
 
-          console.log(greenThreshold, orangeThreshold, redThreshold);
+          //console.log(greenThreshold, orangeThreshold, redThreshold);
 
           // if result is bigger than 0.85 = 85%
           if (modelResult >= greenThreshold) {
@@ -972,14 +972,14 @@ loadJSON("../data/dict.json", function (dictionaryy) {
       
       }
       
-
+      let cachedURL;
+      let Result;
       async function runCode() {
 
         let next = true;
         // variable storing last visited URL (used not to run code, when not necessary)
-        let cachedURL;
         // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
-        let Result;
+        
         let tab = await getCurrentURL();
 
         let adress = tab
@@ -1071,48 +1071,22 @@ loadJSON("../data/dict.json", function (dictionaryy) {
         // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
         if (tab && tab !== cachedURL) {
+          console.log("tab is " + tab);
+          console.log("cached url is " + cachedURL);
           cachedURL = tab;
           // prevent code from running on special sites (extension::, ...)
           if (tab.includes("http://") || tab.includes("https://")) {
             // parse the URL to string we need == https://www.example.com -> example.com
-            // create new object of class Domain from changed URL
-            let domain = new Domain(adress);
 
-            // regex domain, having replaced certain values replaced for model usage
-            // slice domain, so we can create model input
-            let sliced = findBigrams(domain.name);
-            // from sliced URL, generate model input
-            modelInput = bigramsToInt(sliced);
-            // run model and get model prediction
-            let output = runModel(modelInput);
-            output.then((res) => {
-              // log prediction
-              console.log(res);
-              // set cached result
-              Result = res;
-              // change icon according to the Result (danger icon, ...)
-              changeIcon(Result);
-            });
+          createDomainrunModel(adress);
 
-            /*
-          const inp =
-            ".-_0123456789abcdefghijklmnopqrstuvwxyz@$#áéíýóúůěžščřďťň";
-          const out =
-            ".--0000000000adcdetgligclmmopprstuwwris??????????????????";
-          console.log("replaceChars: \n" + inp);
-          var outp = replaceChars(inp);
-          console.log(out);
-          console.log(outp);
-          if (out != outp) {
-            console.log("DOMAIN.unitTest(): replaceChars doesn't match.");
-            throw "DOMAIN.unitTest(): replaceChars doesn't match.";
-          }
-          */
           } else {
             // if on a special site change icon to the base one
             resetIcon();
           }
         } else {
+          console.log("this site is cached");
+          console.log("result is " + Result);
           // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
           if (Result) {
             // log cached result
@@ -1124,6 +1098,62 @@ loadJSON("../data/dict.json", function (dictionaryy) {
       }
       });
       }
+
+      function createDomainrunModel(adress, source="background") {
+
+        console.log("adress in func is " + adress + " from source " + source);
+         // create new object of class Domain from changed URL
+         let domain = new Domain(adress);
+
+         // regex domain, having replaced certain values replaced for model usage
+         // slice domain, so we can create model input
+         let sliced = findBigrams(domain.name);
+         // from sliced URL, generate model input
+         modelInput = bigramsToInt(sliced);
+         // run model and get model prediction
+         let output = runModel(modelInput);
+         output.then((res) => {
+           // log prediction
+           console.log(res);
+           if(source == "background"){
+           // set cached result
+           Result = res;
+           // change icon according to the Result (danger icon, ...)
+           changeIcon(Result);
+           }
+         });
+      }
+
+      browser.contextMenus.create({
+        id: "analyze-link",
+        title: "Analyze link using DomAInt",
+        contexts: ["link"],
+    });
+    
+    browser.contextMenus.onClicked.addListener((info, tab) => {
+        if (info.menuItemId === "analyze-link") {
+            // Always HTML-escape external input to avoid XSS.
+            const safeUrl = escapeHTML(info.linkUrl);
+            const finalAdress = safeUrl.replace("http://", "")
+                                      .replace("https://", "")
+                                      .replace("www.", "")
+                                      .split(/[/?#]/)[0];
+                                      
+    
+            createDomainrunModel(finalAdress, "contextMenu");
+        }
+    });
+    
+    
+    // https://gist.github.com/Rob--W/ec23b9d6db9e56b7e4563f1544e0d546
+    function escapeHTML(str) {
+        // Note: string cast using String; may throw if `str` is non-serializable, e.g. a Symbol.
+        // Most often this is not the case though.
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 
       // code is executed whenever new browser tab is active/clicked
 
@@ -1139,6 +1169,21 @@ loadJSON("../data/dict.json", function (dictionaryy) {
     });
   });
 });
+
+/*
+const inp =
+".-_0123456789abcdefghijklmnopqrstuvwxyz@$#áéíýóúůěžščřďťň";
+const out =
+".--0000000000adcdetgligclmmopprstuwwris??????????????????";
+console.log("replaceChars: \n" + inp);
+var outp = replaceChars(inp);
+console.log(out);
+console.log(outp);
+if (out != outp) {
+console.log("DOMAIN.unitTest(): replaceChars doesn't match.");
+throw "DOMAIN.unitTest(): replaceChars doesn't match.";
+ }
+ */
 
 // console.log(JSON.stringify(genBigrams()));
 
