@@ -974,8 +974,15 @@ loadJSON("../data/dict.json", function (dictionaryy) {
       
       let cachedURL;
       let Result;
+      let lastClosedSite;
+      let isAfterClose;
+      // add variable that will check if lastclosedUrl is not being opened after "continueOnce" 
+      // = this variable will be set to true, then checked in runcode function and set to false after the function end
+      // that means, that only right after the new tab is opened, this site will not be evaluated by the autoclose
+      // or somehow inject *if in blacklist and not equals to last closedUrl*
       async function runCode() {
-
+        console.log("code runs");
+        if(!isAfterClose){
         let next = true;
         // variable storing last visited URL (used not to run code, when not necessary)
         // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
@@ -993,7 +1000,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
               .replace("https://", "")
               .replace("www.", "");
 
-
+        
         browser.storage.local.get("blackList").then((res) => {
           // if blacklist exists
           if (res.blackList) {
@@ -1019,10 +1026,14 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                     });
                     currentDomain.then((tab) => {
                       const closeSite = tab[0].id;
-                      return closeTab(closeSite);
+                      console.log(`close site ${closeSite}`);
+                      const closedSiteUrl = tab[0].url;
+                      closeTab(closeSite);
+                      lastClosedSite = closedSiteUrl;
+                      showAfterClosePopup(closeSite);
                     });
                     // return if autoClose is not enabled
-                  }
+                  } 
                   browser.browserAction.setTitle({
                     title: "This site is blacklisted",
                   });
@@ -1032,12 +1043,15 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                   });
                   next = false;
                 });
+                
               }
             });
             // return if there's no blacklist
           }
         });
+      
 
+        
         browser.storage.local.get("whiteList").then((res) => {
           // if blacklist exists
           if (res.whiteList) {
@@ -1066,7 +1080,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             });
           }
         
-
+          
           if(next) {
         // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
@@ -1097,6 +1111,9 @@ loadJSON("../data/dict.json", function (dictionaryy) {
         }
       }
       });
+    } 
+    isAfterClose = false;
+    console.log("changed to false");
       }
 
       function createDomainrunModel(adress, source="background") {
@@ -1143,6 +1160,32 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             createDomainrunModel(finalAdress, "contextMenu");
         }
     });
+
+    browser.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+          if (request.msg === "continue_once") {
+              isAfterClose = true;
+              console.log("changed to true");
+              browser.tabs.create({ url: lastClosedSite }); 
+              setTimeout(() => {
+                isAfterClose = false;
+              }, 5000)    
+              sendResponse(`tab with url ${lastClosedSite} created`);    
+          }
+          
+      }
+      
+  );
+
+  browser.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.msg === "send_url") {
+          sendResponse(lastClosedSite);          
+        }
+        
+    }
+    
+);
     
     
     // https://gist.github.com/Rob--W/ec23b9d6db9e56b7e4563f1544e0d546
@@ -1155,16 +1198,77 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             .replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-      // code is executed whenever new browser tab is active/clicked
 
-      browser.tabs.onUpdated.addListener(function (tabId, info, status) {
-        if (status.status == "complete") {
-          runCode();
+    function showAfterClosePopup(closedId) {
+      let currentDomain = browser.tabs.query({
+        currentWindow: true,
+        active: true,
+      });
+      currentDomain.then((tab) => {
+        const currentTabId = tab[0].id;
+        console.log(`curr tab ${currentTabId}`);
+        browser.tabs.sendMessage(currentTabId, {data: "show_popup"}).then((response => {
+          console.log(response);
+        }));
+      });
+    /*
+      browser.runtime.sendMessage({   
+        msg: "show_popup", 
+        data: {
+            url: closedSiteUrl,
         }
+    });
+    */
+      /*
+        browser.runtime.sendMessage({   
+          msg: "closed_Url", 
+          data: {
+              url: closedSiteUrl,
+          }
+      });
+     */
+      
+        
+    }
+
+
+    function getCurrentTab(callback) {
+      let currTab;
+      let currentDomain = browser.tabs.query({
+        currentWindow: true,
+        active: true,
+      });
+      currentDomain.then((tab) => {
+       currTab = tab[0];
+       callback(currTab);
+      });
+    }
+
+    function closeTab(tabId) {
+      // destroy specified browser tab
+      browser.tabs.remove(tabId);
+      
+    }
+  
+
+      // code is executed whenever new browser tab is active/clicked
+    /* current error - both of these listeners might be active at the same time 
+    = code will try to autoclose twice, iframe will be added twice, also an error might happen
+    */
+      browser.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
+        let url = tab.url;
+        if (url !== undefined && changeinfo.status == "loading" && !isAfterClose) {
+          
+          runCode();
+    }
       });
 
       browser.tabs.onActivated.addListener(function () {
+        if(!isAfterClose){
+        console.log("fired");
         runCode();
+        }
+        
       });
     });
   });

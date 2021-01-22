@@ -31,7 +31,10 @@ let meaning = document.getElementById("meaning");
 // add event listener on new submited url to be blacklisted
 blacklistForm.addEventListener("submit", addSite);
 // add event listener on new submited url to be whitelisted
-whitelistForm.addEventListener("submit", addToWhiteList);
+whitelistForm.addEventListener("submit", function() {
+  let domain = document.querySelector('input[name="whitelistUrl"]').value;
+  addToWhiteList(domain);
+});
 
 thresholdForm.addEventListener("submit", configureThreshold);
 
@@ -237,45 +240,7 @@ function addSite() {
   });
 }
 
-/**
- *function addSite gets URL value from html form user wishes to whitelist
- */
-function addToWhiteList() {
-  // get  value from form input
-  let domain = document.querySelector('input[name="whitelistUrl"]').value;
-  // parse full url to domain adress only
-  let regDom = domain
-    .replace("http://", "")
-    .replace("https://", "")
-    .replace("www.", "")
-    .split(/[/?#]/)[0];
 
-  let whiteListedSites = checkForDuplicatesWhitelist(domain, regDom, function (whiteListedSites) {
-    console.log(whiteListedSites);
-
-    if (whiteListedSites) {
-      // create object made of full URL and parsed URL
-      const object = {
-        domain: domain,
-        regex: regDom,
-      };
-
-      // push the previous object to the existing whitelist
-      whiteListedSites.push(object);
-
-      // save whiteListed sites to the browser storage
-      browser.storage.local.set({
-        whiteList: JSON.stringify(whiteListedSites),
-      });
-
-      //log if succesfully accomplished
-      //TODO create some sort of flash message to popup and options page
-      console.log("succesfully added domain to the whiteList");
-    } else {
-      return;
-    }
-  });
-}
 
 function configureThreshold() {
   const object = { red: red.value, orange: orange.value, green: green.value };

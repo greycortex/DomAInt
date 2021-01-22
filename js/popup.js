@@ -11,7 +11,17 @@ let cDomain = document.getElementById("cDomain");
 
 // adding listeners to DOM elements triggering their responsible functions
 currentToBlacklist.addEventListener("click", addCurrent);
-currentToWhitelist.addEventListener("click", addToWhiteList);
+currentToWhitelist.addEventListener("click", function() {
+  // get current url
+  let currentDomain = browser.tabs.query({
+    currentWindow: true,
+    active: true,
+  });
+  currentDomain.then((tab) => {
+    const domain = tab[0].url;
+    addToWhiteList(domain);
+  });
+});
 options.addEventListener("click", openOptions);
 
 /**
@@ -71,48 +81,3 @@ function addCurrent() {
  
 
 
-function addToWhiteList() {  
-    // get current url
-    let currentDomain = browser.tabs.query({
-      currentWindow: true,
-      active: true,
-    });
-    currentDomain.then((tab) => {
-      const domain = tab[0].url;
-
-      if (domain.startsWith("http")) {
-        // use regex to parse the url, so we can use it for comparing
-        let regDom = domain
-          .replace("http://", "")
-          .replace("https://", "")
-          .replace("www.", "")
-          .split(/[/?#]/)[0];
-
-          let domainList = checkForDuplicatesWhitelist(domain, regDom, function(domainList) {
-            console.log(domainList);
-          
-
-          if(domainList) {
-        // create object constisting of full url and the parsed one
-        let object = {
-          domain: domain,
-          regex: regDom,
-        };
-
-        // add it to the blacklisted list and save it to local storage
-        domainList.push(object);
-
-        let parsed = JSON.stringify(domainList);
-        console.log(parsed);
-        browser.storage.local.set({
-          whiteList: parsed,
-        });
-
-      } else {
-        return;
-      }
-    });
-    }
-    });
-  
-}
