@@ -4,6 +4,12 @@ ifrm.setAttribute('src', 'afterClosePopup.html');
 document.body.appendChild(ifrm);
 */
 
+ /**
+       * showPopup function creates an iframe html element and inserts the actual html popup
+       * from web accessible resources in it
+       */
+
+
 function showPopup() {
   // Avoid recursive frame insertion...
   let extensionOrigin = "chrome-extension://" + browser.runtime.id;
@@ -15,17 +21,22 @@ function showPopup() {
     document.body.appendChild(iframe);
     
 
-    // Some styles for a fancy sidebar
+    // iframe styling
     iframe.style.cssText =
       "position:absolute;top:15px;right:15px;display:block;" +
       "width:300px;height:200px;z-index:9999;" +
       "border-radius:10px;";
 
+    // remove popup automatically after 15 seconds
       setTimeout(() => {
         removePopup();
       }, 15000)
   }
 }
+
+/**
+       * function removePopup gets the iframe element by its id and then removes it
+       */
 
 function removePopup() {
   let popup = document.getElementById("iframe");
@@ -34,7 +45,13 @@ function removePopup() {
   }
 }
 
-// if sent tabid != currentid
+/**
+       * On message listener that listens for show popup message, send whenever a site is closed by autoclose
+       * calls the show popup function and then sends response back
+       *  @param {object} request = used to check for the show popup message
+       * @param {function} sendResponse used for callback
+       * @returns {callback} callbacks response (used for debbuging), will be replaced with promise
+       */
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
         showPopup();
@@ -42,6 +59,14 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
   sendResponse(request.closedUrl);
 });
+
+/**
+       * On message listener that listens for remove popup message, this message is send with the cross button on the iframe
+       * calls the removePopup function and then sends response back
+       * @param {object} request = used to check for the remove popup message
+       * @param {function} sendResponse used for callback
+       * @returns {callback} callbacks response (used for debbuging), will be replaced with promise
+       */
 
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "remove_popup") {

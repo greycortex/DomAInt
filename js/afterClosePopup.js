@@ -6,7 +6,10 @@ crossButton.addEventListener("click", removePopupMessage);
 continueOnceButton.addEventListener("click", continueToSiteOnce);
 whitelistButton.addEventListener("click", whitelistMessage);
 
-
+/**
+       * removePopupMessage is used to remove the iframe popup element from the page
+       * and is fired when the cross button on it is clicked
+       */
 
 function removePopupMessage() {
     let currentDomain = browser.tabs.query({
@@ -22,15 +25,25 @@ function removePopupMessage() {
     });
 }
 
+/**
+       * whiteListMessage is used to send message, which retrieves closed url as a response
+       * and then adds it to the whitelist
+       * @returns {function} addToWhiteList call
+       */
+
 function whitelistMessage() {
     browser.runtime.sendMessage({
         msg: "send_url"
     }).then((response) => {
         console.log(response);
-        addToWhiteList(response);
+        return addToWhiteList(response);
     });
     
 }
+
+/**
+       * ContinueToSiteOnce sends message to the backgrounds script to call the continueOnce function
+       */
 
 function continueToSiteOnce() {
     browser.runtime.sendMessage({
