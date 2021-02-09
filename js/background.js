@@ -935,57 +935,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
         });
       }
 
-      /**
-       * Returns getVirusTotalAPIResults function call = we firstly need to post the url to examine
-       * the api then returns an id, where we get the final result using GET request
-       *
-       * @param {string} takes an url that should be examined by virustotal
-       * @returns {function} calls function which retrieves the scan result
-       */
 
-      function postVirustotalAPIRequest(url) {
-        const body = new FormData();
-        body.append("url", url);
-      
-        const data = new URLSearchParams();
-        for (const pair of body) {
-          data.append(pair[0], pair[1]);
-        }
-      
-        fetch("https://www.virustotal.com/api/v3/urls", {
-          body: data,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Apikey":
-              "81a1519190a2a86179bd9fb4543a8a00755bb099bb178b13af603b3a0562f1f0"
-          },
-          method: "POST",
-        })
-          .then((response) => response.json())
-          .then((data) => getVirustotalAPIResults(data.data.id));
-      }
-      
-      /**
-       * Returns JSON result of a previous url scan
-       *
-       * @param {string} takes an id from the previous function. That id corresponds with the final json result
-       * 
-       * @returns {JSON} returns json scan result of the url posted
-       */
-      
-      function getVirustotalAPIResults(id) {
-      
-          fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
-              headers: {
-                  "X-Apikey":
-                    "81a1519190a2a86179bd9fb4543a8a00755bb099bb178b13af603b3a0562f1f0",
-                },
-              method: "GET",
-            })
-            .then((response) => response.json())
-            .then((data) => console.log(data));
-      
-      }
       
       let cachedURL;
       let Result;

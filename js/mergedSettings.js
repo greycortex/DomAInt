@@ -229,13 +229,13 @@ function getBlacklist() {
 function getWhitelist() {
   let whiteListedSites;
   
-    // get blackListed sites from browser storage
+    // get whiteListed sites from browser storage
     let whiteList = browser.storage.local.get("whiteList");
     whiteList.then((res) => {
-      // check if there are any blacklisted sites
+      // check if there are any whitelisted sites
       if (!res.whiteList || res.whiteList.length < 1) {
         whiteListedSites = [];
-        // parse blackListed sites to object
+        // parse whiteListed sites to object
       } else {
         whiteListedSites = JSON.parse(res.whiteList);
       }

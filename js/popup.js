@@ -9,6 +9,17 @@ let options = document.getElementById("options");
 // get cDomain button (used to add current site to the blacklist)
 let cDomain = document.getElementById("cDomain");
 
+
+// browser.browserAction.onClicked.addListener(postVirustotalAPIRequest);
+
+/*
+  will listen for popup open and then send request to the virustotal api with the current url if possible
+
+document.addEventListener('DOMContentLoaded', function () {
+  postVirustotalAPIRequest();
+});
+*/
+
 // adding listeners to DOM elements triggering their responsible functions
 currentToBlacklist.addEventListener("click", addCurrent);
 currentToWhitelist.addEventListener("click", function() {
@@ -71,13 +82,81 @@ function addCurrent() {
         });
         console.log("succesfully added site to blacklist");
       } else {
-        console.log("nah");
+        console.log("List could not be retrieved");
         return;
       }
     });
       }
     });
 }
+
+function getApiKey() {
+    return new Promise(function(resolve, reject) {
+      let getKey = browser.storage.local.get("apikey");
+          getKey.then((res) => {
+      if(res.apikey) {
+        resolve(res.apikey);
+      } else {
+        reject(new Error("There is no ApiKey set in the storage"));
+      }
+    });
+  });
+}
+
+/**
+       * Returns getVirusTotalAPIResults function call = we firstly need to post the url to examine
+       * the api then returns an id, where we get the final result using GET request
+       *
+       * @param {string} takes an url that should be examined by virustotal
+       * @returns {function} calls function which retrieves the scan result
+       */
+
+       
+      async function postVirustotalAPIRequest(url) {
+        let X_APIKey = await getApiKey(); 
+        
+        const body = new FormData();
+        body.append("url", url);
+      
+        const data = new URLSearchParams();
+        for (const pair of body) {
+          data.append(pair[0], pair[1]);
+        }
+      
+        fetch("https://www.virustotal.com/api/v3/urls", {
+          body: data,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Apikey":
+              X_APIKey
+          },
+          method: "POST",
+        })
+          .then((response) => response.json())
+          .then((data) => getVirustotalAPIResults(data.id, X_APIKey));
+      }
+      
+      /**
+       * Returns JSON result of a previous url scan
+       *
+       * @param {string} takes an id from the previous function. That id corresponds with the final json result
+       * 
+       * @returns {JSON} returns json scan result of the url posted
+       */
+      
+      function getVirustotalAPIResults(id, X_APIKey) {
+      
+          fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
+              headers: {
+                  "X-Apikey":
+                    X_APIKey
+                },
+              method: "GET",
+            })
+            .then((response) => response.json())
+            .then((data) => console.log(data));
+      
+      }
  
 
 

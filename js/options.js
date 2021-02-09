@@ -4,28 +4,23 @@ let blacklistForm = document.getElementById("form");
 let whitelistForm = document.getElementById("whitelistForm");
 // get html form used to configure custom AI threshold
 let thresholdForm = document.getElementById("thresholdForm");
+// get html form used to setup virustotal API calls
+let apiForm = document.getElementById("apiForm");
 // get clear button (used to clear the whole blackList)
 let clear = document.getElementById("clear");
 // get clear button (used to clear the whole whiteList)
 let clearWhitelist = document.getElementById("clearWhite");
 
-
-
-
-
-
-
-
-
-
+// get html threshold ranges
 const red = document.getElementById("redRange");
 const orange = document.getElementById("orangeRange");
 const green = document.getElementById("greenRange");
 
+// get html range values
 let redVal = document.getElementById("redVal");
 let orangeVal = document.getElementById("orangeVal");
 let greenVal = document.getElementById("greenVal");
-
+// div used to describe what will the threshold work like
 let meaning = document.getElementById("meaning");
 
 // add event listener on new submited url to be blacklisted
@@ -36,6 +31,8 @@ whitelistForm.addEventListener("submit", function() {
   addToWhiteList(domain);
 });
 
+apiForm.addEventListener("submit", addAPIKey);
+
 thresholdForm.addEventListener("submit", configureThreshold);
 
 clear.addEventListener("click", clearBLackList);
@@ -43,8 +40,11 @@ clearWhitelist.addEventListener("click", clearWhiteList);
 
 
 /**
- *function showBlacklistedSites is used to show sites that are being blacklisted on the settings page
- */
+       * function showBlacklistedSites retrieves all blacklisted sites from local storage
+       * and if there are any, display them to the html
+       * function also add event listener to each of the sites, so user might remove each one by one
+       */
+
 function showBlacklistedSites() {
   // get blacklisted sites from browser storage
   let blackList = browser.storage.local.get("blackList");
@@ -73,6 +73,9 @@ function showBlacklistedSites() {
         </div>`;
         i++;
       });
+
+
+
       let removeFromList = document.getElementsByClassName("removeFromListBlacklist");
       console.log(removeFromList.length);
       for(let i = 0; i<removeFromList.length; i++) {
@@ -85,6 +88,13 @@ function showBlacklistedSites() {
     }
   });
 }
+
+  /**
+       * removes single site from blacklist or whitelist
+       *
+       * @param {string} type - either blacklist or whitelist
+       * @returns {string} id - html id of the site
+       */
 
 function removeSiteFromLists(type, id) {
   if(type == "whitelist") {
@@ -130,7 +140,7 @@ else if(type == "blacklist") {
 
 
 /**
- *function clearBlacklist clear the whole URL UblackList
+ *function clearBlacklist removes all sites from the blacklist
  */
 
 function clearBLackList() {
@@ -144,6 +154,9 @@ function clearBLackList() {
   }
 }
 
+/**
+       * function clearWhiteList removes all sites from the whitelist
+       */
 function clearWhiteList() {
   let empty = [];
   browser.storage.local.set({
@@ -154,6 +167,11 @@ function clearWhiteList() {
     whiteListdiv.innerText = "";
   }
 }
+
+/**
+       * renders each whitelisted site from local storage in the option html
+       * also adds event listeners, so that pages can be removed one by one
+       */
 
 function showWhitelistedSites() {
   // get blacklisted sites from browser storage
@@ -241,15 +259,22 @@ function addSite() {
 }
 
 
+/**
+       * function configureThreshold saves the threshold from settings from to he local storage
+       */
 
 function configureThreshold() {
   const object = { red: red.value, orange: orange.value, green: green.value };
 
   // save threshold to the browser storage
   browser.storage.local.set({
-    threshold: JSON.stringify(object),
+    threshold: JSON.stringify(object)
   });
 }
+
+/**
+       * on site load, this function shows Threshold settings from local storage or the default ones
+       */
 
 function showThreshold() {
   // get blacklisted sites from browser storage
@@ -285,6 +310,10 @@ function showThreshold() {
   });
 }
 
+/**
+       * desribes what will model work like with current Threshold configuration
+       */
+
 function editMeaning() {
 meaning.innerHTML = "<br>";
 meaning.innerText += 
@@ -295,9 +324,26 @@ meaning.innerText +=
 
 }
 
+/**
+       * takes apikey value from form and saves it to the local storage // might not be the best solution
+       */
+
+function addAPIKey() {
+  let APIKey = document.querySelector('input[name="apikey"]').value;
+  console.log(APIKey);
+  browser.storage.local.set({
+    apikey: JSON.stringify(APIKey)
+  });
+}
+
 showBlacklistedSites();
 showWhitelistedSites();
 showThreshold();
+
+/*
+  oninput section for all 3 threshold sliders, moves other sliders if necessary, changes text value
+*/
+
 
 
 red.oninput = function () {
