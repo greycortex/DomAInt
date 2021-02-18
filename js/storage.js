@@ -3,7 +3,7 @@
  *
  * @param {string} file --> path to JSON file we want to load
  * @param {function} callback --> used to callback (return) loaded JSON file
- * @returns {function} returns loaded JSON using callback
+ * @returns {callback} returns loaded JSON using callback
  */
 function loadJSON(file, callback) {
   var xobj = new XMLHttpRequest();
