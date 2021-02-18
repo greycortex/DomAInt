@@ -3,13 +3,13 @@
     "name": "DomAIn",
     "version": "1.0",
 
-    "description": "Scan url for potential secruity issues Machine learning",
+    "description": "Scan url for potential secruity issues using Machine learning",
     "homepage_url": "https://www.greycortex.com/research",
     "icons": {
         "48": "img/base.png"
     },
 
-    "permissions": ["activeTab", "tabs", "storage", "webNavigation"],
+    "permissions": ["activeTab", "tabs", "storage", "webNavigation", "contextMenus"],
 
     "background": {
         "scripts": [
@@ -17,11 +17,19 @@
             "js/tf.min.js",
             "js/punycode/punycode.js",
             "js/storage.js",
-            "js/background.js",
-            "js/close.js"
+            "js/background.js"
         ]
     },
-
+    "content_scripts": [
+        {
+          "matches": ["<all_urls>"],
+          "js": ["js/browser-polyfill.js","js/content.js"]
+        }
+      ],
+      "web_accessible_resources": [
+        "afterClosePopup.html",
+        "js/afterClosePopup.js"
+    ],
     "options_ui": {
         "page": "options.html",
         "browser_style": true,

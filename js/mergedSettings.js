@@ -8,8 +8,9 @@ let blackListdiv = document.getElementById("blacklist");
 let whiteListdiv = document.getElementById("whitelist");
 
 // adding listeners to DOM elements triggering their responsible functions
-toggleButton.addEventListener("click", toggle);
-
+if (toggleButton) {
+    toggleButton.addEventListener("click", toggle);
+}
 /**
  
  *toggle function is responsible for turning off/on blacklist site autoclose
@@ -57,7 +58,7 @@ function checkForDuplicates(domain, regDom, callback) {
     let blackList = browser.storage.local.get("blackList");
     blackList.then((res) => {
         // check if there are any blacklisted sites
-        if (!res.blackList || res.blackList.left < 1) {
+        if (!res.blackList || res.blackList.length < 1) {
             blackListedSites = [];
             // parse blackListed sites to object
         } else {
@@ -101,6 +102,9 @@ function checkForDuplicates(domain, regDom, callback) {
     });
 
 }
+
+
+
 
 function checkForDuplicatesWhitelist(domain, regDom, callback) {
     let whiteListedSites;
@@ -156,4 +160,94 @@ function checkForDuplicatesWhitelist(domain, regDom, callback) {
 }
 
 
-updateButton();
+
+/**
+ *function addSite gets URL value from html form user wishes to whitelist
+ */
+function addToWhiteList(url) {
+    let domain = url;
+    // parse full url to domain adress only
+    let regDom = domain
+            .replace("http://", "")
+            .replace("https://", "")
+            .replace("www.", "")
+            .split(/[/?#]/)[0];
+
+    let whiteListedSites = checkForDuplicatesWhitelist(domain, regDom, function (whiteListedSites) {
+        console.log(whiteListedSites);
+
+        if (whiteListedSites) {
+            // create object made of full URL and parsed URL
+            const object = {
+                domain: domain,
+                regex: regDom,
+            };
+
+            // push the previous object to the existing whitelist
+            whiteListedSites.push(object);
+
+            // save whiteListed sites to the browser storage
+            browser.storage.local.set({
+                whiteList: JSON.stringify(whiteListedSites),
+            });
+
+            //log if succesfully accomplished
+            //TODO create some sort of flash message to popup and options page
+            console.log("succesfully added domain to the whiteList");
+        } else {
+            return;
+        }
+    });
+}
+
+function getBlacklist() {
+    let blackListedSites;
+
+    // get blackListed sites from browser storage
+    let blackList = browser.storage.local.get("blackList");
+    blackList.then((res) => {
+        // check if there are any blacklisted sites
+        if (!res.blackList || res.blackList.length < 1) {
+            blackListedSites = [];
+            // parse blackListed sites to object
+        } else {
+            blackListedSites = JSON.parse(res.blackList);
+        }
+
+        return new Promise(function (resolve, reject) {
+            if (blackListedSites) {
+                resolve(blackListedSites);
+            } else {
+                reject(new Error("could not return the blacklist"));
+            }
+        });
+    });
+}
+
+function getWhitelist() {
+    let whiteListedSites;
+
+    // get whiteListed sites from browser storage
+    let whiteList = browser.storage.local.get("whiteList");
+    whiteList.then((res) => {
+        // check if there are any whitelisted sites
+        if (!res.whiteList || res.whiteList.length < 1) {
+            whiteListedSites = [];
+            // parse whiteListed sites to object
+        } else {
+            whiteListedSites = JSON.parse(res.whiteList);
+        }
+
+        return new Promise(function (resolve, reject) {
+            if (whiteListedSites) {
+                resolve(whiteListedSites);
+            } else {
+                reject(new Error("could not return the whitelist"));
+            }
+        });
+    });
+}
+
+if (toggleButton) {
+    updateButton();
+}

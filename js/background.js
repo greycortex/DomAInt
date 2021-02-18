@@ -886,13 +886,13 @@ loadJSON("../data/dict.json", function (dictionaryy) {
           } else {
             let threshold = JSON.parse(res.threshold);
             redThreshold = threshold.red == 0 ? 0 : threshold.red / 100;
-            orangeThreshold = threshold.orange;
-            greenThreshold = threshold.green;
+            orangeThreshold = threshold.orange / 100;
+            greenThreshold = threshold.green / 100;
           }
 
-          console.log(greenThreshold, orangeThreshold, redThreshold);
+          //console.log(greenThreshold, orangeThreshold, redThreshold);
 
-          // if result is bigget than 0.85 = 85%
+          // if result is bigger than 0.85 = 85%
           if (modelResult >= greenThreshold) {
             browser.browserAction.setTitle({ title: "This page is safe!" });
             // set extension icon to green
@@ -941,15 +941,33 @@ loadJSON("../data/dict.json", function (dictionaryy) {
           path: "img/base.png",
         });
       }
+
+
       
+      let cachedURL;
+      let Result;
+      let lastClosedSite;
+      let isAfterClose;
+     
+      /**
+       * this function is called whenever a new tab is active or user navigates to a new url.
+       * this function is not called if a user navigates to a closed site using "continue once" option
+       * function checks whether the url is either in blacklist or whitelist -> if so, icon is change to the specified one.
+       * if a non http/https url is active (such as blank page, new tab,...) function returns icon reset.
+       * if a http/https url request is made, function checks whether the url is cached, if so = icon is changed to the cached result
+       * if not, the url is scanned using the DomAInt model
+       * 
+       *
+       * @returns {function} returns certain function call depending on the case
+       */
 
       async function runCode() {
-
+        console.log("code runs");
+        if(!isAfterClose){
         let next = true;
         // variable storing last visited URL (used not to run code, when not necessary)
-        let cachedURL;
         // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
-        let Result;
+        
         let tab = await getCurrentURL();
 
         let adress = tab
@@ -963,7 +981,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
               .replace("https://", "")
               .replace("www.", "");
 
-
+        
         browser.storage.local.get("blackList").then((res) => {
           // if blacklist exists
           if (res.blackList) {
@@ -989,10 +1007,14 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                     });
                     currentDomain.then((tab) => {
                       const closeSite = tab[0].id;
-                      return closeTab(closeSite);
+                      console.log(`close site ${closeSite}`);
+                      const closedSiteUrl = tab[0].url;
+                      closeTab(closeSite);
+                      lastClosedSite = closedSiteUrl;
+                      showAfterClosePopup();
                     });
                     // return if autoClose is not enabled
-                  }
+                  } 
                   browser.browserAction.setTitle({
                     title: "This site is blacklisted",
                   });
@@ -1002,14 +1024,17 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                   });
                   next = false;
                 });
+                
               }
             });
             // return if there's no blacklist
           }
         });
+      
 
+        
         browser.storage.local.get("whiteList").then((res) => {
-          // if blacklist exists
+          // if whitelist exists
           if (res.whiteList) {
             // parse blacklist to object
             const whiteList = JSON.parse(res.whiteList);
@@ -1036,53 +1061,27 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             });
           }
         
-
+          
           if(next) {
         // get URL of current tab
         // run code only if a new site is visited else change icon according to cached URL
         if (tab && tab !== cachedURL) {
+          console.log("tab is " + tab);
+          console.log("cached url is " + cachedURL);
           cachedURL = tab;
           // prevent code from running on special sites (extension::, ...)
           if (tab.includes("http://") || tab.includes("https://")) {
             // parse the URL to string we need == https://www.example.com -> example.com
-            // create new object of class Domain from changed URL
-            let domain = new Domain(adress);
 
-            // regex domain, having replaced certain values replaced for model usage
-            // slice domain, so we can create model input
-            let sliced = findBigrams(domain.name);
-            // from sliced URL, generate model input
-            modelInput = bigramsToInt(sliced);
-            // run model and get model prediction
-            let output = runModel(modelInput);
-            output.then((res) => {
-              // log prediction
-              console.log(res);
-              // set cached result
-              Result = res;
-              // change icon according to the Result (danger icon, ...)
-              changeIcon(Result);
-            });
+          createDomainrunModel(adress);
 
-            /*
-          const inp =
-            ".-_0123456789abcdefghijklmnopqrstuvwxyz@$#áéíýóúůěžščřďťň";
-          const out =
-            ".--0000000000adcdetgligclmmopprstuwwris??????????????????";
-          console.log("replaceChars: \n" + inp);
-          var outp = replaceChars(inp);
-          console.log(out);
-          console.log(outp);
-          if (out != outp) {
-            console.log("DOMAIN.unitTest(): replaceChars doesn't match.");
-            throw "DOMAIN.unitTest(): replaceChars doesn't match.";
-          }
-          */
           } else {
             // if on a special site change icon to the base one
             resetIcon();
           }
         } else {
+          console.log("this site is cached");
+          console.log("result is " + Result);
           // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
           if (Result) {
             // log cached result
@@ -1093,22 +1092,244 @@ loadJSON("../data/dict.json", function (dictionaryy) {
         }
       }
       });
+    } 
+    isAfterClose = false;
+    console.log("changed to false");
       }
 
-      // code is executed whenever new browser tab is active/clicked
+      /**
+       * Returns icon change depending on the url scan result
+       *
+       * @param {string} takes url that should be scanned with the AI model
+       * @param {string} since the functionality differs if the function is called using the runCode function
+       * or with the context menu, source parameter is present and is set to background
+       * @returns {function} calls changeIcon function
+       */
 
-      browser.tabs.onUpdated.addListener(function (tabId, info, status) {
-        if (status.status == "complete") {
-          runCode();
+      function createDomainrunModel(adress, source="background") {
+
+        console.log("adress in func is " + adress + " from source " + source);
+         // create new object of class Domain from changed URL
+         let domain = new Domain(adress);
+
+         // regex domain, having replaced certain values replaced for model usage
+         // slice domain, so we can create model input
+         let sliced = findBigrams(domain.name);
+         // from sliced URL, generate model input
+         modelInput = bigramsToInt(sliced);
+         // run model and get model prediction
+         let output = runModel(modelInput);
+         output.then((res) => {
+           // log prediction
+           console.log(res);
+           if(source == "background"){
+           // set cached result
+           Result = res;
+           // change icon according to the Result (danger icon, ...)
+           changeIcon(Result);
+           }
+         });
+      }
+
+      /**
+       * Creates a context menu, which is navigated to using the right mouse click (only works on links)
+       * 
+       */
+
+      browser.contextMenus.create({
+        id: "analyze-link",
+        title: "Analyze link using DomAInt",
+        contexts: ["link"],
+    });
+    
+
+    /**
+       * Listener that listens, if the context menu option is used, if so, parses the url for the model using regex
+       * and returns the AI function call with the url
+       *
+       * @param {object} info checks if exactly analyze link option is clicked
+       * or with the context menu, source parameter is present and is set to background
+       * @returns {function} createDomainrunModel
+       */
+
+    browser.contextMenus.onClicked.addListener((info) => {
+        if (info.menuItemId === "analyze-link") {
+            // Always HTML-escape external input to avoid XSS.
+            const safeUrl = escapeHTML(info.linkUrl);
+            const finalAdress = safeUrl.replace("http://", "")
+                                      .replace("https://", "")
+                                      .replace("www.", "")
+                                      .split(/[/?#]/)[0];
+                                      
+    
+            createDomainrunModel(finalAdress, "contextMenu");
         }
+    });
+
+    /**
+       * On message listener that listens for "continue once" message from the afterclose popup
+       * sets the afterclose value to true, to ensure, that the runCode function wont close the tab this time
+       * creates a new tab with the url of the last closed site
+       * since the tab cration will fire mutliple listeners, setTimeout ensures, that the site will be opened and not closed
+       *
+       * @param {object} request = used to check for the continue once message
+       * @param {function} sendResponse used for callback
+       * @returns {callback} callbacks response (used for debbuging)
+       */
+
+    browser.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+          if (request.msg === "continue_once") {
+              isAfterClose = true;
+              console.log("changed to true");
+              browser.tabs.create({ url: lastClosedSite }); 
+              setTimeout(() => {
+                isAfterClose = false;
+              }, 5000)    
+              sendResponse(`tab with url ${lastClosedSite} created`);    
+          }   
+      }
+  );
+
+  /**
+       * Listener that listens for send url message, which sends the url of last closed site
+       * @param {function} sendResponse used for callback
+       * @returns {callback} callbacks response
+       */
+
+  browser.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.msg === "send_url") {
+          sendResponse(lastClosedSite);          
+        }
+        
+    }
+    
+);
+    
+    /**
+       * this function is used to get url from context menu click as we need it
+       *
+       * @param {string} str to be parsed using regex
+       * @returns {string} returns string with replaced special characters
+       */
+
+    // https://gist.github.com/Rob--W/ec23b9d6db9e56b7e4563f1544e0d546
+    function escapeHTML(str) {
+        // Note: string cast using String; may throw if `str` is non-serializable, e.g. a Symbol.
+        // Most often this is not the case though.
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+            .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    /**
+       * showAfterClosePopup is used to send message to content script to inject iframe of our popup to the new tab
+       * and is fired whenever a blacklisted site is closed
+       *  
+       * gets id of the new tab (neede to send a message), then sends the message
+       */
+
+    function showAfterClosePopup() {
+      let currentDomain = browser.tabs.query({
+        currentWindow: true,
+        active: true,
+      });
+      currentDomain.then((tab) => {
+        const currentTabId = tab[0].id;
+        console.log(`curr tab ${currentTabId}`);
+        browser.tabs.sendMessage(currentTabId, {data: "show_popup"}).then((response => {
+          console.log(response);
+        }));
+      });
+    }
+
+    /**
+       * getCurrentTab (will replace repeating code, callback will be changed to promise)
+       * used to get id of the active (current) tab
+       *
+       * @param {callback} defined to return callback for now
+       * @returns {callback} callbacks the active tab object
+       */
+
+    function getCurrentTab(callback) {
+      let currTab;
+      let currentDomain = browser.tabs.query({
+        currentWindow: true,
+        active: true,
+      });
+      currentDomain.then((tab) => {
+       currTab = tab[0];
+       callback(currTab);
+      });
+    }
+
+    /**
+       * basically just closes the tab with specified id
+       *
+       * @param {string} id of the tab we wish to close
+       * @returns {function} calls the browser api to close the tab
+       */
+
+    function closeTab(tabId) {
+      // destroy specified browser tab
+      browser.tabs.remove(tabId);      
+    }
+  
+
+      // code is executed whenever new browser tab is active/clicked
+    /* current error - both of these listeners might be active at the same time 
+    = code will try to autoclose twice, iframe will be added twice, also an error might happen
+    */
+
+    /**
+       * listener that listens whenever a request is send
+       *
+       * @param {object} changeInfo - used to check if the site state is loading (prevents it for firing for multiple times,
+       *  faster than waiting for a page to fully load to scan/close it)
+       * @returns {function} runCode call
+       */
+
+      browser.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
+        // might replace the function that gets the url
+        let url = tab.url;
+        if (url !== undefined && changeinfo.status == "loading" && !isAfterClose) {
+          
+          runCode();
+    }
       });
 
+      /**
+       * Listener that is fired, whenever the active tab is changed (we click on a new tab)
+       * @returns {function} runCode call
+       */
+
       browser.tabs.onActivated.addListener(function () {
+        if(!isAfterClose){
+        console.log("fired");
         runCode();
+        }
+        
       });
     });
   });
 });
+
+/*
+const inp =
+".-_0123456789abcdefghijklmnopqrstuvwxyz@$#áéíýóúůěžščřďťň";
+const out =
+".--0000000000adcdetgligclmmopprstuwwris??????????????????";
+console.log("replaceChars: \n" + inp);
+var outp = replaceChars(inp);
+console.log(out);
+console.log(outp);
+if (out != outp) {
+console.log("DOMAIN.unitTest(): replaceChars doesn't match.");
+throw "DOMAIN.unitTest(): replaceChars doesn't match.";
+ }
+ */
 
 // console.log(JSON.stringify(genBigrams()));
 

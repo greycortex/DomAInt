@@ -10,9 +10,10 @@
  *
  * @param {string} takes Id of the tab, we want to close
  *
- */
+ 
 function closeTab(tabId) {
   // destroy specified browser tab
   browser.tabs.remove(tabId);
 }
 
+*/
