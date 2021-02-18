@@ -1,8 +1,6 @@
 node_modules/
-/dicts
 /exclude
 /nbproject/private
 /samples
 /suffixes
 /data/samples-nn1-bs2_uniq.csv
-

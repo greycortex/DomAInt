@@ -667,22 +667,22 @@ loadJSON("../data/dict.json", function (dictionaryy) {
         7: "0",
         8: "0",
         9: "0",
-        //    "a",
+        // "a",
         k: "c",
         b: "d",
-        //    "e",
+        // "e",
         j: "g",
         y: "i",
         h: "l",
         n: "m",
-        //    "o",
+        // "o",
         q: "p",
         x: "r",
         z: "s",
         f: "t",
-        //    "u",
+        // "u",
         v: "w",
-        //   "?"
+        // "?"
       };
 
       /**
