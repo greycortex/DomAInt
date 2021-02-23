@@ -4,3 +4,4 @@ node_modules/
 /samples
 /suffixes
 /data/samples-nn1-bs2_uniq.csv
+*~

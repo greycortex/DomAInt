@@ -322,11 +322,11 @@ function showThreshold() {
 
 function editMeaning() {
     meaning.innerHTML = "<p>";
-    meaning.innerText += `According to these settings, model will work as following: 
+    meaning.innerText += `According to these settings, the model will work as follows: 
 Till ${green.value}% the site will be rated as safe.
-Between the green and the orange value, there is the gray area.
+Between the green and the orange value, there is the grey area, we don't know much about.'
 From ${orange.value}% to ${red.value}% the site will be rated as potencionaly dangerous.
-From ${red.value}% to ${orange.value}% the site will be rated as dangerous.
+From ${red.value}% on, the site will be rated as dangerous.
 `;
 }
 
