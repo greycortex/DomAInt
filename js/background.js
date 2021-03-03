@@ -81,19 +81,35 @@ setInterval(loadModel, 4000 * 60 * 60);
  * @param {type} dictionaryy
  * @returns {undefined}
  */
-loadJSON("../data/dict.json", function (dictionaryy) {
-
-    // Parse JSON string into object
-    let dictionary = JSON.parse(dictionaryy);
 
     // TODO: replace dictionary
 
-    loadJSON("../data/suffix.json", function (SUFFIXx) {
+        let suffix; 
+        let SUFFIX;
+        let bigramDict;
+        let dictionary;
+
+         // Parse JSON string into object
+        let promiseDictionary = loadJSON("../data/dict.json");
+        promiseDictionary.then((res) => {
+            dictionary = res;
+        });
+
+
+
         // Parse JSON string into object
-        let suffix = JSON.parse(SUFFIXx);
+        let promiseSuffix = loadJSON("../data/suffix.json");
+        promiseSuffix.then((res) => {
+            SUFFIXx = res;
+            suffix = JSON.parse(res);
+        });
 
         // ../data/bigram_vocabulary2.json
-        loadJSON("../models/bigrams_model_GRU64/bigram_vocabulary_all.json", function (bigramDict) {
+            let promiseBigramDict =  loadJSON("../models/bigrams_model_GRU64/bigram_vocabulary_all.json");
+            promiseBigramDict.then((res) => {
+                bigramDict = res;
+            });
+            
             var suffixes = null;
 
             /** Stub type enum */
@@ -1370,9 +1386,6 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                 }
 
             });
-        });
-    });
-});
 
 /*
  const inp =
