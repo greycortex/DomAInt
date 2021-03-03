@@ -772,7 +772,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
             function getCurrentURL() {
                 let currentTab;
                 // returns promise, so we can await the value
-                return new Promise((resolve) => {
+                return new Promise((resolve, reject) => {
                     try {
                         //query current browser tab
                         browser.tabs
@@ -789,6 +789,7 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                                 });
                     } catch (err) {
                         console.log(err);
+                        reject (new Error(err));
                     }
                 });
             }
@@ -1139,6 +1140,8 @@ loadJSON("../data/dict.json", function (dictionaryy) {
              * @returns {function} calls changeIcon function
              */
 
+            
+
             function createDomainrunModel(adress, source = "background") {
 
                 console.log("adress in func is " + adress + " from source " + source);
@@ -1160,6 +1163,28 @@ loadJSON("../data/dict.json", function (dictionaryy) {
                         Result = res;
                         // change icon according to the Result (danger icon, ...)
                         changeIcon(Result);
+                    }
+                    else if (source == "contextMenu") {
+
+                        browser.browserAction.setTitle({
+                            title: "DomAInT by GreyCortex"
+                        }).then(() => {
+
+                        let gettingTitle = browser.browserAction.getTitle({});
+
+                        gettingTitle.then((response) => {
+
+                            console.log(`title is ${response}`);
+                            newTitle = response;
+
+                            newTitle += `\n result from context menu for adress ${adress} is ${Math.round(res * 100) / 100}`;
+
+                            browser.browserAction.setTitle({
+                                title: newTitle
+                            
+                                });
+                            });
+                        });
                     }
                 });
             }

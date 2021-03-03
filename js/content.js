@@ -13,7 +13,6 @@ document.body.appendChild(ifrm);
 function showPopup() {
   // Avoid recursive frame insertion...
   let extensionOrigin = "chrome-extension://" + browser.runtime.id;
-  if (!location.ancestorOrigins.contains(extensionOrigin)) {
     let iframe = document.createElement("iframe");
     // Must be declared at web_accessible_resources in manifest.json
     iframe.src = browser.runtime.getURL("afterClosePopup.html");
@@ -31,7 +30,6 @@ function showPopup() {
       setTimeout(() => {
         removePopup();
       }, 15000)
-  }
 }
 
 /**
