@@ -9,16 +9,26 @@ let options = document.getElementById("options");
 // get cDomain button (used to add current site to the blacklist)
 let cDomain = document.getElementById("cDomain");
 
+let consolelog = document.getElementById("console");
 
-// browser.browserAction.onClicked.addListener(postVirustotalAPIRequest);
 
+
+
+
+//  will listen for popup open and then send request to the virustotal api with the current url if possible
 /*
-  will listen for popup open and then send request to the virustotal api with the current url if possible
-
 document.addEventListener('DOMContentLoaded', function () {
-  postVirustotalAPIRequest();
+  let currentDomain = browser.tabs.query({
+    currentWindow: true,
+    active: true,
+  });
+  currentDomain.then((tab) => {
+    const domain = tab[0].url;
+  postVirustotalAPIRequest(domain);;
+  });
 });
 */
+
 
 // adding listeners to DOM elements triggering their responsible functions
 currentToBlacklist.addEventListener("click", addCurrent);
@@ -114,6 +124,7 @@ function getApiKey() {
        
       async function postVirustotalAPIRequest(url) {
         let X_APIKey = await getApiKey(); 
+        X_APIKey = X_APIKey.replaceAll('"', "");
         
         const body = new FormData();
         body.append("url", url);
@@ -127,15 +138,17 @@ function getApiKey() {
           body: data,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "X-Apikey":
-              X_APIKey
+            "X-Apikey":X_APIKey
           },
-          method: "POST",
+          method: "POST"
         })
           .then((response) => response.json())
-          .then((data) => getVirustotalAPIResults(data.id, X_APIKey));
+          .then((data) => getVirustotalAPIResults(data.data.id, X_APIKey));
+          
+          
+          
       }
-      
+     
       /**
        * Returns JSON result of a previous url scan
        *
@@ -148,13 +161,12 @@ function getApiKey() {
       
           fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
               headers: {
-                  "X-Apikey":
-                    X_APIKey
+                  "X-Apikey":`${X_APIKey}`
                 },
-              method: "GET",
+              method: "GET"
             })
             .then((response) => response.json())
-            .then((data) => console.log(data));
+            .then((data) => console.log(data.data.attributes.stats));
       
       }
  
