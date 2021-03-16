@@ -182,7 +182,7 @@ function getApiKey() {
           virustotalDiv.innerHTML += `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
         }
 
-        if(stats.suscipicous > 0) {
+        if(stats.suspicious > 0) {
           virustotalDiv.innerHTML += `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
         }
       }
