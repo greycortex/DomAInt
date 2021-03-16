@@ -9,14 +9,14 @@ let options = document.getElementById("options");
 // get cDomain button (used to add current site to the blacklist)
 let cDomain = document.getElementById("cDomain");
 
-let consolelog = document.getElementById("console");
+let virustotalDiv = document.getElementById("virustotalDiv");
 
 
 
 
 
 //  will listen for popup open and then send request to the virustotal api with the current url if possible
-/*
+
 document.addEventListener('DOMContentLoaded', function () {
   let currentDomain = browser.tabs.query({
     currentWindow: true,
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   postVirustotalAPIRequest(domain);;
   });
 });
-*/
+
 
 
 // adding listeners to DOM elements triggering their responsible functions
@@ -143,7 +143,7 @@ function getApiKey() {
           method: "POST"
         })
           .then((response) => response.json())
-          .then((data) => getVirustotalAPIResults(data.data.id, X_APIKey));
+          .then((data) => getVirustotalAPIResults(data.data.id, X_APIKey, url));
           
           
           
@@ -157,7 +157,7 @@ function getApiKey() {
        * @returns {JSON} returns json scan result of the url posted
        */
       
-      function getVirustotalAPIResults(id, X_APIKey) {
+      function getVirustotalAPIResults(id, X_APIKey, url) {
       
           fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
               headers: {
@@ -166,8 +166,25 @@ function getApiKey() {
               method: "GET"
             })
             .then((response) => response.json())
-            .then((data) => console.log(data.data.attributes.stats));
+            .then((data) => showVirutstotalAPIResults(data, url));
       
+      }
+
+      function showVirutstotalAPIResults(data, url) {
+        let stats = data.data.attributes.stats;
+
+        let antiVirusCount = +stats.harmless + +stats.malicious + +stats.suspicious;
+        console.log(`${+stats.harmless} ${+stats.malicious} ${+stats.suspicious}`);
+
+        virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
+        
+        if(stats.malicious > 0) {
+          virustotalDiv.innerHTML += `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
+        }
+
+        if(stats.suscipicous > 0) {
+          virustotalDiv.innerHTML += `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
+        }
       }
  
 
