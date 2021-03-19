@@ -17,14 +17,15 @@ let virustotalDiv = document.getElementById("virustotalDiv");
 
 //  will listen for popup open and then send request to the virustotal api with the current url if possible
 
+
 document.addEventListener('DOMContentLoaded', function () {
+  // only get domain, not full url
   let currentDomain = browser.tabs.query({
     currentWindow: true,
     active: true,
   });
   currentDomain.then((tab) => {
-    const domain = tab[0].url;
-  postVirustotalAPIRequest(domain);;
+    postVirustotalAPIRequest(tab[0].url);
   });
 });
 
@@ -172,6 +173,7 @@ function getApiKey() {
 
       function showVirutstotalAPIResults(data, url) {
         let stats = data.data.attributes.stats;
+        console.log(stats);
 
         let antiVirusCount = +stats.harmless + +stats.malicious + +stats.suspicious;
         console.log(`${+stats.harmless} ${+stats.malicious} ${+stats.suspicious}`);
@@ -185,6 +187,20 @@ function getApiKey() {
         if(stats.suspicious > 0) {
           virustotalDiv.innerHTML += `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
         }
+
+        addClass();
+      }
+
+       /**
+       * 
+       *  Adds predefined CSS class to fillbox element in order to trigger water like animation
+       *  to display virustotal result percentage
+       * 
+       */
+
+      function addClass() {
+        let fillBox = document.getElementById("fillBox");
+        fillBox.classList.add("fillBox");
       }
  
 

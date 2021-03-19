@@ -1,11 +1,48 @@
 /* The switch - the box around the slider */
 body{
-  width: 230px;
-  height: 433px;
   overflow: hidden;
   text-align: center;
   font-family:Arial, Helvetica, sans-serif;
+  width: 300px;
+  height: 350px;
 }
+
+hr {
+  margin: 0;
+  padding: 0;
+}
+
+.fillBox {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBox:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #00acee;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fill 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fill {
+  from {
+    top: 250px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: -50px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
 
 .elements {
   height: 35px;
@@ -19,10 +56,9 @@ body{
 }
 
 .switchElem {
-  text-align: center;
-  padding-left: 50px;
-  float: left;
+  text-align: center; 
   padding-bottom: 3px;
+  margin-top: 10px;
 }
 
 .elem1 {
@@ -112,10 +148,6 @@ svg:hover {
   transition: .4s;
 }
 
-.center {
-  margin-top: 2px;
-  text-align: center;
-}
 
 span {
   font-size: 10px;
