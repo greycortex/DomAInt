@@ -12,29 +12,33 @@ hr {
   padding: 0;
 }
 
-.fillBox {
+.virustotalDiv {
+  font-family: 'Roboto', sans-serif;
+}
+
+.fillBoxGreen {
   width: 300px;
   height: 350px;
   position: relative;
   overflow: hidden;
 }
 
-.fillBox:before {
+.fillBoxGreen:before {
   content: "";
   position: absolute;
   width: 500px;
   height: 500px;
-  background: #00acee;
+  background: #1a8d54;
   left: 40%;
   transform:translateX(-50%);
   border-radius: 40%;
-  animation: fill 3s ease-in-out ;
+  animation: fillGreen 3s ease-in-out ;
   z-index: -1;
   animation-fill-mode: forwards;
 }
-@keyframes fill {
+@keyframes fillGreen {
   from {
-    top: 250px;
+    top: 350px;
     transform: translateX(-50%) rotate(0deg);
   }
   to {
@@ -43,6 +47,67 @@ hr {
   }
 }
 
+.fillBoxOrange {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBoxOrange:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #f1b027;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fillOrange 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fillOrange {
+  from {
+    top: 350px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: 150px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+.fillBoxRed {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBoxRed:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #b4272a;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fillRed 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fillRed { 
+  from {
+    top: 350px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: 220px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
 
 .elements {
   height: 35px;
@@ -72,7 +137,6 @@ hr {
 .image {
   width: 95%;
 }
-
 
 /* The switch - the box around the slider */
 .switch {

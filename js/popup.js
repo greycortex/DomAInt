@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   currentDomain.then((tab) => {
     postVirustotalAPIRequest(tab[0].url);
+    console.log(tab[0].url);
   });
 });
 
@@ -118,8 +119,8 @@ function getApiKey() {
        * Returns getVirusTotalAPIResults function call = we firstly need to post the url to examine
        * the api then returns an id, where we get the final result using GET request
        *
-       * @param {string} takes an url that should be examined by virustotal
-       * @returns {function} calls function which retrieves the scan result
+       * @param {string} url - url that is going to be POSTed to the API
+       * @returns {function call} calls function which retrieves the scan result
        */
 
        
@@ -145,21 +146,20 @@ function getApiKey() {
         })
           .then((response) => response.json())
           .then((data) => getVirustotalAPIResults(data.data.id, X_APIKey, url));
-          
-          
-          
       }
      
       /**
        * Returns JSON result of a previous url scan
        *
-       * @param {string} takes an id from the previous function. That id corresponds with the final json result
+       * @param {string} id - this id corresponds to the scan we POSTed and want to retrieve the results of
+       * @param {string} X_APIKey - virustotal API auth API key
+       * @param {string} url - url that was POSTed to the API
        * 
-       * @returns {JSON} returns json scan result of the url posted
+       * @returns {function call} returns json scan result of the url posted
        */
       
-      function getVirustotalAPIResults(id, X_APIKey, url) {
-      
+      function getVirustotalAPIResults(id, X_APIKey, url) {   
+        console.log(`id ${id}`);
           fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
               headers: {
                   "X-Apikey":`${X_APIKey}`
@@ -167,9 +167,17 @@ function getApiKey() {
               method: "GET"
             })
             .then((response) => response.json())
-            .then((data) => showVirutstotalAPIResults(data, url));
-      
+            .then((data) => showVirutstotalAPIResults(data, url)); 
       }
+
+      /**
+       * Parses Virustotal API results and calls addClass function depending on the result
+       *
+       * @param {string} takes an id from the previous function. That id corresponds with the final json result
+       * @param {string} url - examined url, used to display it in the popup
+       * 
+       * @returns {function call} calls addClass function 
+       */
 
       function showVirutstotalAPIResults(data, url) {
         let stats = data.data.attributes.stats;
@@ -178,17 +186,20 @@ function getApiKey() {
         let antiVirusCount = +stats.harmless + +stats.malicious + +stats.suspicious;
         console.log(`${+stats.harmless} ${+stats.malicious} ${+stats.suspicious}`);
 
-        virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
+        if(stats.harmless > stats.malicious && stats.harmless > stats.suspicious) {
+          virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
+          return addClass("green");
+        }
         
-        if(stats.malicious > 0) {
-          virustotalDiv.innerHTML += `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
+        else if(stats.suspicious > stats.harmless && stats.suspicious > stats.malicious) {
+          virustotalDiv.innerHTML = `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
+          return addClass("Yellow");
         }
 
-        if(stats.suspicious > 0) {
-          virustotalDiv.innerHTML += `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
+        else if(stats.malicious > stats.harmless && stats.malicious > stats.suspicious) {
+          virustotalDiv.innerHTML = `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
+          return addClass("Red");
         }
-
-        addClass();
       }
 
        /**
@@ -198,9 +209,20 @@ function getApiKey() {
        * 
        */
 
-      function addClass() {
+      function addClass(color) {
         let fillBox = document.getElementById("fillBox");
-        fillBox.classList.add("fillBox");
+
+        switch(color) {
+          case "green":
+            fillBox.classList.add("fillBoxGreen"); 
+            break;
+          case "orange":
+            fillBox.classList.add("fillBoxOrange"); 
+            break;
+          case "red":
+            fillBox.classList.add("fillBoxRed"); 
+            break;
+        }
       }
  
 
