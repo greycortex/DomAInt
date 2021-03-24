@@ -9,39 +9,83 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     </head>
     <body>
-        <img src="img/gcx.png" class="image">
-        <div><b>DomAIn</b></div>
-        <div id="fillBox">
-        <hr/>
+        <section class="header">
+            <img src="img/gcx.png" class="image">
+            <div><b>DomAIn</b></div>
+            <div id="fillBox">
+            <hr/>
+        </section>
+            <i class="arrow down" id="classToggler"></i>
+            <nav class="navbar" id="navbar">
+                <ul class="nav-list">
+
+                    <li class="nav-item">
+                        <span class="menuText">Toggle autoclose:</span>
+                        <div class="nav-link">
+                            <div class="switchElem">
+                            <label class="switch"> 
+                                <input type="checkbox" id="toggleButton" name="toggleButton">
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="tooltiptext"></span>
+                            </div>
+                        </div>
+
+                    </li>
+                    <li class="nav-item">
+                        <span class="menuText">Blacklist current:</span>
+                        <div class="nav-link">
+                            <svg id="cDomain" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-fill-exclamation" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 .5c-.662 0-1.77.249-2.813.525a61.11 61.11 0 0 0-2.772.815 1.454 1.454 0 0 0-1.003 1.184c-.573 4.197.756 7.307 2.368 9.365a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586a11.191 11.191 0 0 0 2.418-2.3c1.611-2.058 2.94-5.168 2.367-9.365a1.454 1.454 0 0 0-1.003-1.184 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.553.553 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                              </svg>
+                            </div>
+                    </li>
+                    <li class="nav-item">
+                        <span class="menuText">Whitelist current:</span>
+                        <div class="nav-link">
+                            <svg id="whitelist" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-fill-check" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 .5c-.662 0-1.77.249-2.813.525a61.11 61.11 0 0 0-2.772.815 1.454 1.454 0 0 0-1.003 1.184c-.573 4.197.756 7.307 2.368 9.365a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586a11.191 11.191 0 0 0 2.418-2.3c1.611-2.058 2.94-5.168 2.367-9.365a1.454 1.454 0 0 0-1.003-1.184 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5zm2.854 6.354a.5.5 0 0 0-.708-.708L7.5 8.793 6.354 7.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                              </svg>
+                            </div>
+                    </li>
+                    <li class="nav-item">
+                        <span class="menuText">Open options:</span>
+                        <div class="nav-link">
+                            <svg id="options" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-toggles" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7h-7zm7 6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm2.45 0A3.49 3.49 0 0 1 8 3.5 3.49 3.49 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5H6.95zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7z"/>
+                                </svg>
+                            </div>
+                    </li>
+                </ul>
+            </nav>
+        <div id="virustotalDiv" class="virustotalDiv"></div>
+        <div id="statusDiv" class="statusDiv"></div>
+        <!-- 
+        <section class="buttons">
         <div class="switchElem">
             <label class="switch"> 
                 <input type="checkbox" id="toggleButton" name="toggleButton">
                 <span class="slider round"></span>
             </label>
-            <span class="tooltiptext">auto close blacklisted sites</span>
+            <span class="tooltiptext"></span>
         </div>
 
-        <figure class="item">
-            <svg id="cDomain" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-shield-fill-exclamation" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg id="cDomain" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-fill-exclamation" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M8 .5c-.662 0-1.77.249-2.813.525a61.11 61.11 0 0 0-2.772.815 1.454 1.454 0 0 0-1.003 1.184c-.573 4.197.756 7.307 2.368 9.365a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586a11.191 11.191 0 0 0 2.418-2.3c1.611-2.058 2.94-5.168 2.367-9.365a1.454 1.454 0 0 0-1.003-1.184 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.553.553 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
               </svg>
-            <span>Add to blacklist</span>
-        </figure>
+            <span></span>
 
-        <figure class="item">
-            <svg id="whitelist" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-shield-fill-check" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg id="whitelist" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-fill-check" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M8 .5c-.662 0-1.77.249-2.813.525a61.11 61.11 0 0 0-2.772.815 1.454 1.454 0 0 0-1.003 1.184c-.573 4.197.756 7.307 2.368 9.365a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586a11.191 11.191 0 0 0 2.418-2.3c1.611-2.058 2.94-5.168 2.367-9.365a1.454 1.454 0 0 0-1.003-1.184 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5zm2.854 6.354a.5.5 0 0 0-.708-.708L7.5 8.793 6.354 7.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
               </svg>
-            <span>Add to whitelist</span>
-        </figure>
+            <span></span>
 
-        <figure class="item">
-            <svg id="options" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-toggles" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg id="options" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-toggles" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7h-7zm7 6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm2.45 0A3.49 3.49 0 0 1 8 3.5 3.49 3.49 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5H6.95zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7z"/>
             </svg>
-            <span>Open options</span>
-        </figure>
-        <div id="virustotalDiv" class="virustotalDiv"></div>
+            <span></span>
+        </section>
+        -->
     </div>
         
         <script src="js/browser-polyfill.js"></script>

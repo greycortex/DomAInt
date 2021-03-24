@@ -10,13 +10,27 @@ let options = document.getElementById("options");
 let cDomain = document.getElementById("cDomain");
 
 let virustotalDiv = document.getElementById("virustotalDiv");
+let statusDiv = document.getElementById("statusDiv");
+
+let navbar = document.getElementById("navbar");
+let classToggler = document.getElementById("classToggler");
+
+classToggler.addEventListener("click", () => {
+  navbar.classList.toggle("navbar-change");
+
+  classToggler.classList.toggle('up');
+  classToggler.classList.toggle('up-scroll');
+  classToggler.classList.toggle('down');
+  
+  virustotalDiv.classList.toggle('virustotalDivScroll');
+});
+
 
 
 
 
 
 //  will listen for popup open and then send request to the virustotal api with the current url if possible
-
 
 document.addEventListener('DOMContentLoaded', function () {
   // only get domain, not full url
@@ -29,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(tab[0].url);
   });
 });
-
 
 
 // adding listeners to DOM elements triggering their responsible functions
@@ -145,7 +158,10 @@ function getApiKey() {
           method: "POST"
         })
           .then((response) => response.json())
-          .then((data) => getVirustotalAPIResults(data.data.id, X_APIKey, url));
+          .then((data) => {
+            console.log(url);
+            getVirustotalAPIResults(data.data.id, X_APIKey, url)
+          });
       }
      
       /**
@@ -159,6 +175,7 @@ function getApiKey() {
        */
       
       function getVirustotalAPIResults(id, X_APIKey, url) {   
+        console.log(url)
         console.log(`id ${id}`);
           fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
               headers: {
@@ -167,7 +184,10 @@ function getApiKey() {
               method: "GET"
             })
             .then((response) => response.json())
-            .then((data) => showVirutstotalAPIResults(data, url)); 
+            .then((data) => {
+              console.log(data);
+              showVirutstotalAPIResults(data, url, id)
+            }); 
       }
 
       /**
@@ -179,25 +199,36 @@ function getApiKey() {
        * @returns {function call} calls addClass function 
        */
 
-      function showVirutstotalAPIResults(data, url) {
+      function showVirutstotalAPIResults(data, url, id) {
         let stats = data.data.attributes.stats;
         console.log(stats);
 
         let antiVirusCount = +stats.harmless + +stats.malicious + +stats.suspicious;
-        console.log(`${+stats.harmless} ${+stats.malicious} ${+stats.suspicious}`);
-
+        console.log(antiVirusCount);
+/*
+        if(antiVirusCount == 0) {
+          virustotalDiv.innerHTML = "failed to fetch";
+        }
+*/
         if(stats.harmless > stats.malicious && stats.harmless > stats.suspicious) {
-          virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
+          let percent = Math.round(stats.harmless/antiVirusCount*100);
+          //virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
+          virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
+          statusDiv.innerHTML = "<h5>harmless</h5>";
           return addClass("green");
         }
         
         else if(stats.suspicious > stats.harmless && stats.suspicious > stats.malicious) {
-          virustotalDiv.innerHTML = `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
+          let percent = Math.round(stats.suspicious/antiVirusCount*100);
+          //virustotalDiv.innerHTML = `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
+          virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
           return addClass("Yellow");
         }
 
         else if(stats.malicious > stats.harmless && stats.malicious > stats.suspicious) {
-          virustotalDiv.innerHTML = `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
+          let percent = Math.round(stats.malicious/antiVirusCount*100);
+          //virustotalDiv.innerHTML = `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
+          virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
           return addClass("Red");
         }
       }
