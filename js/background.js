@@ -1187,13 +1187,12 @@ setInterval(loadModel, 4000 * 60 * 60);
                         }).then(() => {
 
                         let gettingTitle = browser.browserAction.getTitle({});
-
                         gettingTitle.then((response) => {
 
                             console.log(`title is ${response}`);
                             newTitle = response;
 
-                            newTitle += `\n result from context menu for adress ${adress} is ${Math.round(res * 100) / 100}`;
+                            newTitle += `\n result from context menu for adress ${adress} is ${100 - Math.round(res*100)}% safe`;
 
                             browser.browserAction.setTitle({
                                 title: newTitle
@@ -1248,7 +1247,7 @@ setInterval(loadModel, 4000 * 60 * 60);
              *
              * @param {object} request = used to check for the continue once message
              * @param {function} sendResponse used for callback
-             * @returns {callback} callbacks response (used for debbuging)
+             * @returns {Promise} Response promise
              */
 
             browser.runtime.onMessage.addListener(
@@ -1260,7 +1259,7 @@ setInterval(loadModel, 4000 * 60 * 60);
                             setTimeout(() => {
                                 isAfterClose = false;
                             }, 5000)
-                            sendResponse(`tab with url ${lastClosedSite} created`);
+                            return Promise.resolve(`tab with url ${lastClosedSite} created`);
                         }
                     }
             );
@@ -1268,13 +1267,13 @@ setInterval(loadModel, 4000 * 60 * 60);
             /**
              * Listener that listens for send url message, which sends the url of last closed site
              * @param {function} sendResponse used for callback
-             * @returns {callback} callbacks response
+             * @returns {Promise} Response promise
              */
 
             browser.runtime.onMessage.addListener(
                     function (request, sender, sendResponse) {
                         if (request.msg === "send_url") {
-                            sendResponse(lastClosedSite);
+                            return Promise.resolve(lastClosedSite);
                         }
 
                     }
@@ -1348,7 +1347,11 @@ setInterval(loadModel, 4000 * 60 * 60);
 
             function closeTab(tabId) {
                 // destroy specified browser tab
+                try{
                 browser.tabs.remove(tabId);
+                } catch(e) {
+                    console.log(e);
+                }
             }
 
 

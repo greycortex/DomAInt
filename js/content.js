@@ -48,14 +48,13 @@ function removePopup() {
        * calls the show popup function and then sends response back
        *  @param {object} request = used to check for the show popup message
        * @param {function} sendResponse used for callback
-       * @returns {callback} callbacks response (used for debbuging), will be replaced with promise
+       * @returns {Promise} Response message
        */
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
         showPopup();
-     
   }
-  sendResponse(request.closedUrl);
+  return Promise.resolve(request.closedUrl);
 });
 
 /**
@@ -63,7 +62,7 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
        * calls the removePopup function and then sends response back
        * @param {object} request = used to check for the remove popup message
        * @param {function} sendResponse used for callback
-       * @returns {callback} callbacks response (used for debbuging), will be replaced with promise
+       * @returns {Promise} Response message
        */
 
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -71,5 +70,5 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         removePopup();
      
   }
-  sendResponse(request.closedUrl);
+  return Promise.resolve(request.closedUrl);
 });

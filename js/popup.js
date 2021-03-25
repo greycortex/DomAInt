@@ -160,7 +160,9 @@ function getApiKey() {
           .then((response) => response.json())
           .then((data) => {
             console.log(url);
+            if(data.data.id){
             getVirustotalAPIResults(data.data.id, X_APIKey, url)
+          }
           });
       }
      

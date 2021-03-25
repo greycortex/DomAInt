@@ -22,7 +22,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["*://*/*"],
+            "matches": ["http://*/*", "https://*/*"],
             "all_frames": true,
           "js": ["js/browser-polyfill.js","js/content.js"]
         }
