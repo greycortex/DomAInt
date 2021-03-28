@@ -118,7 +118,8 @@ input[type='text'] {
   border: solid 1px #d8d8d8;
 }
 
-input[type='submit'] {
+
+.submitButtons {
   width: 100px;
   height: 44px;
   border-radius: 4px;
@@ -138,6 +139,12 @@ input[type='submit'] {
   color: black;
   cursor: pointer;
 }
+
+.saveButton {
+  position: relative;
+  left: 72px;
+}
+
 
 input[type='submit']:hover {
   background-color: #ccc !important;
@@ -166,6 +173,15 @@ input[type='submit']:hover {
   margin-top: 5px;
 }
 
+.list-group-item span {
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.list-group-item img {
+  margin-bottom: 4px;
+  margin-left: 10px;
+}
 
 .domain {
   height: 19px;
@@ -282,6 +298,21 @@ input[type='submit']:hover {
   cursor: pointer;  
 }
 
+.leftlink span {
+  position: relative;
+  vertical-align:super; 
+}
+
+.leftlink svg {
+  position: relative;
+  top: -2px;
+  margin-left: -20px;
+}
+
+.leftlink svg:hover {
+  color: black;
+}
+
 
 .leftlink:hover {
   background-color: #ccc;
@@ -297,7 +328,56 @@ input[type='submit']:hover {
 }
 
 .thresholddiv {
-  margin-bottom: 100px;
+  margin-bottom: 10px;
+}
+
+.whitelistDiv {
+  margin-bottom: -10px;
+}
+
+#redRange {
+  margin-left: 22px;
+}
+
+#greenRange {
+  margin-left: 9px;
+}
+
+#clearWhite {
+  margin-left: 0;
+}
+
+#clearWhite span {
+  position: relative;
+  top: -4px;
+}
+
+#clear {
+  margin-left: 0;
+}
+
+#clear span {
+  position: relative;
+  top: -4px;
+}
+
+#visit {
+  position: relative;
+  top: -5px;
+}
+
+#domaint {
+font-size: 25px;
+}
+
+#options {
+  font-size: 15px;
+}
+
+
+.tooltiptext {
+  position: relative;
+  top: 2px;
 }
 
 
