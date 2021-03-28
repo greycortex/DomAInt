@@ -10,7 +10,7 @@ document.body.appendChild(ifrm);
        */
 
 
-function showPopup(closedUrl) {
+function showPopup() {
   // Avoid recursive frame insertion...
   let extensionOrigin = "chrome-extension://" + browser.runtime.id;
     let iframe = document.createElement("iframe");
@@ -53,7 +53,7 @@ function removePopup() {
        */
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
-        showPopup(request.closedUrl);
+        showPopup();
   }
   return Promise.resolve(request.closedUrl);
 });
