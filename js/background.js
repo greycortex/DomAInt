@@ -1061,7 +1061,7 @@ setInterval(loadModel, 4000 * 60 * 60);
                                                 const closedSiteUrl = tab[0].url;
                                                 closeTab(closeSite);
                                                 lastClosedSite = closedSiteUrl;
-                                                showAfterClosePopup();
+                                                showAfterClosePopup(closedSiteUrl);
                                             });
                                             // return if autoClose is not enabled
                                         }
@@ -1304,7 +1304,7 @@ setInterval(loadModel, 4000 * 60 * 60);
              * gets id of the new tab (neede to send a message), then sends the message
              */
 
-            function showAfterClosePopup() {
+            function showAfterClosePopup(closedUrl) {
                 let currentDomain = browser.tabs.query({
                     currentWindow: true,
                     active: true,
@@ -1312,7 +1312,7 @@ setInterval(loadModel, 4000 * 60 * 60);
                 currentDomain.then((tab) => {
                     const currentTabId = tab[0].id;
                     console.log(`curr tab ${currentTabId}`);
-                    browser.tabs.sendMessage(currentTabId, {data: "show_popup"}).then((response => {
+                    browser.tabs.sendMessage(currentTabId, {data: "show_popup", closedUrl: closedUrl}).then((response => {
                         console.log(response);
                     }));
                 });

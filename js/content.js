@@ -10,7 +10,7 @@ document.body.appendChild(ifrm);
        */
 
 
-function showPopup() {
+function showPopup(closedUrl) {
   // Avoid recursive frame insertion...
   let extensionOrigin = "chrome-extension://" + browser.runtime.id;
     let iframe = document.createElement("iframe");
@@ -18,18 +18,19 @@ function showPopup() {
     iframe.src = browser.runtime.getURL("afterClosePopup.html");
     iframe.setAttribute("id", "iframe");
     document.body.appendChild(iframe);
-    
 
     // iframe styling
     iframe.style.cssText =
-      "position:absolute;top:15px;right:15px;display:block;" +
-      "width:300px;height:200px;z-index:9999;" +
+      "position:fixed;top:15px;right:15px;display:block;" +
+      "width:300px;height:170px;z-index:9999;" +
       "border-radius:10px;";
 
     // remove popup automatically after 15 seconds
+    
       setTimeout(() => {
         removePopup();
       }, 15000)
+      
 }
 
 /**
@@ -52,7 +53,7 @@ function removePopup() {
        */
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
-        showPopup();
+        showPopup(request.closedUrl);
   }
   return Promise.resolve(request.closedUrl);
 });
