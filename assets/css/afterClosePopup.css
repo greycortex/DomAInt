@@ -1,0 +1,29 @@
+body {
+    background-color: white;
+    text-align: center;
+
+}
+
+.optionButton {
+    width: 125px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    border-radius: 24px;
+    background-color: #f28d15;
+}
+
+.buttons {
+    display: inline;
+    position: relative;
+    top: 10px;
+}
+
+#domaintCross {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+}

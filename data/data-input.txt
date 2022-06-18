@@ -1,0 +1,29 @@
+// the PSL needs to be loaded first!
+public_suffix_list.dat
+cisco_top-1m-TLD.csv
+
+// GreyCortex then :)
+greycortex.com
+greycortex.cz
+greycortex.sk
+greycortex.net
+graycortex.com
+greycortex.co.uk
+greycortex.de
+greycortex.eu
+greycortex.org
+greycortex.at
+greycortex.ch
+greycortex.org
+gcortex.com
+gcortex.net
+
+// negative
+top-1m.csv
+majestic_top-1m.csv
+// The Cisco Top1M cisco_top-1m.csv is not intended for domAIn plugin!
+
+// positive
+blacklist_joewein.de.utf8.txt
+eti_domains.txt
+generated-uR DGAs 1M.txt

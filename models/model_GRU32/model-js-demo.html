@@ -1,0 +1,63 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/domain-web"></script>
+  <script>
+    async function run(){
+	// Dummy model M0
+        const MODEL_URL = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json';
+        const model = await tf.loadLayersModel(MODEL_URL);
+        console.log(model.summary());
+
+        const input = tf.tensor([[317,  26, 487, 608, 562, 561,   0,   0,   0,   0,   0,   0,   0,  0,  0,  0,  0,  0,  0,  0]]);
+	// console.log(input.shape);
+        // const x = input.reshape([, 20]).print();
+
+        const result = model.predict(input);
+        alert("M0: " + result);
+
+
+
+
+	// LSTM model
+        const MODEL_URL_LSTM = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/saved_models_LSTM32_adadelta/model_lstm32_adadelta.json';
+        const model_LSTM = await tf.loadLayersModel(MODEL_URL_LSTM);
+        console.log(model_LSTM.summary());
+
+        const input2 = tf.tensor([[250,  82, 134,  66, 252,  34, 259,   1,  56,   1, 285,  60, 291, 13, 195, 
+			           269, 145,  60, 234,  52, 126,   0,   0,   0,   0,   0,  0,   0,   0,   0,  
+				     0,   0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0]]);
+
+        const result_LSTM = model_LSTM.predict(input2);
+        alert("LSTM: " + result_LSTM);
+
+	// GRU model
+        const MODEL_URL_GRU = 'https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model_GRU32/model_GRU32.json';
+        const model_GRU = await tf.loadLayersModel(MODEL_URL_LSTM);
+        console.log(model_GRU.summary());
+
+        const result_GRU = model_GRU.predict(input2);
+        alert("GRU: " + result_GRU);
+    }
+    run();
+//<!--
+//const threshold = 0.9;-->
+//toxicity.load(threshold).then(model => {
+//    const sentences = ['you suck'];
+//    model.classify(sentences).then(predictions => {
+//        console.log(predictions);
+//        for(i=0; i<7; i++){
+//            if(predictions[i].results[0].match){
+//                console.log(predictions[i].label +
+//                            " was found with probability of " +
+//                            predictions[i].results[0].probabilities[1]);
+//            }
+//        }
+//    });
+//});
+//-->
+  </script>
+</head>
+<body></body>
+</html>

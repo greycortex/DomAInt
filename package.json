@@ -1,0 +1,74 @@
+{
+    "name": "domaint",
+    "description": "stay safe while browsing the internet using machine learning",
+    "version": "0.0.1",
+    "homepage": "https://www.greycortex.com/research",
+    "author": "ENTER YOUR NAME HERE",
+    "repository": {
+        "type": "git",
+        "url": "ENTER GIT REPO URL"
+    },
+    "scripts": {
+        "start": "xt-build -e dev -w",
+        "start:firefox": "xt-build -e dev -p firefox -w",
+        "build": "xt-build -e prod",
+        "build:firefox": "xt-build -e prod -p firefox",
+        "clean": "xt-clean",
+        "docs": "xt-docs",
+        "test": "xt-test",
+        "coverage": "nyc --reporter=lcov npm run test",
+        "sync": "xt-sync",
+        "fix": "node utils/eval_fix.js"
+    },
+    "babel": {
+        "presets": [
+            "@babel/preset-env"
+        ]
+    },
+    "eslintIgnore": [
+        "test/**/*"
+    ],
+    "devDependencies": {
+        "extension-cli": "latest"
+    },
+    "xtdocs": {
+        "source": {
+            "include": [
+                "README.md",
+                "src"
+            ]
+        }
+    },
+    "xtbuild": {
+        "js_bundles": [
+            {
+                "name": "./src/background",
+                "src": "./src/index.js"
+            },
+            {
+                "name": "./src/options",
+                "src": "./src/options.js"
+            },
+            {
+                "name": "./src/popup",
+                "src": "./src/popup.js"
+            },
+            {
+                "name": "./src/mergedSettings",
+                "src": "./src/mergedSettings.js"
+            },
+            {
+                "name": "./src/content",
+                "src": "./src/content.js"
+            },
+            {
+                "name": "./src/afterClosePopup",
+                "src": "./src/afterClosePopup.js"
+            }
+        ]
+    },
+    "dependencies": {
+        "@tensorflow/tfjs": "^3.18.0",
+        "punycode": "^2.1.1"
+    }
+}

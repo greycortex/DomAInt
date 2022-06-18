@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "annotation":"The model file is a representation of learned model, classification information and domain suffixes including selected (FP) domains.",
+    "copyright":"Copyright (c) 2018 GreyCortex",
+    "created":"2018-11-15 21:20",
+    "naming":"daim-new.json|daim-YYMMDDHHMM.json",
+    "notes":"The popularity is not inheritable.",
+    "todo":"Add the model :)"
+  },
+  "model": {
+    "version": 0,
+    "timestamp":"2018-03-00"
+  },
+  "suffix": {
+    "file":"data/suffix.json",
+    "version": 0,
+    "timestamp":"2018-03-09",
+    "key":"suffix",
+    "array":["pop","neg","pos"],
+    "notes":"TODO: some more features as language, PoS lexical terms, livenes, concept ..."
+  },
+  "dict": {
+    "file":"data/dict.json",
+    "key":"word",
+    "array":["pop","neg","pos"]
+  },
+  "network": {},
+  
+  "color": {
+    "red":[76,100],
+    "yellow":[51,75],
+    "grey":[25,50],
+    "green":[0,24]
+  }
+}
+
+
+

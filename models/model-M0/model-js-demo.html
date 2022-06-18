@@ -1,0 +1,34 @@
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/domain-web"></script>
+<script>
+    async function run(){
+        const MODEL_URL = './model.json';
+        const model = await tf.loadLayersModel(MODEL_URL);
+        console.log(model.summary());
+        const input = tf.tensor([317,  26, 487, 608, 562, 561,   0,   0,   0,   0,   0,   0,   0,  0,  0,  0,  0,  0,  0,  0]);
+        const result = model.predict(input);
+        alert(result);
+    }
+    run();
+//<!--
+//const threshold = 0.9;-->
+//toxicity.load(threshold).then(model => {
+//    const sentences = ['you suck'];
+//    model.classify(sentences).then(predictions => {
+//        console.log(predictions);
+//        for(i=0; i<7; i++){
+//            if(predictions[i].results[0].match){
+//                console.log(predictions[i].label +
+//                            " was found with probability of " +
+//                            predictions[i].results[0].probabilities[1]);
+//            }
+//        }
+//    });
+//});
+//-->
+</script>
+</head>
+<body></body>
+</html>

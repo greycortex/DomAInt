@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/options.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>Options</title>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="image">
+        <img src="../img/gcx.png" alt="GreycortexLogo" id="logo" />
+      </div>
+      <div class="center" id="domaint">DomAInt</div>
+      <div class="optionsText" id="options">options</div>
+      <p class="center">
+        DomAInt is a free extension made by GREYCORTEX Research. The first AI
+        based browser plugin to classify the badness of domains that sends no
+        data anywhere.
+      </p>
+    </nav>
+  <div class="container"> 
+
+      <div  id="links">
+        <a href="" class="leftlink" id="rate-options">
+          <svg class="glyphicon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+          </svg>
+          <span>Rate us 5 stars</span>
+        </a>
+        <a href="https://github.com/greycortex/DomAInt" class="leftlink" id="github-options">
+          <svg class="glyphicon git" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span>Contribute</span>
+        </a>
+        <a href="https://www.greycortex.com/" class="leftlink" id="greycortex-options">
+          <svg class="glyphicon eye" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-eye-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+            <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+          </svg>
+          <span id="visit">Visit us</span>
+        </a>
+      </div>
+    
+    <div class="bottommargin">
+      <div class="bottomborder">
+        <h1>Auto close settings</h1>
+      </div>
+
+
+    <div class="left">
+      <div class="switchElem">
+        <label class="switch">
+          <input type="checkbox" id="toggleButton" name="toggleButton" />
+          <span class="slider round"></span>
+        </label>
+        <span class="tooltiptext"
+          >Turn ON/OFF autoclosing blacklisted sites</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="bottommargin whitelistDiv">
+    <div class="bottomborder">
+      <h1>Whitelisted Sites</h1>
+    </div>
+    <div class="center">
+      <figure id="clearWhite">
+        <svg
+          width="1.5em"
+          height="1.5em"
+          viewBox="0 0 16 16"
+          class="bi bi-shield-slash"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.357 3.478c-.42 3.969.87 6.928 2.423 8.911a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586.466-.32.983-.74 1.502-1.263l-.707-.707a9.692 9.692 0 0 1-1.362 1.147 5.934 5.934 0 0 1-.857.5c-.116.053-.21.089-.282.11A.73.73 0 0 1 8 14.5c-.007-.001-.038-.005-.097-.023a2.273 2.273 0 0 1-.282-.111 5.934 5.934 0 0 1-.857-.5 10.197 10.197 0 0 1-2.197-2.093C3.262 10.107 2.145 7.672 2.289 4.41l-.932-.932zm11.053 6.81c.971-1.785 1.594-4.15 1.187-7.129a.454.454 0 0 0-.315-.366c-.626-.2-1.682-.526-2.725-.802C9.491 1.71 8.51 1.5 8 1.5c-.51 0-1.49.21-2.557.491a45.4 45.4 0 0 0-1.041.29l-.806-.806a52.727 52.727 0 0 1 1.591-.45C6.23.749 7.337.5 8 .5c.662 0 1.77.249 2.813.525a61.09 61.09 0 0 1 2.772.815c.528.168.926.623 1.003 1.184.458 3.355-.299 6.015-1.444 7.999l-.735-.735z"
+          />
+          <path
+            fill-rule="evenodd"
+            d="M14.646 15.354l-14-14 .708-.708 14 14-.707.707z"
+          />
+        </svg>
+        <span class="deleteSpan">Clear whitelist</span>
+      </figure>
+      <div>
+        <form id="whitelistForm">
+          <input
+            type="text"
+            name="whitelistUrl"
+            placeholder="https://example.com/"
+            required
+          />
+          <input type="submit" class="submitButtons" value="Add" />
+        </form>
+      </div>
+    </div>
+    <div class="list-group" id="whitelist"></div>
+    <br/>
+  </div>
+
+  <div class="bottommargin">
+    <div class="bottomborder">
+      <h1>Blacklisted Sites</h1>
+    </div>
+    <div class="center">
+      <figure id="clear">
+        <svg
+          id="clear"
+          width="1.5em"
+          height="1.5em"
+          viewBox="0 0 16 16"
+          class="bi bi-shield-slash-fill"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.357 3.478c-.42 3.969.87 6.928 2.423 8.911a11.192 11.192 0 0 0 2.417 2.3c.371.256.715.451 1.007.586.27.124.558.225.796.225s.527-.101.796-.225c.292-.135.636-.33 1.007-.586.466-.32.983-.74 1.502-1.263L1.357 3.478zm11.787 7.545c1.145-1.984 1.902-4.644 1.444-8a1.454 1.454 0 0 0-1.003-1.183 61.09 61.09 0 0 0-2.772-.815C9.77.749 8.663.5 8 .5c-.662 0-1.77.249-2.813.525-.548.145-1.1.303-1.59.45l9.547 9.548z"
+          />
+          <path
+            fill-rule="evenodd"
+            d="M14.646 15.354l-14-14 .708-.708 14 14-.707.707z"
+          />
+        </svg>
+        <span class="deleteSpan">Clear blacklist</span>
+      </figure>
+      <div>
+        <form id="form">
+
+          <input
+            type="text"
+            name="url"
+            placeholder="https://example.com/"
+            required
+          />
+          <input type="submit" class="submitButtons" value="Add" />
+        </form>
+      </div>
+    </div>
+    <div class="blacklist" id="blacklist"></div>
+  </div>
+
+  <div class="bottommargin">
+    <div class="bottomborder">
+      <h1>Virustotal API key</h1>
+    </div>
+    
+    <div class="center">
+      <div>
+        <form id="apiForm">
+          <input
+            type="text"
+            name="apikey"
+            placeholder="0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx"
+            required
+          />
+          <input type="submit" class="submitButtons" value="Add" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <div class="thresholddiv">
+      <div>
+        <form id="thresholdForm">
+          <div class="bottomborder">
+            <h1>Configure AI percentual settings</h1>
+          </div>
+          <div class="slidecontainer">
+            green:
+            <input
+              type="range"
+              name="greenRange"
+              id="greenRange"
+              min=""
+              max="100"
+            />
+            <span id="greenVal"></span>
+            <br />
+            orange:
+            <input
+              type="range"
+              name="orangeRange"
+              id="orangeRange"
+              min="1"
+              max="99"
+            />
+            <span id="orangeVal"></span>
+            <br />
+            red:
+            <input
+              type="range"
+              name="redRange"
+              id="redRange"
+              min="0"
+              max="98"
+            />
+            <span id="redVal"></span>
+            <br />
+          </div>
+          <input type="submit" class="submitButtons saveButton" value="Save" />
+        </form>
+      </div>
+    </div>
+    <div id="meaning"></div>
+    </div>
+    
+
+    <p class="footer">Copyright (C) 2019 GreyCortex s.r.o.</p>
+    <script src="../../src/mergedSettings.js"></script>
+    <script src="../../src/options.js" type="module"></script>
+  </body>
+</html>

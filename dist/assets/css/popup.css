@@ -1,0 +1,332 @@
+/* The switch - the box around the slider */
+body{
+  overflow: hidden;
+  text-align: center;
+  font-family:Arial, Helvetica, sans-serif;
+  width: 300px;
+  height: 350px;
+}
+
+hr {
+  margin: 0;
+  padding: 0;
+}
+
+.virustotalDiv {
+  font-family: 'Roboto', sans-serif;
+  color: white;
+  margin: 0;
+  font-size: 40px;
+  text-align: center;
+  position: relative;
+  margin-top: -300px;
+  transition: all .8s;
+}
+
+.virustotalDivScroll {
+  margin-top: -165px;
+}
+
+.statusDiv {
+  font-size: 15px;
+  color: white;
+  position: relative;
+  margin-top: -65px;
+}
+
+
+
+.fillBoxGreen {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBoxGreen:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #1a8d54;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fillGreen 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fillGreen {
+  from {
+    top: 350px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: -50px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+
+.fillBoxOrange {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBoxOrange:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #f1b027;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fillOrange 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fillOrange {
+  from {
+    top: 350px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: 150px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+.fillBoxRed {
+  width: 300px;
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fillBoxRed:before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: #b4272a;
+  left: 40%;
+  transform:translateX(-50%);
+  border-radius: 40%;
+  animation: fillRed 3s ease-in-out ;
+  z-index: -1;
+  animation-fill-mode: forwards;
+}
+@keyframes fillRed { 
+  from {
+    top: 350px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: 220px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+.elements {
+  height: 35px;
+}
+
+.elem {
+  padding-right: 15px;
+  padding-top: 5px;
+  float: left;
+  cursor: pointer;
+}
+
+.switchElem {
+  text-align: center; 
+  padding-bottom: 3px;
+}
+
+
+.image {
+  width: 95%;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 35px;
+  height: 22px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 15px;
+  width: 15px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: orange;
+}
+
+.slider:hover {
+  background-color: orange;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+svg:hover {
+  color: orange;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+
+span {
+  font-size: 10px;
+  display: block;
+}
+
+.item {
+  display: inline;
+  width: 120px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  margin-top: 50px;
+  margin-bottom: 0;
+  margin-left: 25px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid white;
+}
+
+.container {
+  width: 300px;
+  height: 200px;
+  z-index: 10;
+}
+
+.navbar {
+  width: 300px;
+  height:185px;
+  position: fixed;
+  top: -300px;
+  transition: top .8s;
+}
+
+.navbar-change {
+  top: 80px;
+}
+
+.nav-list {
+  padding:0;
+}
+
+.nav-item {
+  list-style: none;
+  margin: 10px;
+  padding-top: 7px;
+}
+
+.nav-link {
+  text-decoration: none;
+  text-align: center;
+  margin-left: 230px;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.up {
+  width: 10px;
+  height: 10px;
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  position: absolute;
+  transition: all .8s;
+  top: 0;
+  z-index: 1;
+  left: 150px;
+}
+
+.up-scroll {
+  top: inherit;
+  top: 270px;
+}
+
+.down {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  position: absolute;
+  transition: all .8s;
+  top: 70px;
+  z-index: 1;
+  left: 150px;
+}
+
+svg {
+  color: black;
+  cursor: pointer;
+}
+
+.menuText{
+  float: left;
+  font-size: 15px;
+  font-family: 'Roboto', sans-serif;
+  padding-right: 0px;
+  padding-left: 0px;
+  margin-right: -50px;
+}
+
