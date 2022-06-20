@@ -4,8 +4,11 @@ var global = (function(g){
 }(this))
 */
 //const browser = require("webextension-polyfill");
-const punycode = require('punycode');
 import * as tf from '@tensorflow/tfjs';
+import { Domain } from './domainClass';
+import { escapeHTML } from './replaceFunctions';
+import { findBigrams, bigramsToInt } from './bigramFunctions';
+import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon } from './tabFunctions';
 
 // need to include threshold settings, set better default threshold
 
@@ -40,21 +43,6 @@ import * as tf from '@tensorflow/tfjs';
  const FS = require("fs");
  */
 
-/** Maximum domain length */
-const MAX_LENGTH = 255;
-const MAX_LEVEL = MAX_LENGTH - 128;
-const MAX_SUFFIX_LEVEL = 5;
-
-/* Regular expressions in the base form */
-const LATIN_REGEX = /[a-z]+/; // \\p{Lower}+
-const LATIN_REGEX_GLOBAL = /[a-z]+/g;
-const NUMBER_REGEX = /[0-9]+/; // \\p{Digit}+
-const DOT_REGEX = /\./;
-const DASH_REGEX = /[\-|_]+/;
-const WWW_REGEX = /w+[0-9]*/;
-const IP_REGEX = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
-const IDN_REGEX = /xn--/;
-const BS_REGEX = /[^\.\-_0-9a-z]/g;
 
 // load and prepare the model of up to 44 overlapping bigrams trained from github 
 const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/rnn/models/domain_bigrams-lstm/model.json"
@@ -78,819 +66,6 @@ loadModel();
 // load model each 4 hours in case it has been updated to a newer version
 setInterval(loadModel, 4000 * 60 * 60);
 
-// static suffixes
-
-// TODO: replace dictionary
-
-/**
- * Load JSON dictionaries 
- * 
- * @param {type} dictionaryy
- * @returns {undefined}
- */
-
-// TODO: replace dictionary
-
-
-// Parse JSON string into object
-const dictionary = require("../data/dict.json");
-
-/*
-async function loadJSONFiles() {
-fakedictionary = await loadJSON("../data/dict.json");
-
-if(fakedictionary == dictionary) {
-    console.log("dictionaries are same");
-} else {
-    console.error("dictionaries are not the same");
-}
-
-}
-*/
-
-// Parse JSON string into object
-const suffix = require("../data/suffix.json");
-const SUFFIXx = require("../data/suffix.json");
-
-// ../data/bigram_vocabulary2.json
-const bigramDict = require("../models/bigrams_model_GRU64/bigram_vocabulary_all.json");
-
-var suffixes = null;
-
-/** Stub type enum */
-const StubType = { DOT: 0, DASH: 1, NUMBER: 2, LATIN: 3, BS: 4 };
-Object.freeze(StubType);
-
-/**
- * Stub class represents a subdomain or its part (word, number, -, ...)
- *
- * @property {string} subdomain
- * @property {integer} level
- * @property {StubType} sType
- * @property {string[]} words
- */
-class Stub {
-    /**
-     * Stub constructor.
-     *
-     * @param {string} sub
-     * @param {integer} lvl
-     * @param {StubType} sType
-     * @param {string[]} words
-     * @returns {nm$_domain.Stub}
-     * @throws {exceptionType} IllegalArgumentException
-     */
-    constructor(sub, lvl, sType, words) {
-        if (!sub || !lvl || !sType || !words) {
-            throw "DOMAIN.Stub(): Null in constructor.";
-        }
-
-        /** Ideally, this is the complete subdomain */
-        this.subdomain = sub;
-        /** Subdomain level */
-        this.level = lvl;
-        /** StubType - what it is */
-        this.stubType = sType;
-        /** The stub - part of the subdomain */
-        this.strs = [];
-
-        if (typeof words === "string") {
-            this.strs.push(words);
-        } else if (Array.isArray(words)) {
-            this.strs = words;
-        } else {
-            // exception
-            throw "DOMAIN.Stub(): Unknown type of words in constructor.";
-        }
-    }
-
-    /**
-     * Counts simple rating/digits etc in the strs list.
-     * @returns {Number} r
-     */
-    rating() {
-        var r = 0;
-        for (var w of this.strs) {
-            if (w.length > 0)
-                r += 1.0 / w.length;
-            else
-                r += 2; // (wtf :)
-        }
-        return r;
-    }
-
-    /**
-     * Strings toString/CSV
-     * @returns {string} CSV
-     */
-    toCSV() {
-        return this.strs.toString();
-        // if (ret.length > 1) ret = ret.substring(1, ret.length - 1);
-        // return ret;
-    }
-}
-
-/**
- * This class represents Java (mendel.common) Domain.
- *
- * @property {string} name nice UTF-8
- * @property {boolean} idn
- * @property {string[]} subs in reverse order UTF-8
- * @property {string} suffix in reverse order ASCII
- * @property {Stub[]} part1 primary Stubs
- * @property {null|Stub[]} part2 alternate Stubs
- *
- */
-
-class Domain {
-    // throws
-    constructor(domain) {
-        if (!domain || domain.length == 0)
-            throw "The the domain is null";
-
-        // get the ascii/latin name w/o port
-        var ports = domain.trim().toLowerCase().split(":");
-        domain = ports[0];
-        var ascii = punycode.toASCII(domain);
-        if (BS_REGEX.test(ascii)) {
-            throw (
-                "DOMAIN.validate(): The domain doesn't comply to RFC1034 or so: " +
-                domain
-            );
-        }
-
-        /** The complete normalized name */
-        this.name = this.validate(domain);
-        this.name
-            .replace(/_/g, "-")
-            .replace(/[0-9]/g, "0")
-            .replace(/[~!@#$%^&*()+\-=?;:'",<>\{\}\[\]\\\/]/gi, "?");
-        /** Whether is IDN - */
-        this.idn = IDN_REGEX.test(ascii);
-
-        /** String subdomains in reverse order (level 1 = 0) - the length gives all the levels */
-        this.subs = replaceNice(this.name).split(".").reverse();
-        if (!this.subs || this.subs.length == 0) {
-            throw (
-                "DOMAIN.validate(): The domain doesn't comply to RFC1034 or so: " +
-                domain
-            );
-        }
-        for (var s of this.subs) {
-            if (s.length == 0)
-                throw (
-                    "DOMAIN.validate(): The domain doesn't comply to RFC1034 or so: " +
-                    domain
-                );
-        }
-
-        /** Get the longest suffix possible */
-        this.suffix = this.getSuffix(this.subs);
-
-        /** Subdomain classes (level 1+) level: [Stubs], aka. Map<Integer, List<Stub>> */
-        this.part1 = {};
-        /** Subdomain alternative classes (level 1+) */
-        this.part2;
-
-        // proceed :) :) :)
-        for (var i = 1; i <= this.subs.length; i++) {
-            var sub = this.subs[i - 1].trim();
-            // not necessary to limit the length to 63 chars as: if (sub.length > 63) ...;
-
-            // split by non-Latin characters
-            var last_end = 0;
-            var mf;
-            while ((mf = LATIN_REGEX.exec(sub.substring(last_end)))) {
-                var start = last_end + mf.index;
-                var end = last_end + start + mf[0].length;
-
-                // process what is left in front of found
-                if (start - last_end > 0) {
-                    // split Digit, _- and nonsense here
-                    var stub = this.getStrings(
-                        sub,
-                        i,
-                        sub.substring(last_end, start)
-                    ); // List<Domain.Stub>
-                    this.putStub(1, i, stub);
-                    if (this.part2)
-                        this.putStub(2, i, stub);
-                }
-
-                var words = this.getWords(i, mf[0]); // List<Stub>
-                if (words.length == 1) {
-                    this.putStub(1, i, words[0]);
-                    // if there is an alternative
-                    if (this.part2)
-                        this.putStub(2, i, words[0]);
-                }
-                if (words.length > 1) {
-                    // add alternative for higher level domains only
-                    if (i > 1) {
-                        // get the second best option
-                        var best = 1;
-                        var rating = Number.MAX_VALUE;
-                        for (var c = words.length - 1; c > 0; c--) {
-                            var r = words[c].rating();
-                            if (
-                                r < rating &&
-                                (this.part2 || r < words[c].subdomain.length)
-                            ) {
-                                // rating = length :(
-                                rating = r;
-                                best = c;
-                            }
-                        }
-
-                        if (rating < Number.MAX_VALUE) {
-                            // and putStub there the best
-                            this.putStub(2, i, words[best]);
-                        }
-                    }
-
-                    // this should be done at the end, so the previous doesn't copy it
-                    this.putStub(1, i, words[0]);
-                }
-
-                last_end = end;
-            }
-
-            // process what is left at the end
-            if (sub.length - last_end > 0) {
-                // split Digit, _- and nonsense here
-                var stub = this.getStrings(
-                    sub,
-                    i,
-                    sub.substring(last_end, sub.length)
-                ); // List<Domain.Stub>
-                this.putStub(1, i, stub);
-                if (this.part2)
-                    this.putStub(2, i, stub);
-            }
-        }
-    }
-
-    /**
-     * This is to replace part1|2.putStub(1|2, level, subDomain[s]).
-     *
-     * @param {int} number of partition
-     * @param {int} level
-     * @param {Stub|Stub[]} sd
-     * @return {Stub[]}
-     */
-    putStub(number, level, sd) {
-        var part = this.part1; // Map<Integer, List<Stub>>
-        if (number > 1) {
-            if (!this.part2) {
-                this.part2 = {};
-                // an attempt to clone the part1 into part2
-                for (var l in this.part1) {
-                    this.part2[l] = [].concat(this.part1[l]);
-                }
-            } // clone it
-            part = this.part2;
-        }
-
-        var p = []; // List<Stub>
-        if (part[level]) {
-            if (Array.isArray(sd)) {
-                part[level] = part[level].concat(sd);
-                p = sd;
-            } // concat arrays
-            else {
-                part[level].push(sd);
-                p = [sd];
-            } // just assume it is Stub
-        } else {
-            if (Array.isArray(sd))
-                p = sd;
-            // it is already an letters
-            else
-                p.push(sd); // new letters
-            part[level] = p;
-        }
-
-        return p;
-    }
-
-    /**
-     * Dummy getWords for other characters that aren't processed.
-     *
-     * @param {string} subdomain
-     * @param {int} level
-     * @param {string|NOT string[]!} str
-     * @return List<Stub>
-     */
-    getStrings(subdomain, level, str) {
-        if (!str == null || str.length == 0)
-            return null;
-        var subParts = []; // List<Stub>
-        // TODO: split and parse :(
-
-        // split by non-Latin characters
-        var s = str;
-        while (s.length > 0) {
-            // Matcher n = NUMBER.matcher(s);
-            // Matcher d = DASH.matcher(s);
-
-            // var nf = s.length(); // ints
-            // var df = s.length();
-
-            // if (n.find()) nf = n.start();
-            var nf = NUMBER_REGEX.exec(s);
-            // if (d.find()) df = d.start();
-            var df = DASH_REGEX.exec(s);
-
-            if (nf && nf.index === 0) {
-                // got NUMBER
-                var ss = s.substring(0, nf[0].length);
-                // if (DISABLE_BS) ss = ss.replaceAll(".", "9");
-                subParts.push(new Stub(subdomain, level, StubType.NUMBER, ss));
-                s = s.substring(nf[0].length);
-            } else if (df && df.index === 0) {
-                // got DASH
-                var ss = s.substring(0, df[0].length);
-                // if (DISABLE_BS) ss = ss.replaceAll(".", "-");
-                subParts.push(new Stub(subdomain, level, StubType.DASH, ss));
-                s = s.substring(df[0].length);
-            } else {
-                // ? - other chars
-                var of = s.length; // int
-                if (nf && df)
-                    of = Math.min(nf.index, df.index);
-                else if (df)
-                    of = df.index;
-                else if (nf)
-                    of = nf.index;
-                var ss = s.substring(0, of);
-                // if (DISABLE_BS) ss = ss.replaceAll(".", "?");
-                subParts.push(new Stub(subdomain, level, StubType.BS, ss));
-                s = s.substring(of);
-            }
-        }
-
-        return subParts;
-    }
-
-    /**
-     * This gets all strs from only REMAINING letter-based string.
-     * You should use something like this:
-     * String[] ss = subdomain.split("\\P{Alpha}+");
-     * for (String s : ss) {
-     *    if (s.length() > 0) keys.add(s);
-     * }
-     *
-     * @param str
-     * @return {Stub[]}
-     */
-    getWords(level, str) {
-        if (str == null || str.lenght == 0)
-            return null;
-        var subParts = []; // ordered List<Stub>
-        var words = []; // ordered List<String>
-
-        // simple recursive bullshit - minimum is a bigram :(given by the directory):
-        for (var e = str.length; e >= 1; e--) {
-            var substr = str.substring(0, e); // was b, e, String
-
-            // if "found" or desperate (no strs, no Stub), try second
-            if ((words.length == 0 && e == 1) || dictionary[substr]) {
-                // CHECK: subParts.isEmpty() && strs.isEmpty()
-                words.push(substr);
-                if (e < str.length) {
-                    var rest = this.getRest(str.substring(e));
-                    words = words.concat(rest);
-                }
-                if (e == str.length || this.covers(str, words)) {
-                    // 3 is there so it doesn't do [co,m] when there's [com]: (covers(str1, strs) && (str1.length() > 3 || subParts.isEmpty()))
-                    var subD = new Stub(str, level, StubType.LATIN, words);
-                    subParts.push(subD);
-                    words = [];
-                }
-            }
-            // if
-            // else if (subParts.size() >= 2) break; // fair enough
-        }
-
-        // add there what left from above
-        if (words.length > 0) {
-            if (subParts.length == 0) {
-                var subD = new Stub(str, level, StubType.LATIN, words);
-                subParts.push(subD);
-            }
-            // in case we have a very nice strs that cover the whole str1 in case the str1 is longer than 3 (avoid [co,m])
-            else if (subParts.length >= 1 && this.covers(str, words)) {
-                // or something else ... good luck! - the last part || !covers(...) may not be necessary: if ((covers(str1, strs) && (str1.length() > 3 || subParts.isEmpty())) || !covers(str1, ((Stub)subParts.get(0)).strs)) {
-                var subD = new Stub(str, level, StubType.LATIN, words);
-                subParts.push(subD);
-            }
-        }
-
-        // deduplicate what we got ?
-        if (subParts.length > 1) {
-            // else fair enough
-            // TODO: ??? optimize + profile ?
-        }
-
-        return subParts;
-    }
-
-    /**
-     * This recursively gets all strs from only REMAINING letter-based string.
-     *
-     * @param str
-     * @return {string[]}
-     */
-    getRest(str) {
-        var words = []; // new ArrayList<>()
-        if (!str || str.length == 0)
-            return words;
-
-        // simple recursive bullshit - minimum is a bigram :(given by the directory):
-        for (var e = str.length; e >= 1; e--) {
-            var substr = str.substring(0, e); // was b, e, string
-
-            // if "found" or desperate (no strs), try second
-            if ((words.length == 0 && e == 1) || dictionary[substr]) {
-                words.push(substr);
-                if (e < str.length) {
-                    var rest = this.getRest(str.substring(e));
-                    words = words.concat(rest);
-                }
-                if (e == str.length || this.covers(str, words))
-                    break;
-            }
-        }
-
-        return words;
-    }
-
-    /**
-     * This returns whether the strs cover the whole string.
-     *
-     * @param str
-     * @param {string[]} words
-     * @return full coverage
-     */
-    covers(str, words) {
-        var c = str.length;
-        for (var w of words)
-            c -= w.length;
-        return c <= 0;
-    }
-
-    /**
-     * Validates the domain name against to
-     * [RFC 1034] <https://tools.ietf.org/html/rfc1034> (actual version) and
-     * [RFC 3492] <https://tools.ietf.org/html/rfc3492> and
-     * [RFC 5891] <https://tools.ietf.org/html/rfc5891>
-     *
-     * @param {string} domain
-     * @returns {string} validate.name in UTF-8
-     * @throws IllegalArgumentException
-     */
-    validate(domain) {
-        if (!domain) {
-            throw "DOMAIN.validate(): The domain is null.";
-        }
-
-        // get the real name in UTF-8
-        var name = punycode.toUnicode(domain.trim().toLowerCase());
-        if (domain.trim().length > MAX_LENGTH || name.length > MAX_LENGTH) {
-            throw (
-                "DOMAIN.validate(): The domain is longer than 255 characters: " +
-                domain
-            );
-        }
-        // check if there is something weird like xn--
-        if (IDN_REGEX.test(domain)) {
-            throw (
-                "DOMAIN.validate(): The domain doesn't comply to RFC3490: " +
-                domain
-            );
-        }
-        // check if there is an IP address
-        if (IP_REGEX.test(domain)) {
-            throw "DOMAIN.validate(): The domain is an IP address: " + domain;
-        }
-
-        return name;
-    }
-
-    /**
-     * Returns the suffix as a string in reverse order ASCII
-     *
-     * @param {type} ascii
-     * @returns {string} Domain.suffix
-     */
-    getSuffix(ascii) {
-        if (!suffixes) {
-            try {
-                suffixes = SUFFIXx;
-            } catch (e) {
-                // var SH = require("shelljs");
-                // console.log("pwd: "+ SH.pwd());
-                throw "DOMAIN.getSuffix(): Can't read suffixes: " + e;
-            }
-        }
-        if (!suffixes) {
-            throw "DOMAIN.getSuffix(): Can't read suffixes!";
-        }
-        // else console.log("suffixes.length: "+ Object.keys(suffixes).length);
-
-        // that's it
-        var suffix = null;
-        // to be parsedBigramDict
-        var arr = null;
-
-        if (typeof ascii === "string") {
-            arr = ascii.split(".").reverse().slice(0, MAX_SUFFIX_LEVEL);
-        } else if (Array.isArray(ascii)) {
-            arr = ascii.slice(0, MAX_SUFFIX_LEVEL);
-        } else {
-            // exception
-            throw "DOMAIN.getSuffix(): Unknown type of ASCII domain.";
-        }
-
-        // try the longest one
-        for (var i = arr.length; i > 0; i--) {
-            suffix = arr.slice(0, i).join(".");
-            if (suffixes[suffix])
-                break;
-        }
-
-        return suffix;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * This may do 1-2 lines with primary and secondary combination.
-     *
-     * @return {string} CSV
-     */
-    toCSV() {
-        var str1 = this.name + "," + this.suffix;
-        var str2 = null;
-
-        for (var i = this.subs.length; i > 0; i--) {
-            // alternative 1
-            var sd = this.part1[i]; // List<Stub>
-            if (!sd || sd.length == 0)
-                str1 += ",[]";
-            else {
-                for (var k = 0; k < sd.length; k++) {
-                    str1 += "," + sd[k].toCSV();
-                }
-            }
-            if (i > 1)
-                str1 += ",.";
-
-            // alternative (2)
-            if (this.part2) {
-                // not empty
-                if (!str2)
-                    str2 = this.name + "," + this.suffix;
-                var sd = this.part2[i];
-                if (!sd || sd.length == 0)
-                    str2 += ",[]";
-                else {
-                    for (var k = 0; k < sd.length; k++) {
-                        str2 += "," + sd[k].toCSV();
-                    }
-                }
-                if (i > 1)
-                    str2 += ",.";
-            }
-        }
-
-        //if (idn) {
-        //    str1 += ",#IDN";
-        //    str2 += ",#IDN";
-        //}
-
-        if (str2)
-            return str1 + "\n" + str2;
-        else
-            return str1;
-    }
-}
-
-/** A compact DomAIn alphabet (c) 2018 P3+M */
-const alphabet = [
-    ".",
-    "-",
-    "0",
-    "a",
-    "c",
-    "d",
-    "e",
-    "g",
-    "i",
-    "l",
-    "m",
-    "o",
-    "p",
-    "r",
-    "s",
-    "t",
-    "u",
-    "w",
-    "?",
-];
-
-/** Substitutions */
-const substitute = {
-    //    ".",
-    _: "-",
-    1: "0",
-    2: "0",
-    3: "0",
-    4: "0",
-    5: "0",
-    6: "0",
-    7: "0",
-    8: "0",
-    9: "0",
-    // "a",
-    k: "c",
-    b: "d",
-    // "e",
-    j: "g",
-    y: "i",
-    h: "l",
-    n: "m",
-    // "o",
-    q: "p",
-    x: "r",
-    z: "s",
-    f: "t",
-    // "u",
-    v: "w",
-    // "?"
-};
-
-/**
- * A nice replace of dictionary to be Pareto-friendly.
- * see https://stackoverflow.com/a/44475397:
- */
-function replaceChars(domain) {
-    return domain
-        .replace(/[_123456789kbjyhnqxzfv]/g, (c) => substitute[c])
-        .replace(/[^\.\-0-9a-z]/g, "?");
-}
-
-/**
- * A nice replace of numbers and BS - this is what you want :)
- */
-function replaceNice(domain) {
-    return domain
-        .replace(/[_123456789]/g, (c) => substitute[c])
-        .replace(/[^\.\-0-9a-z]/g, "?");
-}
-
-/**
- * A nice replace of bullshits - doesn't apply substitutions!
- * see https://stackoverflow.com/a/44475397:
- */
-function replaceBS(domain) {
-    return domain.replace(BS_REGEX, "?");
-}
-
-/**
- * This is how to create bigram letters so it is possible to do:
- * fvect[bigrams.indexOf("ab")] += 1;
- *
- * @return bigrams = [".-",".0",".a",...,"??"] // MAYBE: add "len","level", ...
- */
-
-function genBigrams() {
-    var grams = [];
-
-    for (var a of alphabet) {
-        for (var b of alphabet) {
-            if (
-                a === "." &&
-                b === "." // we don't need ".."
-            )
-                ;
-            else
-                grams.push(a + b);
-        }
-    }
-
-    return grams;
-}
-
-/**
- * getCurrentURL gets URL from curretly opened tab and returns it as a string
- *
- *
- *
- * @returns {string} current URL
- */
-
-function getCurrentURL() {
-    let currentTab;
-    // returns promise, so we can await the value
-    return new Promise((resolve, reject) => {
-        try {
-            //query current browser tab
-            chrome.tabs
-                .query({ currentWindow: true, active: true })
-                //after we get info about current tab, resolve it's URL adress
-                .then((tabs) => {
-                    currentTab = tabs[0].url;
-
-                    if (currentTab.startsWith("http")) {
-                        resolve(currentTab);
-                    } else {
-                        resetIcon();
-                    }
-                });
-        } catch (err) {
-            console.log(err);
-            reject(new Error(err));
-        }
-    });
-}
-
-/**
- * create array of URL letter pairs == example.com -> [[ex], [am], [pl], [e.], [co], [m0]]
- * Returns 2 dimensional letters of arrays, each containing 2 letters from URL
- *
- * @param {String} Domain.name example.com
- * @returns {Array} [[ex], [am], [pl], [e.], [co], [m0]]
- */
-
-function findBigrams(domainName) {
-    let slicedDomain = [];
-    // query through domain name
-    for (let i = 0; i < domainName.length - 1; i++) {
-        // create an empty array each query for every pair of URL letters
-        let letters = [];
-        // declare string variable = create a pair of current letters
-        let string;
-        string = domainName[i];
-        // check if the other letter is still in range
-        if (domainName[i + 1]) {
-            string += domainName[i + 1];
-            // if not, push Number 0
-        } else {
-            string += "0";
-        }
-        // push created string pair to array
-        letters.push(string);
-        // push current pair array to main array, so we get 2 dimensional array
-        slicedDomain.push(letters);
-    }
-    // return 2 dimensional array of split URL pairs
-    return slicedDomain;
-}
-
-/**
- * Returns array containing compared values from bigramDict
- *
- * @param {Array} takes sliced domain from findBigrams function -> [[ex], [am], [pl], [e.], [co], [m0]]
- * @returns {array} returns an array input for Keras model -> [ 0, 535, 717, 406, 692, 213, 17, 0, 0, 0, … ]
- */
-function bigramsToInt(slicedDomain) {
-    // declare array for input values
-    let modelInput = [];
-    // load bigram Dictionary from browser storage
-
-    // Parse JSON string into object
-    // parse bigram dict to JSON object
-
-    // foreach array from slicedDomain
-    slicedDomain.forEach((e) => {
-        e.forEach((item) => {
-            // if bigram dictionary contains current combination
-            if (item in bigramDict) {
-                // push the value to model input variable
-                modelInput.push(bigramDict[item]);
-            } else {
-                // if current combination is not in bigram Dictionary, push Number 1
-                modelInput.push(1);
-            }
-        });
-    });
-
-    // make sure the input's length is 44
-
-    // if input is shorter, push Number 0, foreach blank space
-    if (modelInput.length < 44) {
-        for (let i = modelInput.length; i < 44; i++) {
-            modelInput.push(0);
-        }
-    }
-    // slice the input, so the length is 44
-    modelInput = modelInput.slice(0, 44);
-
-    // return the input
-    return modelInput;
-}
-
 /**
  * Returns Keras model prediction
  *
@@ -910,94 +85,6 @@ async function runModel(inputArray) {
     // return result
     return finalResult;
 }
-
-/**
- * changes icons according to Keras model result
- *
- * @param {Number} takes Keras model result -> 0.9485247731208801
- */
-
-function changeIcon(modelResult) {
-    let greenThreshold = 0.2;
-    let orangeThreshold = 0.6;
-    let redThreshold = 0.9;
-
-    let threshold = chrome.storage.local.get("threshold");
-    threshold.then((res) => {
-        // if theres no site being blacklisted
-        if (res.threshold != null && res.threshold.length > 0) {
-            let threshold = JSON.parse(res.threshold);
-            greenThreshold = (threshold.green == 0) ? 0 : threshold.green / 100;
-            orangeThreshold = threshold.orange / 100;
-            redThreshold = threshold.red / 100;
-        }
-
-        // TODO: comment this!
-        console.log(greenThreshold, orangeThreshold, redThreshold);
-
-        // if result is less then 0.2 or settings
-        //@TODO: browserAction is deprecated in manifest V3
-        if (modelResult >= 0 && modelResult <= greenThreshold) {
-            chrome.action.setTitle({ title: "This page seems to be safe!" });
-            // set extension icon to green
-            chrome.action.setIcon({
-                path: "/assets/img/green.png",
-            });
-
-            // if result is between green and orande, it is the grey area
-        } else if (modelResult > greenThreshold && modelResult < orangeThreshold) {
-            chrome.action.setTitle({
-                title: "This is the grey area, we can't say much more.",
-            });
-            // set extension icon to orange
-            chrome.action.setIcon({
-                path: "/assets/img/grey.png",
-            });
-
-            // if result is below red, it is orange
-        } else if (modelResult >= orangeThreshold && modelResult < redThreshold) {
-            chrome.action.setTitle({
-                title: "This page might not be all safe.",
-            });
-            // set extension icon to orange
-            chrome.action.setIcon({
-                path: "/assets/img/orange.png",
-            });
-
-            // if result is bigger than red it is dangerous
-        } else if (modelResult >= redThreshold && modelResult <= 1.0) {
-            chrome.action.setBadgeBackgroundColor({ color: "red" });
-            chrome.action.setTitle({
-                title: "Warning: this page might be dangerous!",
-            });
-            // set extension icon to red
-            chrome.action.setIcon({
-                path: "/assets/img/red.png",
-            });
-            // whatever may (have) happened
-        } else {
-            chrome.action.setTitle({ title: "DomAIn by GreyCortex" });
-            // if model didnt predict or an error has occured, set grey
-            chrome.action.setIcon({
-                path: "/assets/img/base.png",
-            });
-        }
-    });
-}
-
-/*
- function resetIcon resets icon, when on a page, that is not supposed to be tested 
- */
-function resetIcon() {
-    // set popup icon title to the base one
-    chrome.action.setTitle({ title: "DomAIn by GreyCortex" });
-    // change icon to the base one
-    chrome.action.setIcon({
-        path: "/assets/img/base.png",
-    });
-}
-
-
 
 let cachedURL;
 let Result;
@@ -1152,6 +239,7 @@ async function runCode() {
     console.log("changed to false");
 }
 
+
 /**
  * Returns icon change depending on the url scan result
  *
@@ -1211,8 +299,7 @@ function createDomainrunModel(adress, source = "background") {
 
 /**
  * Creates a context menu, which is navigated to using the right mouse click (only works on links)
- * 
- */
+*/
 
 chrome.contextMenus.create({
     id: "analyze-link",
@@ -1222,13 +309,11 @@ chrome.contextMenus.create({
 
 
 /**
- * Listener that listens, if the context menu option is used, if so, parses the url for the model using regex
- * and returns the AI function call with the url
- *
- * @param {object} info checks if exactly analyze link option is clicked
- * or with the context menu, source parameter is present and is set to background
- * @returns {function} createDomainrunModel
- */
+* sends the link from context menu to createDomainrunModel function
+*
+* @listens contextMenus.onClicked listens for click on the context menu option 
+* @returns {void}
+*/
 
 chrome.contextMenus.onClicked.addListener((info) => {
     if (info.menuItemId === "analyze-link") {
@@ -1245,16 +330,16 @@ chrome.contextMenus.onClicked.addListener((info) => {
 });
 
 /**
- * On message listener that listens for "continue once" message from the afterclose popup
- * sets the afterclose value to true, to ensure, that the runCode function wont close the tab this time
- * creates a new tab with the url of the last closed site
- * since the tab cration will fire mutliple listeners, setTimeout ensures, that the site will be opened and not closed
- *
- * @param {object} request = used to check for the continue once message
- * @param {function} sendResponse used for callback
- * @returns {Promise} Response promise
- */
+* On message listener that listens for "continue once" message from the afterclose popup
+* sets the afterclose value to true, to ensure, that the runCode function wont close the tab this time
+* creates a new tab with the url of the last closed site
+* since the tab cration will fire mutliple listeners, setTimeout ensures, that the site will be opened and not closed
+* 
+* @listens runtime.onMessage for "continue_once" message  
+* @returns {Promise} resolves debug string
+*/
 
+/*
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.msg === "continue_once") {
@@ -1268,113 +353,42 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+*/
 
-/**
- * Listener that listens for send url message, which sends the url of last closed site
- * @param {function} sendResponse used for callback
- * @returns {Promise} Response promise
- */
-
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.msg === "send_url") {
-            return Promise.resolve(lastClosedSite);
-        }
-
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // 2. A page requested user data, respond with a copy of `user`
+    if (message === "continue_once") {
+        isAfterClose = true;
+        console.log("isAfterClose changed to true");
+        chrome.tabs.create({url: lastClosedSite});
+        setTimeout(() => {
+            isAfterClose = false;
+        }, 5000)
+        sendResponse(`tab with url ${lastClosedSite} created`);
     }
+  });
 
-);
 
 /**
- * this function is used to get url from context menu click as we need it
- *
- * @param {string} str to be parsed using regex
- * @returns {string} returns string with replaced special characters
- */
+* sends the url of site that was closed
+* @listens runtime.onMessage for "send_url" message  
+* @returns {void}
+*/
 
-// https://gist.github.com/Rob--W/ec23b9d6db9e56b7e4563f1544e0d546
-function escapeHTML(str) {
-    // Note: string cast using String; may throw if `str` is non-serializable, e.g. a Symbol.
-    // Most often this is not the case though.
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;").replace(/'/g, "&#39;")
-        .replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // 2. A page requested user data, respond with a copy of `user`
+    if (message === "send_url") {
+        console.log(`lastClosedSite is: ${lastClosedSite}`);
+        sendResponse(lastClosedSite);
+    }
+  });
 
 /**
- * showAfterClosePopup is used to send message to content script to inject iframe of our popup to the new tab
- * and is fired whenever a blacklisted site is closed
- *  
- * gets id of the new tab (neede to send a message), then sends the message
- */
-
-function showAfterClosePopup() {
-    let currentDomain = chrome.tabs.query({
-        currentWindow: true,
-        active: true,
-    });
-    currentDomain.then((tab) => {
-        const currentTabId = tab[0].id;
-        console.log(`curr tab ${currentTabId}`);
-        chrome.tabs.sendMessage(currentTabId, { data: "show_popup" }).then((response => {
-            console.log(`response from showAfterClosePopup message: ${response}`);
-        }));
-    });
-}
-
-/**
- * getCurrentTab (will replace repeating code, callback will be changed to promise)
- * used to get id of the active (current) tab
- *
- * @param {callback} defined to return callback for now
- * @returns {callback} callbacks the active tab object
- */
-
-function getCurrentTab(callback) {
-    let currTab;
-    let currentDomain = chrome.tabs.query({
-        currentWindow: true,
-        active: true,
-    });
-    currentDomain.then((tab) => {
-        currTab = tab[0];
-        callback(currTab);
-    });
-}
-
-/**
- * basically just closes the tab with specified id
- *
- * @param {string} id of the tab we wish to close
- * @returns {function} calls the browser api to close the tab
- */
-
-function closeTab(tabId) {
-    return new Promise((resolve, reject) => {
-        chrome.tabs.remove(tabId, tab => {
-            if(chrome.runtime.lastError) {
-                reject(new Error(chrome.runtime.lastError));
-            } else {
-                resolve(tab);
-            }
-        })
-    })
-}
-
-
-// code is executed whenever new browser tab is active/clicked
-/* current error - both of these listeners might be active at the same time 
- = code will try to autoclose twice, iframe will be added twice, also an error might happen
- */
-
-/**
- * listener that listens whenever a request is send
- *
- * @param {object} changeInfo - used to check if the site state is loading (prevents it for firing for multiple times,
- *  faster than waiting for a page to fully load to scan/close it)
- * @returns {function} runCode call
- */
+* calls runCode when the active tab changes
+* @listens tabs.onUpdated triggers when the active tab changes  
+* @returns {Promise} resolves debug string
+*/
 
 chrome.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
     // might replace the function that gets the url
@@ -1386,9 +400,10 @@ chrome.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
 });
 
 /**
- * Listener that is fired, whenever the active tab is changed (we click on a new tab)
- * @returns {function} runCode call
- */
+* calls runCode when new url is entered
+* @listens tabs.onActivated triggers, when new url is entered
+* @returns {void}
+*/
 
 chrome.tabs.onActivated.addListener(function () {
     if (!isAfterClose) {

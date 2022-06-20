@@ -4,11 +4,12 @@ ifrm.setAttribute('src', 'afterClosePopup.html');
 document.body.appendChild(ifrm);
 */
 
- /**
-       * showPopup function creates an iframe html element and inserts the actual html popup
-       * from web accessible resources in it
-       */
 
+/**
+* creates and injects an iframe of afterClosePopup
+*
+* @returns {void}
+*/
 
 function showPopup() {
   // Avoid recursive frame insertion...
@@ -34,8 +35,10 @@ function showPopup() {
 }
 
 /**
-       * function removePopup gets the iframe element by its id and then removes it
-       */
+* removes injected iframe element
+*
+* @returns {void}
+*/
 
 function removePopup() {
   let popup = document.getElementById("iframe");
@@ -45,12 +48,12 @@ function removePopup() {
 }
 
 /**
-       * On message listener that listens for show popup message, send whenever a site is closed by autoclose
-       * calls the show popup function and then sends response back
-       *  @param {object} request = used to check for the show popup message
-       * @param {function} sendResponse used for callback
-       * @returns {Promise} Response message
-       */
+* Listen for "show_popup" message, call showPopup function of received
+*
+* @listens runtime.onMessage listens for "show_popup" message
+* @returns {Promise} resolves the url of closed site 
+*/
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
         showPopup();
@@ -59,12 +62,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 /**
-       * On message listener that listens for remove popup message, this message is send with the cross button on the iframe
-       * calls the removePopup function and then sends response back
-       * @param {object} request = used to check for the remove popup message
-       * @param {function} sendResponse used for callback
-       * @returns {Promise} Response message
-       */
+* Listen for "remove_popup" message, call removePopup function of received
+*
+* @listens runtime.onMessage listens for "remove_popup" message 
+* @returns {Promise} resolves the url of closed site
+*/
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "remove_popup") {

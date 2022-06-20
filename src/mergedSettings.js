@@ -1,21 +1,16 @@
-// getting DOM elements from popup.html
-
-// get toggleButton (used to enable/disable autoClose)
 let toggleButton = document.getElementById("toggleButton");
 //let clearWhitelist = document.getElementById("clearWhiteList");
 
-let blackListdiv = document.getElementById("blacklist");
-let whiteListdiv = document.getElementById("whitelist");
-
-// adding listeners to DOM elements triggering their responsible functions
 if (toggleButton) {
     toggleButton.addEventListener("click", toggle);
 }
+
 /**
- 
- *toggle function is responsible for turning off/on blacklist site autoclose
- *and saving the value to the local storage
- */
+* toggles autoClose function
+*
+* @returns {void}
+*/
+
 export function toggle() {
     console.log("toggle");
     // get autoclose and its values from browser storage
@@ -33,8 +28,11 @@ export function toggle() {
 }
 
 /**
- * function updateButton is called when on optionsPage, when the autoClose settings are changed
- */
+* updates button, that shows whether autoClose function is enabled 
+*
+* @returns {void}
+*/
+
 export function updateButton() {
     //get the value from browser storage
     let buttonVal = chrome.storage.local.get("autoClose");
@@ -49,6 +47,14 @@ export function updateButton() {
     });
 }
 
+/**
+* checks if there are duplicates in the blacklist
+*
+* @param {String} domain a domain to be checked for
+* @param {String} regDom a regex domain
+* @param {function} callback callback function for blacklist
+* @returns {void}
+*/
 
 export function checkForDuplicates(domain, regDom, callback) {
     let blackListedSites;
@@ -103,6 +109,14 @@ export function checkForDuplicates(domain, regDom, callback) {
 
 }
 
+/**
+* checks if there are duplicates in the whitelist
+*
+* @param {String} domain a domain to be checked for
+* @param {String} regDom a regex domain
+* @param {function} callback callback function for whitelist
+* @returns {void}
+*/
 
 export function checkForDuplicatesWhitelist(domain, regDom, callback) {
     let whiteListedSites;
@@ -157,11 +171,13 @@ export function checkForDuplicatesWhitelist(domain, regDom, callback) {
     });
 }
 
-
-
 /**
- *function addSite gets URL value from html form user wishes to whitelist
- */
+* adds an url to the whitelist
+*
+* @param {String} url an url to be whitelisted
+* @returns {void}
+*/
+
 export function addToWhiteList(url) {
     let domain = url;
     // parse full url to domain adress only
@@ -198,6 +214,12 @@ export function addToWhiteList(url) {
     });
 }
 
+/**
+* return the blacklist
+*
+* @returns {Promise} returns the blacklist if available
+*/
+
 export function getBlacklist() {
     let blackListedSites;
 
@@ -221,6 +243,12 @@ export function getBlacklist() {
         });
     });
 }
+
+/**
+* return the whitelist
+*
+* @returns {Promise} returns the whitelist if available
+*/
 
 export function getWhitelist() {
     let whiteListedSites;

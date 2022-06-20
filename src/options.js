@@ -1,42 +1,32 @@
-import {checkForDuplicates} from "./mergedSettings"
+import {checkForDuplicates, addToWhiteList} from "./mergedSettings"
 
 let blackListdiv = document.getElementById("blacklist");
 let whiteListdiv = document.getElementById("whitelist");
 
-// get html form used to add sites to blacklist
 let blacklistForm = document.getElementById("form");
-// get html form used to add sites to whitelist
 let whitelistForm = document.getElementById("whitelistForm");
-// get html form used to configure custom AI threshold
 let thresholdForm = document.getElementById("thresholdForm");
-// get html form used to setup virustotal API calls
 let apiForm = document.getElementById("apiForm");
-// get clear button (used to clear the whole blackList)
 let clear = document.getElementById("clear");
-// get clear button (used to clear the whole whiteList)
 let clearWhitelist = document.getElementById("clearWhite");
 
 /**
- * Color elements, threshold ranges and values
- * @type Element
- */
-const green = document.getElementById("greenRange");
+* Color elements, threshold ranges and values
+* @type Element
+*/
 // grey is implicit
+const green = document.getElementById("greenRange");
 const orange = document.getElementById("orangeRange");
 const red = document.getElementById("redRange");
 
-// get html range values
 let greenVal = document.getElementById("greenVal");
-// grey is implicit
 let orangeVal = document.getElementById("orangeVal");
 let redVal = document.getElementById("redVal");
 
 // div used to describe what will the threshold work like
 let meaning = document.getElementById("meaning");
 
-// add event listener on new submited url to be blacklisted
 blacklistForm.addEventListener("submit", addSite);
-// add event listener on new submited url to be whitelisted
 whitelistForm.addEventListener("submit", function() {
   let domain = document.querySelector('input[name="whitelistUrl"]').value;
   addToWhiteList(domain);
@@ -55,6 +45,14 @@ clearWhitelist.addEventListener("click", clearWhiteList);
  * and if there are any, display them to the html
  * function also add event listener to each of the sites, so user might remove each one by one
  */
+
+/**
+* retrieves all blacklisted sites from local storage
+* and if there are any, display them to the html
+* function also add event listener to each of the sites, so user might remove each one by one
+*
+* @returns {void}
+*/
 function showBlacklistedSites() {
     // TODO: check if the user wants to get this info?
     
@@ -100,14 +98,14 @@ ${site.regex}
     });
 }
 
-
-
 /**
-  * removes single site from blacklist or whitelist
-  *
-  * @param {string} type - either blacklist or whitelist
-  * @returns {string} id - html id of the site
-  */
+* creates an array of url letter pairs
+*
+* @param {String} type blacklist/whitelist
+* @param {String} id html id of the site
+* @returns {void}
+*/
+
 function removeSiteFromLists(type, id) {
     if (type == "whitelist") {
         let whiteListedSites;
@@ -153,6 +151,12 @@ function removeSiteFromLists(type, id) {
  *function clearBlacklist removes all sites from the blacklist
  */
 
+/**
+* removes all sites from the blacklist
+*
+* @returns {void}
+*/
+
 function clearBLackList() {
     let empty = [];
     chrome.storage.local.set({
@@ -165,8 +169,10 @@ function clearBLackList() {
 }
 
 /**
- * function clearWhiteList removes all sites from the whitelist
- */
+* removes all sites from the whitelist
+*
+* @returns {void}
+*/
 function clearWhiteList() {
     let empty = [];
     chrome.storage.local.set({
@@ -178,12 +184,12 @@ function clearWhiteList() {
     }
 }
 
-
-
 /**
- * renders each whitelisted site from local storage in the option html
- * also adds event listeners, so that pages can be removed one by one
- */
+* renders the whitelist and adds remove event listeners to each page
+*
+* @returns {void}
+*/
+
 function showWhitelistedSites() {
     // get blacklisted sites from browser storage
     let whiteList = chrome.storage.local.get("whiteList");
@@ -225,10 +231,11 @@ ${site.regex}
     });
 }
 
-
 /**
- *function addSite gets URL value from html form user wishes to blacklist
- */
+* adds site to the blacklist
+*
+* @returns {void}
+*/
 function addSite() {
     // get  value from form input
     let domain = document.querySelector('input[name="url"]').value;
@@ -268,11 +275,12 @@ function addSite() {
     });
 }
 
-
-
 /**
- * function configureThreshold saves the threshold from settings from to he local storage
- */
+* gets and saves user threshold settigns
+*
+* @returns {void}
+*/
+
 function configureThreshold() {
     const object = {green: green.value, orange: orange.value, red: red.value};
 
@@ -283,8 +291,11 @@ function configureThreshold() {
 }
 
 /**
- * on site load, this function shows Threshold settings from local storage or the default ones
- */
+* renders threshold settings
+*
+* @returns {void}
+*/
+
 function showThreshold() {
     // get blacklisted sites from browser storage
     let threshold = chrome.storage.local.get("threshold");
@@ -320,8 +331,10 @@ function showThreshold() {
 }
 
 /**
- * desribes what will model work like with current Threshold configuration
- */
+* shows, how will the model work with such settings
+*
+* @returns {void}
+*/
 
 function editMeaning() {
     meaning.innerHTML = "<p>";
@@ -333,9 +346,13 @@ From ${red.value}% on, the site will be rated as dangerous.
 `;
 }
 
+
 /**
- * takes apikey value from form and saves it to the local storage // might not be the best solution
- */
+* gets and saves API key
+* @TODO hash or some sort of encryption
+* @returns {void}
+*/
+
 function addAPIKey() {
     let APIKey = document.querySelector('input[name="apikey"]').value;
     console.log(APIKey);
@@ -344,10 +361,12 @@ function addAPIKey() {
     });
 }
 
+/**
+* changes meaning value, moves sliders, so the valus dont collide
+*
+* @returns {void}
+*/
 
-/*
- * oninput section for all 3 threshold sliders, moves other sliders if necessary, changes text value
- */
 green.oninput = function () {
     greenVal.innerText = green.value + "%";
     if (+green.value > +orange.value) {

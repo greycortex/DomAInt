@@ -8,7 +8,7 @@
  */
 
 // include neural network
-const SYNAPTIC = require('../src/synaptic/synaptic');
+const SYNAPTIC = require('./synaptic/synaptic');
 const {Neuron, Layer, Network, Trainer, Architect} = SYNAPTIC;
 
 

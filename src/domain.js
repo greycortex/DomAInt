@@ -21,7 +21,7 @@ const {Neuron, Layer, Network, Trainer, Architect} = SYNAPTIC;
 // https://developer.mozilla.org/en-US/docs/Web/API/URL
 
 // https://libraries.io/npm/punycode
-const PUNYCODE = require('punycode');
+const PUNYCODE = require('./punycode/punycode.js');
 
 // for browser support, you may need https://github.com/bestiejs/punycode.js/tree/v1.4.1
 
