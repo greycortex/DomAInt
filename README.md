@@ -50,5 +50,6 @@ This extension was created with [Extension CLI](https://oss.mobilefirst.me/exten
 | `npm run test` | run unit tests |
 | `npm run sync` | update config files |
 | `npm run fix` | fix unsave eval error |
+| `npm run lint` | runs eslint test |
 
 For CLI instructions see [User Guide &rarr;](https://oss.mobilefirst.me/extension-cli/)
