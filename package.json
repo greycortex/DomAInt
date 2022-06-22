@@ -18,7 +18,8 @@
         "test": "xt-test",
         "coverage": "nyc --reporter=lcov npm run test",
         "sync": "xt-sync",
-        "fix": "node utils/eval_fix.js"
+        "fix": "node utils/eval_fix.js",
+        "lint": "eslint ."
     },
     "babel": {
         "presets": [
@@ -69,6 +70,7 @@
     },
     "dependencies": {
         "@tensorflow/tfjs": "^3.18.0",
+        "chai-as-promised": "^7.1.1",
         "punycode": "^2.1.1"
     }
 }
