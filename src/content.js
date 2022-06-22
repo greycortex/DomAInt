@@ -57,8 +57,10 @@ function removePopup() {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
         showPopup();
+        //FIXME: returning null
+        return sendResponse(request.closedUrl);
   }
-  return Promise.resolve(request.closedUrl);
+  //return Promise.resolve(request.closedUrl);
 });
 
 /**
