@@ -27,19 +27,19 @@ export function getCurrentURL() {
 }
 */
 
-export function getCurrentURL() {
-	// returns promise, so we can await the value
-	return new Promise(async (resolve, reject) => {
-		//query current browser tab
-		const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
-		const currentURL = tabs[0].url;
-		console.log(`current url to be resolved is: ${currentURL}`);
-		if (currentURL.startsWith("http")) {
-			resolve(currentURL);
-		} else {
-			resetIcon();
-		}
-	});
+export async function getCurrentURL() {
+  const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
+  // returns promise, so we can await the value
+  return new Promise( (resolve, reject) => {
+    //query current browser tab
+    const currentURL = tabs[0].url;
+    console.log(`current url to be resolved is: ${currentURL}`);
+    if (currentURL.startsWith("http")) {
+      resolve(currentURL);
+    } else {
+      resetIcon();
+    }
+  });
 }
 
 /**
@@ -50,16 +50,16 @@ export function getCurrentURL() {
 */
 
 export async function showAfterClosePopup() {
-	const tab = await chrome.tabs.query({
-		currentWindow: true,
-		active: true,
-	});
-	const currentTabId = tab[0].id;
-	console.log(`curr tab ${currentTabId}`);
+  const tab = await chrome.tabs.query({
+    currentWindow: true,
+    active: true,
+  });
+  const currentTabId = tab[0].id;
+  console.log(`curr tab ${currentTabId}`);
 
-	chrome.tabs.sendMessage(currentTabId, { data: "show_popup" }, response => {
-		console.log(`response from showAfterClosePopup message: ${response}`);
-	});
+  chrome.tabs.sendMessage(currentTabId, { data: "show_popup" }, response => {
+    console.log(`response from showAfterClosePopup message: ${response}`);
+  });
 }
 
 /**
@@ -88,11 +88,11 @@ export function getCurrentTab(callback) {
  */
 
 //TODO: tab is undefined
-export function closeTab(tabId) {
-	return new Promise(async (resolve, reject) => {
-		const tab = await chrome.tabs.remove(tabId);
-		resolve(tab);
-	});
+export async function closeTab(tabId) {
+  const tab = await chrome.tabs.remove(tabId);
+  return new Promise((resolve, reject) => {
+    resolve(tab);
+  });
 }
 
 /**
@@ -102,40 +102,40 @@ export function closeTab(tabId) {
  */
 
 export function changeIcon(modelResult) {
-	let greenThreshold = 0.2;
-	let orangeThreshold = 0.6;
-	let redThreshold = 0.9;
+  let greenThreshold = 0.2;
+  let orangeThreshold = 0.6;
+  let redThreshold = 0.9;
 
-	let resThreshold = chrome.storage.local.get("threshold");
-		// if theres no site being blacklisted
-		if (resThreshold != null && resThreshold.length > 0) {
-			let threshold = JSON.parse(resThreshold);
-			greenThreshold = (threshold.green == 0) ? 0 : threshold.green / 100;
-			orangeThreshold = threshold.orange / 100;
-			redThreshold = threshold.red / 100;
-		}
+  let resThreshold = chrome.storage.local.get("threshold");
+  // if theres no site being blacklisted
+  if (resThreshold != null && resThreshold.length > 0) {
+    let threshold = JSON.parse(resThreshold);
+    greenThreshold = (threshold.green == 0) ? 0 : threshold.green / 100;
+    orangeThreshold = threshold.orange / 100;
+    redThreshold = threshold.red / 100;
+  }
 
-		// TODO: comment this!
-		console.log(greenThreshold, orangeThreshold, redThreshold);
+  // TODO: comment this!
+  console.log(greenThreshold, orangeThreshold, redThreshold);
 
-		// if result is less then 0.2 or settings
-		//@TODO: browserAction is deprecated in manifest V3
-		if (modelResult >= 0 && modelResult <= greenThreshold) {
-			setIcon({ title: "This page seems to be safe!", iconPath: "/assets/img/green.png" });
+  // if result is less then 0.2 or settings
+  //@TODO: browserAction is deprecated in manifest V3
+  if (modelResult >= 0 && modelResult <= greenThreshold) {
+    setIcon({ title: "This page seems to be safe!", iconPath: "/assets/img/green.png" });
 
-		} else if (modelResult > greenThreshold && modelResult < orangeThreshold) {
-			setIcon({ title: "This is the grey area, we can't say much more.", iconPath: "/assets/img/grey.png" });
+  } else if (modelResult > greenThreshold && modelResult < orangeThreshold) {
+    setIcon({ title: "This is the grey area, we can't say much more.", iconPath: "/assets/img/grey.png" });
 
-		} else if (modelResult >= orangeThreshold && modelResult < redThreshold) {
-			setIcon({ title: "This page might not be safe.", iconPath: "/assets/img/orange.png" });
+  } else if (modelResult >= orangeThreshold && modelResult < redThreshold) {
+    setIcon({ title: "This page might not be safe.", iconPath: "/assets/img/orange.png" });
 
-		} else if (modelResult >= redThreshold && modelResult <= 1.0) {
-			chrome.action.setBadgeBackgroundColor({ color: "red" });
-			setIcon({ title: "Warning: this page might be dangerous!", iconPath: "/assets/img/red.png" });
-		} else {
+  } else if (modelResult >= redThreshold && modelResult <= 1.0) {
+    chrome.action.setBadgeBackgroundColor({ color: "red" });
+    setIcon({ title: "Warning: this page might be dangerous!", iconPath: "/assets/img/red.png" });
+  } else {
 
-			resetIcon();
-		}
+    resetIcon();
+  }
 }
 
 /**
@@ -144,7 +144,7 @@ export function changeIcon(modelResult) {
  */
 
 export function resetIcon() {
-	setIcon({ title: "DomAIn by GreyCortex", iconPath: "/assets/img/base.png" });
+  setIcon({ title: "DomAIn by GreyCortex", iconPath: "/assets/img/base.png" });
 }
 
 /**
@@ -156,10 +156,10 @@ export function resetIcon() {
  */
 
 export function setIcon(params) {
-	// set popup icon title to the base one
-	chrome.action.setTitle({ title: params.title });
-	// change icon to the base one
-	chrome.action.setIcon({
-		path: params.iconPath,
-	});
+  // set popup icon title to the base one
+  chrome.action.setTitle({ title: params.title });
+  // change icon to the base one
+  chrome.action.setIcon({
+    path: params.iconPath,
+  });
 }

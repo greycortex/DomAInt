@@ -4,11 +4,11 @@ var global = (function(g){
 }(this))
 */
 //const browser = require("webextension-polyfill");
-import * as tf from '@tensorflow/tfjs';
-import { Domain } from './domainClass';
-import { escapeHTML } from './replaceFunctions';
-import { findBigrams, bigramsToInt } from './bigramFunctions';
-import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon, setIcon } from './tabFunctions';
+import * as tf from "@tensorflow/tfjs";
+import { Domain } from "./domainClass";
+import { escapeHTML } from "./replaceFunctions";
+import { findBigrams, bigramsToInt } from "./bigramFunctions";
+import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon, setIcon } from "./tabFunctions";
 
 // need to include threshold settings, set better default threshold
 
@@ -45,7 +45,7 @@ import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon, se
 
 
 // load and prepare the model of up to 44 overlapping bigrams trained from github 
-const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/rnn/models/domain_bigrams-lstm/model.json"
+const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/rnn/models/domain_bigrams-lstm/model.json";
 // const MODEL_PATH = "https://raw.githubusercontent.com/greycortex/DomAInt/master/models/doman_bigrams-lstm.js/model.json";
 // "https://raw.githubusercontent.com/greycortex/DomAIn/master/models/model-M0/model.json";
 
@@ -56,8 +56,8 @@ let model;
  * function loadModel is used to load tfjs model
  */
 async function loadModel() {
-    console.log("loading model...");
-    model = await tf.loadLayersModel(MODEL_PATH);
+  console.log("loading model...");
+  model = await tf.loadLayersModel(MODEL_PATH);
 }
 
 // run model at the start, so it can be used
@@ -74,16 +74,16 @@ setInterval(loadModel, 4000 * 60 * 60);
  */
 
 async function runModel(inputArray) {
-    // create tensor input from inputArray param
-    const input = tf.tensor([inputArray]);
-    // create result from model prediction
-    const prediction = model.predict(input);
-    // convert result for future usage
-    const finalResult = prediction.dataSync()[0];
-    //return changeIcon(finalResult);
+  // create tensor input from inputArray param
+  const input = tf.tensor([inputArray]);
+  // create result from model prediction
+  const prediction = model.predict(input);
+  // convert result for future usage
+  const finalResult = prediction.dataSync()[0];
+  //return changeIcon(finalResult);
 
-    // return result
-    return finalResult;
+  // return result
+  return finalResult;
 }
 
 let cachedURL;
@@ -103,140 +103,136 @@ let isAfterClose;
  * @returns {function} returns certain function call depending on the case
  */
 
- async function runCode() {
-    console.log("code runs");
-    if (!isAfterClose) {
-        let next = true;
-        // variable storing last visited URL (used not to run code, when not necessary)
-        // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
+async function runCode() {
+  console.log("code runs");
+  if (!isAfterClose) {
+    let next = true;
+    // variable storing last visited URL (used not to run code, when not necessary)
+    // result variable used for icon change when accessing a cached URL (used not to run code, when not necessary)
 
-        let tab = await getCurrentURL();
+    let tab = await getCurrentURL();
 
-        let adress = tab
-            .replace("http://", "")
-            .replace("https://", "")
-            .replace("www.", "")
-            .split(/[/?#]/)[0];
+    let adress = tab
+      .replace("http://", "")
+      .replace("https://", "")
+      .replace("www.", "")
+      .split(/[/?#]/)[0];
 
-        let domainControl = tab
-            .replace("http://", "")
-            .replace("https://", "")
-            .replace("www.", "");
+    let domainControl = tab
+      .replace("http://", "")
+      .replace("https://", "")
+      .replace("www.", "");
 
 
-        chrome.storage.local.get("blackList").then((res) => {
-            // if blacklist exists
-            if (res.blackList) {
-                // parse blacklist to object
-                const blackList = JSON.parse(res.blackList);
+    chrome.storage.local.get("blackList", res => {
+      // if blacklist exists
+      if (res.blackList) {
+        // parse blacklist to object
+        const blackList = JSON.parse(res.blackList);
 
-                // compare each blacklisted sites to the one being accessed
-                blackList.forEach((site) => {
-                    // compare blacklisted site to the one being accessed
-                    if (
-                        adress.toLowerCase() == site.regex ||
+        // compare each blacklisted sites to the one being accessed
+        blackList.forEach((site) => {
+          // compare blacklisted site to the one being accessed
+          if (
+            adress.toLowerCase() == site.regex ||
                         domainControl.toLowerCase() == site.regex
                         // if accesed site is blacklisted, use close function to close it
-                    ) {
-                        // get autoclose function settings from browser storage
-                        chrome.storage.local.get("autoClose").then((res) => {
-                            // if autoClose is enabled by the user continue, else stop
-                            if (res.autoClose == true) {
-                                // get array of blacklisted sites
-                                let currentDomain = chrome.tabs.query({
-                                    currentWindow: true,
-                                    active: true,
-                                });
-                                currentDomain.then(async (tab) => {
-                                    const closeSite = tab[0].id;
-                                    console.log(`close site ${closeSite}`);
-                                    const closedSiteUrl = tab[0].url;
-                                    let close = await closeTab(closeSite);
-                                    lastClosedSite = closedSiteUrl;
-                                    showAfterClosePopup();
-                                });
-                                // return if autoClose is not enabled
-                            }
-                            chrome.action.setTitle({
-                                title: "This site is blacklisted",
-                            });
-                            // set extension icon to green
-                            chrome.action.setIcon({
-                                path: "/assets/img/gb.png",
-                            });
-                            next = false;
-                        });
-
-                    }
+          ) {
+            // get autoclose function settings from browser storage
+            chrome.storage.local.get("autoClose", res => {
+              // if autoClose is enabled by the user continue, else stop
+              if (res.autoClose == true) {
+                // get array of blacklisted sites
+                let currentDomain = chrome.tabs.query({
+                  currentWindow: true,
+                  active: true,
                 });
-                // return if there's no blacklist
-            }
-        });
-
-
-
-        chrome.storage.local.get("whiteList").then((res) => {
-            // if whitelist exists
-            if (res.whiteList) {
-                // parse blacklist to object
-                const whiteList = JSON.parse(res.whiteList);
-
-                // compare each blacklisted sites to the one being accessed
-                whiteList.forEach((site) => {
-                    // compare blacklisted site to the one being accessed
-                    if (
-                        adress.toLowerCase() == site.regex ||
-                        domainControl.toLowerCase() == site.regex
-                        // if accesed site is blacklisted, use close function to close it
-                    ) {
-                        // get autoclose function settings from browser storage
-                        chrome.action.setTitle({
-                            title: "This site is whitelisted",
-                        });
-                        // set extension icon to green
-                        chrome.action.setIcon({
-                            path: "/assets/img/base.png",
-                        });
-                        next = false;
-                        return;
-                    }
+                currentDomain.then(async (tab) => {
+                  const closeSite = tab[0].id;
+                  console.log(`close site ${closeSite}`);
+                  const closedSiteUrl = tab[0].url;
+                  let close = await closeTab(closeSite);
+                  lastClosedSite = closedSiteUrl;
+                  showAfterClosePopup();
                 });
-            }
+                // return if autoClose is not enabled
+              }
+              chrome.action.setTitle({
+                title: "This site is blacklisted",
+              });
+              // set extension icon to green
+              chrome.action.setIcon({
+                path: "/assets/img/gb.png",
+              });
+              next = false;
+            });
 
-
-            if (next) {
-                // get URL of current tab
-                // run code only if a new site is visited else change icon according to cached URL
-                if (tab && tab !== cachedURL) {
-                    console.log("tab is " + tab);
-                    console.log("cached url is " + cachedURL);
-                    cachedURL = tab;
-                    // prevent code from running on special sites (extension::, ...)
-                    if (tab.includes("http://") || tab.includes("https://")) {
-                        // parse the URL to string we need == https://www.example.com -> example.com
-
-                        createDomainrunModel(adress);
-
-                    } else {
-                        // if on a special site change icon to the base one
-                        resetIcon();
-                    }
-                } else {
-                    console.log("this site is cached");
-                    console.log("result is " + Result);
-                    // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
-                    if (Result) {
-                        // log cached result
-                        console.log(Result);
-                        // change icon according to the cached result
-                        changeIcon(Result);
-                    }
-                }
-            }
+          }
         });
-    }
-    isAfterClose = false;
-    console.log("changed to false");
+        // return if there's no blacklist
+      }
+    });
+
+
+
+    chrome.storage.local.get("whiteList", res => {
+      // if whitelist exists
+      if (res.whiteList) {
+        // parse blacklist to object
+        const whiteList = JSON.parse(res.whiteList);
+
+        // compare each blacklisted sites to the one being accessed
+        whiteList.forEach((site) => {
+          // compare blacklisted site to the one being accessed
+          if (
+            adress.toLowerCase() == site.regex || domainControl.toLowerCase() == site.regex
+          // if accesed site is blacklisted, use close function to close it
+          ) {
+            // get autoclose function settings from browser storage
+            chrome.action.setTitle({
+              title: "This site is whitelisted",
+            });
+            // set extension icon to green
+            chrome.action.setIcon({
+              path: "/assets/img/base.png",
+            });
+            next = false;
+            return;
+          }
+        });
+      }
+
+
+      if (next) {
+        // get URL of current tab
+        // run code only if a new site is visited else change icon according to cached URL
+        if (tab && tab !== cachedURL) {
+          console.log("tab is " + tab);
+          console.log("cached url is " + cachedURL);
+          cachedURL = tab;
+          // prevent code from running on special sites (extension::, ...)
+          if (tab.includes("http://") || tab.includes("https://")) {
+            // parse the URL to string we need == https://www.example.com -> example.com
+            createDomainrunModel(adress);
+
+          } else {
+            // if on a special site change icon to the base one
+            resetIcon();
+          }
+        } else {
+          console.log("this site is cached");
+          console.log("result is " + Result);
+          // if we visit cached site, change icon according to previously run and cached result (prevent from running code when not necessary)
+          if (Result) {
+            console.log(Result);
+            changeIcon(Result);
+          }
+        }
+      }
+    });
+  }
+  isAfterClose = false;
+  console.log("changed to false");
 }
 
 
@@ -253,42 +249,40 @@ let isAfterClose;
 
 async function createDomainrunModel(adress, source = "background") {
 
-    console.log("adress in func is " + adress + " from source " + source);
-    // create new object of class Domain from changed URL
-    let domain = new Domain(adress);
+  console.log("adress in func is " + adress + " from source " + source);
+  let domain = new Domain(adress);
 
-    // regex domain, having replaced certain values replaced for model usage
-    // slice domain, so we can create model input
-    let sliced = findBigrams(domain.name);
-    // from sliced URL, generate model input
-    const modelInput = bigramsToInt(sliced);
-    // run model and get model prediction
+  // regex domain, having replaced certain values replaced for model usage
+  // slice domain, so we can create model input
+  let sliced = findBigrams(domain.name);
+  // from sliced URL, generate model input
+  const modelInput = bigramsToInt(sliced);
 
-    //FIXME: runModel isnt returning Promise
-    let output = runModel(modelInput);
-    output.then(async (res) => {
-        // log prediction
-        console.log(res);
-        if (source == "background") {
-            // set cached result
-            Result = res;
-            // change icon according to the Result (danger icon, ...)
-            changeIcon(Result);
-        }
-        else if (source == "contextMenu") {
+  //FIXME: runModel isnt returning Promise
+  let output = runModel(modelInput);
+  output.then(async (res) => {
+    // log prediction
+    console.log(res);
+    if (source == "background") {
+      // set cached result
+      Result = res;
+      // change icon according to the Result (danger icon, ...)
+      changeIcon(Result);
+    }
+    else if (source == "contextMenu") {
 
-            await chrome.action.setTitle({ title: "DomAInT by GreyCortex" });
+      await chrome.action.setTitle({ title: "DomAInT by GreyCortex" });
 
-            let currentTitle = await chrome.action.getTitle({});
+      let currentTitle = await chrome.action.getTitle({});
 
-            console.log(`title is ${currentTitle}`);
-            let newTitle = currentTitle;
+      console.log(`title is ${currentTitle}`);
+      let newTitle = currentTitle;
 
-            newTitle += `\n result from context menu for adress ${adress} is ${100 - Math.round(res * 100)}% safe`;
+      newTitle += `\n result from context menu for adress ${adress} is ${100 - Math.round(res * 100)}% safe`;
 
-            chrome.action.setTitle({ title: newTitle });
-        }
-    });
+      chrome.action.setTitle({ title: newTitle });
+    }
+  });
 }
 
 /**
@@ -296,9 +290,9 @@ async function createDomainrunModel(adress, source = "background") {
 */
 
 chrome.contextMenus.create({
-    id: "analyze-link",
-    title: "Analyze link using DomAInt",
-    contexts: ["link"],
+  id: "analyze-link",
+  title: "Analyze link using DomAInt",
+  contexts: ["link"],
 });
 
 
@@ -310,16 +304,16 @@ chrome.contextMenus.create({
 */
 
 chrome.contextMenus.onClicked.addListener((info) => {
-    if (info.menuItemId === "analyze-link") {
-        // Always HTML-escape external input to avoid XSS.
-        const safeUrl = escapeHTML(info.linkUrl);
-        const finalAdress = safeUrl.replace("http://", "")
-            .replace("https://", "")
-            .replace("www.", "")
-            .split(/[/?#]/)[0];
+  if (info.menuItemId === "analyze-link") {
+    // Always HTML-escape external input to avoid XSS.
+    const safeUrl = escapeHTML(info.linkUrl);
+    const finalAdress = safeUrl.replace("http://", "")
+      .replace("https://", "")
+      .replace("www.", "")
+      .split(/[/?#]/)[0];
 
-        createDomainrunModel(finalAdress, "contextMenu");
-    }
+    createDomainrunModel(finalAdress, "contextMenu");
+  }
 });
 
 /**
@@ -349,16 +343,16 @@ chrome.runtime.onMessage.addListener(
 */
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // 2. A page requested user data, respond with a copy of `user`
-    if (message === "continue_once") {
-        isAfterClose = true;
-        console.log("isAfterClose changed to true");
-        chrome.tabs.create({ url: lastClosedSite });
-        setTimeout(() => {
-            isAfterClose = false;
-        }, 5000)
-        sendResponse(`tab with url ${lastClosedSite} created`);
-    }
+  // 2. A page requested user data, respond with a copy of `user`
+  if (message === "continue_once") {
+    isAfterClose = true;
+    console.log("isAfterClose changed to true");
+    chrome.tabs.create({ url: lastClosedSite });
+    setTimeout(() => {
+      isAfterClose = false;
+    }, 5000);
+    sendResponse(`tab with url ${lastClosedSite} created`);
+  }
 });
 
 
@@ -370,11 +364,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // 2. A page requested user data, respond with a copy of `user`
-    if (message === "send_url") {
-        console.log(`lastClosedSite is: ${lastClosedSite}`);
-        sendResponse(lastClosedSite);
-    }
+  // 2. A page requested user data, respond with a copy of `user`
+  if (message === "send_url") {
+    console.log(`lastClosedSite is: ${lastClosedSite}`);
+    sendResponse(lastClosedSite);
+  }
 });
 
 /**
@@ -384,11 +378,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 */
 
 chrome.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
-    // might replace the function that gets the url
-    let url = tab.url;
-    if (url !== undefined && changeinfo.status == "loading" && !isAfterClose) {
-        runCode();
-    }
+  // might replace the function that gets the url
+  let url = tab.url;
+  if (url !== undefined && changeinfo.status == "loading" && !isAfterClose) {
+    runCode();
+  }
 });
 
 /**
@@ -398,10 +392,10 @@ chrome.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
 */
 
 chrome.tabs.onActivated.addListener(function () {
-    if (!isAfterClose) {
-        console.log("fired");
-        runCode();
-    }
+  if (!isAfterClose) {
+    console.log("fired");
+    runCode();
+  }
 });
 
 /*

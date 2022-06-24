@@ -14,23 +14,22 @@ document.body.appendChild(ifrm);
 function showPopup() {
   // Avoid recursive frame insertion...
   let extensionOrigin = "chrome-extension://" + chrome.runtime.id;
-    let iframe = document.createElement("iframe");
-    // Must be declared at web_accessible_resources in manifest.json
-    iframe.src = chrome.runtime.getURL("/assets/html/afterClosePopup.html");
-    iframe.setAttribute("id", "iframe");
-    document.body.appendChild(iframe);
+  let iframe = document.createElement("iframe");
+  // Must be declared at web_accessible_resources in manifest.json
+  iframe.src = chrome.runtime.getURL("/assets/html/afterClosePopup.html");
+  iframe.setAttribute("id", "iframe");
+  document.body.appendChild(iframe);
 
-    // iframe styling
-    iframe.style.cssText =
+  // iframe styling
+  iframe.style.cssText =
       "position:fixed;top:15px;right:15px;display:block;" +
       "width:300px;height:170px;z-index:9999;" +
       "border-radius:10px;";
 
-    // remove popup automatically after 15 seconds
-    
-      setTimeout(() => {
-        removePopup();
-      }, 15000)
+  // remove popup automatically after 15 seconds
+  setTimeout(() => {
+    removePopup();
+  }, 15000);
       
 }
 
@@ -43,7 +42,7 @@ function showPopup() {
 function removePopup() {
   let popup = document.getElementById("iframe");
   if(popup){
-  document.body.removeChild(popup);
+    document.body.removeChild(popup);
   }
 }
 
@@ -56,10 +55,10 @@ function removePopup() {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
-        showPopup();
-        //FIXME: returning null
-        // ofc its returning null when there is no closeUrl in the request
-        return sendResponse(request.closedUrl);
+    showPopup();
+    //FIXME: returning null
+    // ofc its returning null when there is no closeUrl in the request
+    return sendResponse(request.closedUrl);
   }
   //return Promise.resolve(request.closedUrl);
 });
@@ -73,7 +72,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg === "remove_popup") {
-        removePopup();
+    removePopup();
      
   }
   sendResponse(request.closedUrl);

@@ -1,4 +1,4 @@
-import { addToWhiteList } from './mergedSettings'
+import { addToWhiteList } from "./mergedSettings";
 
 let whitelistButton = document.getElementById("whitelistButton");
 let continueOnceButton = document.getElementById("continueOnceButton");
@@ -14,16 +14,12 @@ whitelistButton.addEventListener("click", whitelistMessage);
 */
 
 async function removePopupMessage() {
-    let tab = await chrome.tabs.query({
-        currentWindow: true,
-        active: true,
-    });
+  let tab = await chrome.tabs.query({ currentWindow: true, active: true, });
+  let currTab = tab[0].id;
 
-    let currTab = tab[0].id;
-
-    chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }).then((response => {
-        console.log(`response from message "remove_popup in afterClosePopupjs is: ${response}`);
-    }));
+  chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }).then((response => {
+    console.log(`response from message "remove_popup in afterClosePopupjs is: ${response}`);
+  }));
 }
 
 /**
@@ -33,11 +29,11 @@ async function removePopupMessage() {
 */
 
 function whitelistMessage() {
-    chrome.runtime.sendMessage("send_url", (response) => {
-        // 3. Got an asynchronous response with the data from the background
-        console.log(`response for "send_url" message is: ${response}`);
-        return addToWhiteList(response);
-    });
+  chrome.runtime.sendMessage("send_url", (response) => {
+    // 3. Got an asynchronous response with the data from the background
+    console.log(`response for "send_url" message is: ${response}`);
+    return addToWhiteList(response);
+  });
 }
 
 /**
@@ -56,8 +52,8 @@ function continueToSiteOnce() {
 */
 
 function continueToSiteOnce() {
-    chrome.runtime.sendMessage("continue_once", (response) => {
-        // 3. Got an asynchronous response with the data from the background
-        console.log(`response for "continue_once" message is: ${response}`);
-    });
+  chrome.runtime.sendMessage("continue_once", (response) => {
+    // 3. Got an asynchronous response with the data from the background
+    console.log(`response for "continue_once" message is: ${response}`);
+  });
 }

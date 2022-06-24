@@ -1,9 +1,9 @@
-const punycode = require('./punycode/punycode.js');
+const punycode = require("./punycode/punycode.js");
 
-import {replaceNice} from './replaceFunctions';
-import {Stub} from './stubClass';
+import {replaceNice} from "./replaceFunctions";
+import {Stub} from "./stubClass";
 import { MAX_LENGTH, MAX_SUFFIX_LEVEL, LATIN_REGEX, NUMBER_REGEX,
-	DASH_REGEX, IP_REGEX, IDN_REGEX, BS_REGEX} from './constants';
+	DASH_REGEX, IP_REGEX, IDN_REGEX, BS_REGEX} from "./constants";
 
 
 

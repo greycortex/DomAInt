@@ -1,4 +1,4 @@
-import { checkForDuplicates, addToWhiteList } from "./mergedSettings"
+import { checkForDuplicates, addToWhiteList } from "./mergedSettings";
 
 let currentToBlacklist = document.getElementById("cDomain");
 let currentToWhitelist = document.getElementById("whitelist");
@@ -22,11 +22,11 @@ let classToggler = document.getElementById("classToggler");
 classToggler.addEventListener("click", () => {
   navbar.classList.toggle("navbar-change");
 
-  classToggler.classList.toggle('up');
-  classToggler.classList.toggle('up-scroll');
-  classToggler.classList.toggle('down');
+  classToggler.classList.toggle("up");
+  classToggler.classList.toggle("up-scroll");
+  classToggler.classList.toggle("down");
 
-  virustotalDiv.classList.toggle('virustotalDivScroll');
+  virustotalDiv.classList.toggle("virustotalDivScroll");
 });
 
 /**
@@ -36,7 +36,7 @@ classToggler.addEventListener("click", () => {
 * @returns {void}
 */
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   // only get domain, not full url
   let currentDomain = chrome.tabs.query({
     currentWindow: true,
@@ -96,7 +96,7 @@ function addCurrent() {
         .split(/[/?#]/)[0];
 
       let domainList = checkForDuplicates(domain, regDom, function (domainList) {
-        console.log(domainList)
+        console.log(domainList);
 
 
         if (domainList) {
@@ -163,7 +163,7 @@ function getApiKey() {
 
 async function postVirustotalAPIRequest(url) {
   let X_APIKey = await getApiKey();
-  X_APIKey = X_APIKey.replaceAll('"', "");
+  X_APIKey = X_APIKey.replaceAll("\"", "");
 
   const body = new FormData();
   body.append("url", url);
@@ -185,7 +185,7 @@ async function postVirustotalAPIRequest(url) {
     .then((data) => {
       console.log(url);
       if (data) {
-        getVirustotalAPIResults(data.data.id, X_APIKey, url)
+        getVirustotalAPIResults(data.data.id, X_APIKey, url);
       }
     });
 }
@@ -201,7 +201,7 @@ async function postVirustotalAPIRequest(url) {
  */
 
 function getVirustotalAPIResults(id, X_APIKey, url) {
-  console.log(url)
+  console.log(url);
   console.log(`id ${id}`);
   fetch(`https://www.virustotal.com/api/v3/analyses/${id}`, {
     headers: {
@@ -212,7 +212,7 @@ function getVirustotalAPIResults(id, X_APIKey, url) {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      showVirutstotalAPIResults(data, url, id)
+      showVirutstotalAPIResults(data, url, id);
     });
 }
 
@@ -246,7 +246,7 @@ function showVirutstotalAPIResults(data) {
   if (stats.harmless > stats.malicious && stats.harmless > stats.suspicious) {
     let percent = Math.round(stats.harmless / antiVirusCount * 100);
     //virustotalDiv.innerHTML = `Virustotal url scan: <br> ${stats.harmless} out of ${antiVirusCount} consider ${url} <br> harmless`;
-    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
+    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`;
     statusDiv.innerHTML = "<h5>harmless</h5>";
     return addClass("green");
   }
@@ -254,14 +254,14 @@ function showVirutstotalAPIResults(data) {
   else if (stats.suspicious > stats.harmless && stats.suspicious > stats.malicious) {
     let percent = Math.round(stats.suspicious / antiVirusCount * 100);
     //virustotalDiv.innerHTML = `<br> ${stats.suspicious} out of ${antiVirusCount} consider ${url} suspicious`;
-    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
+    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`;
     return addClass("Yellow");
   }
 
   else if (stats.malicious > stats.harmless && stats.malicious > stats.suspicious) {
     let percent = Math.round(stats.malicious / antiVirusCount * 100);
     //virustotalDiv.innerHTML = `<br> ${stats.malicious} out of ${antiVirusCount} consider ${url} malicious`;
-    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`
+    virustotalDiv.innerHTML = `<h1>${percent}%</h1>`;
     return addClass("Red");
   }
 }
@@ -278,14 +278,14 @@ function addClass(color) {
   let fillBox = document.getElementById("fillBox");
 
   switch (color) {
-    case "green":
-      fillBox.classList.add("fillBoxGreen");
-      break;
-    case "orange":
-      fillBox.classList.add("fillBoxOrange");
-      break;
-    case "red":
-      fillBox.classList.add("fillBoxRed");
-      break;
+  case "green":
+    fillBox.classList.add("fillBoxGreen");
+    break;
+  case "orange":
+    fillBox.classList.add("fillBoxOrange");
+    break;
+  case "red":
+    fillBox.classList.add("fillBoxRed");
+    break;
   }
 }
