@@ -1,6 +1,6 @@
 import chrome from 'sinon-chrome';
 import chai from 'chai';
-import { closeTab, getCurrentURL, showAfterClosePopup } from '../src/tabFunctions';
+import { closeTab, getCurrentURL, showAfterClosePopup, resetIcon } from '../src/tabFunctions';
 import chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
@@ -24,24 +24,11 @@ describe('getCurrentURL tests', function () {
 		return assert.ok(chrome.tabs.query.calledOnce);
 	});
 
-	it('tabs.query should reject promise', function () {
-		//chrome.tabs.query.yields([1, 2]);
-		chrome.tabs.query.yields([{ url: 'https://www.seznam.cz/' }]);
-		chrome.runtime.lastError = { message: 'Error' };
-		return assert.isRejected(getCurrentURL());
-	});
+	it('getCurrent url should return mocked url', async () => {
+		chrome.tabs.query.resolves([{ url: 'https://www.seznam.cz/' }]);
+		const tabURL = await getCurrentURL();
+		return assert.equal(tabURL, 'https://www.seznam.cz/')
 
-	it('getCurrent url should return mocked url', function () {
-		chrome.tabs.query.yields([{ url: 'https://www.seznam.cz/' }]);
-		return assert.eventually.deepEqual(getCurrentURL(), 'https://www.seznam.cz/');
-	});
-
-	//FIXME: resetIcon is definitely called but the test fails
-
-	it('resetIcon should be called', function () {
-		chrome.tabs.query.yields([{ id: 0, url: 'extensions/' }]);
-		getCurrentURL();
-		//return assert.ok(resetIcon.calledOnce);
 	});
 
 	after(function () {
@@ -66,13 +53,6 @@ describe('showAfterClosePopup tests', function () {
 		return assert.ok(chrome.tabs.query.calledOnce);
 
 	});
-
-	it('tabs.sendMessage should be called', function () {
-		chrome.tabs.query.yields([{ id: 0, url: 'https://www.seznam.cz/' }]);
-		showAfterClosePopup();
-		assert.ok(chrome.tabs.sendMessage.withArgs(0, { data: "show_popup" }).calledOnce);
-	});
-
 
 	after(function () {
 		chrome.flush();
@@ -114,18 +94,6 @@ describe('closeTab tests', function () {
 
 	beforeEach(function () {
 		chrome.flush();
-	});
-
-	//this test works as intended but not sure if I can put Promise inside the yield like that
-	it('tabs.remove should reject promise', function () {
-		chrome.tabs.remove.yields(Promise);
-		chrome.runtime.lastError = { message: 'Error' };
-		return assert.isRejected(closeTab(0));
-	});
-
-	it('tabs.remove should resolve tab', function () {
-		chrome.tabs.remove.yields([{ id: 0, url: 'https://www.seznam.cz/' }]);
-		return assert.eventually.deepEqual(closeTab(0), [{ id: 0, url: 'https://www.seznam.cz/' }]);
 	});
 
 	after(function () {
