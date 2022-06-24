@@ -5,6 +5,7 @@
 */
 
 //TODO: check if works properly after change
+/*
 export function getCurrentURL() {
 	let currentTab;
 	// returns promise, so we can await the value
@@ -24,6 +25,22 @@ export function getCurrentURL() {
 		});
 	});
 }
+*/
+
+export function getCurrentURL() {
+	// returns promise, so we can await the value
+	return new Promise(async (resolve, reject) => {
+		//query current browser tab
+		const tabs = await chrome.tabs.query({ currentWindow: true, active: true });
+		const currentURL = tabs[0].url;
+		console.log(`current url to be resolved is: ${currentURL}`);
+		if (currentURL.startsWith("http")) {
+			resolve(currentURL);
+		} else {
+			resetIcon();
+		}
+	});
+}
 
 /**
 * showAfterClosePopup is used to send message to content script to inject iframe of our popup to the new tab
@@ -32,16 +49,16 @@ export function getCurrentURL() {
 * gets id of the new tab (neede to send a message), then sends the message
 */
 
-export function showAfterClosePopup() {
-	chrome.tabs.query({
+export async function showAfterClosePopup() {
+	const tab = await chrome.tabs.query({
 		currentWindow: true,
 		active: true,
-	}, tab => {
-		const currentTabId = tab[0].id;
-		console.log(`curr tab ${currentTabId}`);
-		chrome.tabs.sendMessage(currentTabId, { data: "show_popup" }, response => {
-			console.log(`response from showAfterClosePopup message: ${response}`);
-		});
+	});
+	const currentTabId = tab[0].id;
+	console.log(`curr tab ${currentTabId}`);
+
+	chrome.tabs.sendMessage(currentTabId, { data: "show_popup" }, response => {
+		console.log(`response from showAfterClosePopup message: ${response}`);
 	});
 }
 
@@ -70,16 +87,12 @@ export function getCurrentTab(callback) {
  * @returns {function} calls the browser api to close the tab
  */
 
+//TODO: tab is undefined
 export function closeTab(tabId) {
-	return new Promise((resolve, reject) => {
-		chrome.tabs.remove(tabId, tab => {
-			if (chrome.runtime.lastError) {
-				reject(new Error(chrome.runtime.lastError));
-			} else {
-				resolve(tab);
-			}
-		})
-	})
+	return new Promise(async (resolve, reject) => {
+		const tab = await chrome.tabs.remove(tabId);
+		resolve(tab);
+	});
 }
 
 /**
@@ -93,11 +106,10 @@ export function changeIcon(modelResult) {
 	let orangeThreshold = 0.6;
 	let redThreshold = 0.9;
 
-	let threshold = chrome.storage.local.get("threshold");
-	threshold.then((res) => {
+	let resThreshold = chrome.storage.local.get("threshold");
 		// if theres no site being blacklisted
-		if (res.threshold != null && res.threshold.length > 0) {
-			let threshold = JSON.parse(res.threshold);
+		if (resThreshold != null && resThreshold.length > 0) {
+			let threshold = JSON.parse(resThreshold);
 			greenThreshold = (threshold.green == 0) ? 0 : threshold.green / 100;
 			orangeThreshold = threshold.orange / 100;
 			redThreshold = threshold.red / 100;
@@ -112,7 +124,7 @@ export function changeIcon(modelResult) {
 			setIcon({ title: "This page seems to be safe!", iconPath: "/assets/img/green.png" });
 
 		} else if (modelResult > greenThreshold && modelResult < orangeThreshold) {
-			setIcon({ title: "This is the grey area, we can't say much more.", iconPath: "/assets/img/gray.png" });
+			setIcon({ title: "This is the grey area, we can't say much more.", iconPath: "/assets/img/grey.png" });
 
 		} else if (modelResult >= orangeThreshold && modelResult < redThreshold) {
 			setIcon({ title: "This page might not be safe.", iconPath: "/assets/img/orange.png" });
@@ -124,7 +136,6 @@ export function changeIcon(modelResult) {
 
 			resetIcon();
 		}
-	});
 }
 
 /**

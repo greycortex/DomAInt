@@ -13,18 +13,17 @@ whitelistButton.addEventListener("click", whitelistMessage);
 * removes iframe injected into page, after a site from blacklist was autoclosed
 */
 
-function removePopupMessage() {
-    let currentDomain = chrome.tabs.query({
+async function removePopupMessage() {
+    let tab = await chrome.tabs.query({
         currentWindow: true,
         active: true,
     });
-    currentDomain.then((tab) => {
-        let currTab = tab[0].id;
 
-        chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }).then((response => {
-            console.log(response);
-        }));
-    });
+    let currTab = tab[0].id;
+
+    chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }).then((response => {
+        console.log(`response from message "remove_popup in afterClosePopupjs is: ${response}`);
+    }));
 }
 
 /**
@@ -60,5 +59,5 @@ function continueToSiteOnce() {
     chrome.runtime.sendMessage("continue_once", (response) => {
         // 3. Got an asynchronous response with the data from the background
         console.log(`response for "continue_once" message is: ${response}`);
-  });
+    });
 }

@@ -8,7 +8,7 @@ import * as tf from '@tensorflow/tfjs';
 import { Domain } from './domainClass';
 import { escapeHTML } from './replaceFunctions';
 import { findBigrams, bigramsToInt } from './bigramFunctions';
-import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon } from './tabFunctions';
+import { getCurrentURL, showAfterClosePopup, closeTab, changeIcon, resetIcon, setIcon } from './tabFunctions';
 
 // need to include threshold settings, set better default threshold
 
@@ -103,7 +103,7 @@ let isAfterClose;
  * @returns {function} returns certain function call depending on the case
  */
 
-async function runCode() {
+ async function runCode() {
     console.log("code runs");
     if (!isAfterClose) {
         let next = true;
@@ -251,7 +251,7 @@ async function runCode() {
 
 
 
-function createDomainrunModel(adress, source = "background") {
+async function createDomainrunModel(adress, source = "background") {
 
     console.log("adress in func is " + adress + " from source " + source);
     // create new object of class Domain from changed URL
@@ -263,8 +263,10 @@ function createDomainrunModel(adress, source = "background") {
     // from sliced URL, generate model input
     const modelInput = bigramsToInt(sliced);
     // run model and get model prediction
+
+    //FIXME: runModel isnt returning Promise
     let output = runModel(modelInput);
-    output.then((res) => {
+    output.then(async (res) => {
         // log prediction
         console.log(res);
         if (source == "background") {
@@ -275,24 +277,16 @@ function createDomainrunModel(adress, source = "background") {
         }
         else if (source == "contextMenu") {
 
-            chrome.action.setTitle({
-                title: "DomAInT by GreyCortex"
-            }).then(() => {
+            await chrome.action.setTitle({ title: "DomAInT by GreyCortex" });
 
-                let gettingTitle = chrome.action.getTitle({});
-                gettingTitle.then((response) => {
+            let currentTitle = await chrome.action.getTitle({});
 
-                    console.log(`title is ${response}`);
-                    let newTitle = response;
+            console.log(`title is ${currentTitle}`);
+            let newTitle = currentTitle;
 
-                    newTitle += `\n result from context menu for adress ${adress} is ${100 - Math.round(res * 100)}% safe`;
+            newTitle += `\n result from context menu for adress ${adress} is ${100 - Math.round(res * 100)}% safe`;
 
-                    chrome.action.setTitle({
-                        title: newTitle
-
-                    });
-                });
-            });
+            chrome.action.setTitle({ title: newTitle });
         }
     });
 }
@@ -323,7 +317,6 @@ chrome.contextMenus.onClicked.addListener((info) => {
             .replace("https://", "")
             .replace("www.", "")
             .split(/[/?#]/)[0];
-
 
         createDomainrunModel(finalAdress, "contextMenu");
     }
@@ -360,13 +353,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message === "continue_once") {
         isAfterClose = true;
         console.log("isAfterClose changed to true");
-        chrome.tabs.create({url: lastClosedSite});
+        chrome.tabs.create({ url: lastClosedSite });
         setTimeout(() => {
             isAfterClose = false;
         }, 5000)
         sendResponse(`tab with url ${lastClosedSite} created`);
     }
-  });
+});
 
 
 /**
@@ -382,7 +375,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(`lastClosedSite is: ${lastClosedSite}`);
         sendResponse(lastClosedSite);
     }
-  });
+});
 
 /**
 * calls runCode when the active tab changes
@@ -394,7 +387,6 @@ chrome.tabs.onUpdated.addListener(function (tabid, changeinfo, tab) {
     // might replace the function that gets the url
     let url = tab.url;
     if (url !== undefined && changeinfo.status == "loading" && !isAfterClose) {
-
         runCode();
     }
 });
@@ -410,7 +402,6 @@ chrome.tabs.onActivated.addListener(function () {
         console.log("fired");
         runCode();
     }
-
 });
 
 /*

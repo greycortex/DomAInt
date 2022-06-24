@@ -58,6 +58,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.data === "show_popup") {
         showPopup();
         //FIXME: returning null
+        // ofc its returning null when there is no closeUrl in the request
         return sendResponse(request.closedUrl);
   }
   //return Promise.resolve(request.closedUrl);
@@ -67,7 +68,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 * Listen for "remove_popup" message, call removePopup function of received
 *
 * @listens runtime.onMessage listens for "remove_popup" message 
-* @returns {Promise} resolves the url of closed site
+* @returns {void}
 */
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -75,5 +76,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         removePopup();
      
   }
-  return Promise.resolve(request.closedUrl);
+  sendResponse(request.closedUrl);
+  //return Promise.resolve(request.closedUrl);
 });

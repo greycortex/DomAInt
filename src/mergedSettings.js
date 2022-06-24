@@ -11,20 +11,14 @@ if (toggleButton) {
 * @returns {void}
 */
 
-export function toggle() {
+export async function toggle() {
     console.log("toggle");
     // get autoclose and its values from browser storage
-    let autoClose = chrome.storage.local.get("autoClose");
-    autoClose.then((res) => {
-        // set the setting to the html value
-        let settings = chrome.storage.local.set({
-            autoClose: toggleButton.checked
-        });
-        //after settings are saved, update the html button's value to the set one
-        settings.then(function () {
-            updateButton();
-        });
-    });
+    await chrome.storage.local.get("autoClose");
+    // set the setting to the html value
+    await chrome.storage.local.set({ autoClose: toggleButton.checked });
+    //after settings are saved, update the html button's value to the set one
+    updateButton();
 }
 
 /**
@@ -182,10 +176,10 @@ export function addToWhiteList(url) {
     let domain = url;
     // parse full url to domain adress only
     let regDom = domain
-            .replace("http://", "")
-            .replace("https://", "")
-            .replace("www.", "")
-            .split(/[/?#]/)[0];
+        .replace("http://", "")
+        .replace("https://", "")
+        .replace("www.", "")
+        .split(/[/?#]/)[0];
 
     let whiteListedSites = checkForDuplicatesWhitelist(domain, regDom, function (whiteListedSites) {
         console.log(whiteListedSites);
