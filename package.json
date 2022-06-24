@@ -3,10 +3,10 @@
     "description": "stay safe while browsing the internet using machine learning",
     "version": "0.0.1",
     "homepage": "https://www.greycortex.com/research",
-    "author": "ENTER YOUR NAME HERE",
+    "author": "Kolouch Petr, P3 @ GREYCORTEX Research",
     "repository": {
         "type": "git",
-        "url": "ENTER GIT REPO URL"
+        "url": "https://github.com/greycortex/DomAInt"
     },
     "scripts": {
         "start": "xt-build -e dev -w",
