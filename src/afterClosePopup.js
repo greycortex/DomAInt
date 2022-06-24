@@ -17,9 +17,9 @@ async function removePopupMessage() {
   let tab = await chrome.tabs.query({ currentWindow: true, active: true, });
   let currTab = tab[0].id;
 
-  chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }).then((response => {
+  chrome.tabs.sendMessage(currTab, { msg: "remove_popup" }, response => {
     console.log(`response from message "remove_popup in afterClosePopupjs is: ${response}`);
-  }));
+  });
 }
 
 /**

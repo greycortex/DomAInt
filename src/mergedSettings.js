@@ -29,8 +29,7 @@ export async function toggle() {
 
 export function updateButton() {
   //get the value from browser storage
-  let buttonVal = chrome.storage.local.get("autoClose");
-  buttonVal.then((val) => {
+  let buttonVal = chrome.storage.local.get("autoClose", val => {
     // if autoClose is not enabled yet or does not exist, disable it by default
     if (!val.autoClose || val.autoClose == null) {
       toggleButton.checked = false;
@@ -55,8 +54,7 @@ export function checkForDuplicates(domain, regDom, callback) {
   let whiteListedSites;
 
   // get blackListed sites from browser storage
-  let blackList = chrome.storage.local.get("blackList");
-  blackList.then((res) => {
+  chrome.storage.local.get("blackList", res => {
     // check if there are any blacklisted sites
     if (!res.blackList || res.blackList.length < 1) {
       blackListedSites = [];
@@ -65,8 +63,7 @@ export function checkForDuplicates(domain, regDom, callback) {
       blackListedSites = JSON.parse(res.blackList);
     }
     // get whiteListed sites from browser storage
-    let whiteList = chrome.storage.local.get("whiteList");
-    whiteList.then((res) => {
+    chrome.storage.local.get("whiteList", res => {
       // check if there are any blacklisted sites
       if (!res.whiteList || res.whiteList.left < 1) {
         whiteListedSites = [];
@@ -117,8 +114,7 @@ export function checkForDuplicatesWhitelist(domain, regDom, callback) {
   let blackListedSites;
 
   // get whiteListed sites from browser storage
-  let whiteList = chrome.storage.local.get("whiteList");
-  whiteList.then((res) => {
+  chrome.storage.local.get("whiteList", res => {
     // check if there are any blacklisted sites
     if (!res.whiteList || res.whiteList.left < 1) {
       whiteListedSites = [];
@@ -128,8 +124,7 @@ export function checkForDuplicatesWhitelist(domain, regDom, callback) {
     }
 
     // get blackListed sites from browser storage
-    let blackList = chrome.storage.local.get("blackList");
-    blackList.then((res) => {
+    chrome.storage.local.get("blackList", res => {
       // check if there are any blacklisted sites
       if (!res.blackList || res.blackList.left < 1) {
         blackListedSites = [];
@@ -218,8 +213,7 @@ export function getBlacklist() {
   let blackListedSites;
 
   // get blackListed sites from browser storage
-  let blackList = chrome.storage.local.get("blackList");
-  blackList.then((res) => {
+  chrome.storage.local.get("blackList", res => {
     // check if there are any blacklisted sites
     if (!res.blackList || res.blackList.length < 1) {
       blackListedSites = [];
@@ -248,8 +242,7 @@ export function getWhitelist() {
   let whiteListedSites;
 
   // get whiteListed sites from browser storage
-  let whiteList = chrome.storage.local.get("whiteList");
-  whiteList.then((res) => {
+  chrome.storage.local.get("whiteList", res => {
     // check if there are any whitelisted sites
     if (!res.whiteList || res.whiteList.length < 1) {
       whiteListedSites = [];
