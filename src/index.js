@@ -76,14 +76,14 @@ setInterval(loadModel, 4000 * 60 * 60);
 async function runModel(inputArray) {
   // create tensor input from inputArray param
   const input = tf.tensor([inputArray]);
-  // create result from model prediction
-  const prediction = model.predict(input);
-  // convert result for future usage
-  const finalResult = prediction.dataSync()[0];
-  //return changeIcon(finalResult);
+  if(model){
+    const prediction = model.predict(input);
+    // convert result for future usage
+    const finalResult = prediction.dataSync()[0];
 
-  // return result
-  return finalResult;
+    return finalResult;
+  }
+  return null;
 }
 
 let cachedURL;
@@ -151,7 +151,7 @@ async function runCode() {
                   const closeSite = tab[0].id;
                   console.log(`close site ${closeSite}`);
                   const closedSiteUrl = tab[0].url;
-                  let close = await closeTab(closeSite);
+                  await closeTab(closeSite);
                   lastClosedSite = closedSiteUrl;
                   showAfterClosePopup();
                 });
@@ -289,10 +289,12 @@ async function createDomainrunModel(adress, source = "background") {
  * Creates a context menu, which is navigated to using the right mouse click (only works on links)
 */
 
-chrome.contextMenus.create({
-  id: "analyze-link",
-  title: "Analyze link using DomAInt",
-  contexts: ["link"],
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "analyze-link",
+    title: "Analyze link using DomAInt",
+    contexts: ["link"],
+  });
 });
 
 
