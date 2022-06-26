@@ -9,6 +9,7 @@
         "url": "https://github.com/greycortex/DomAInt"
     },
     "scripts": {
+        "preinstall": "npx npm-force-resolutions",
         "start": "xt-build -e dev -w",
         "start:firefox": "xt-build -e dev -p firefox -w",
         "build": "xt-build -e prod",
@@ -20,6 +21,12 @@
         "sync": "xt-sync",
         "fix": "node utils/eval_fix.js",
         "lint": "eslint ."
+    },
+    "resolutions": {
+        "glob-parent": "^6.0.1",
+        "markdown-it": "^13.0.0",
+        "marked": "^4.0.17",
+        "nanoid": "^4.0.0"
     },
     "babel": {
         "presets": [
