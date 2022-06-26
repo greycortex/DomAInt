@@ -38,13 +38,13 @@ clearWhitelist.addEventListener("click", clearWhiteList);
 
 
 /**
- * function showBlacklistedSites retrieves all blacklisted sites from local storage
+ * function showBlacklistedSites retrieves all blacklisted sites from sync storage
  * and if there are any, display them to the html
  * function also add event listener to each of the sites, so user might remove each one by one
  */
 
 /**
-* retrieves all blacklisted sites from local storage
+* retrieves all blacklisted sites from sync storage
 * and if there are any, display them to the html
 * function also add event listener to each of the sites, so user might remove each one by one
 *
@@ -54,7 +54,7 @@ function showBlacklistedSites() {
   // TODO: check if the user wants to get this info?
     
   // get blacklisted sites from browser storage
-  chrome.storage.local.get("blackList", res => {
+  chrome.storage.sync.get("blackList", res => {
     // if theres no site being blacklisted
     if (!res.blackList || res.blackList.length < 1) {
       // if there are blacklisted sites
@@ -106,7 +106,7 @@ function removeSiteFromLists(type, id) {
   if (type == "whitelist") {
     let whiteListedSites;
     // get blackListed sites from browser storage
-    chrome.storage.local.get("whiteList", res => {
+    chrome.storage.sync.get("whiteList", res => {
       // check if there are any blacklisted sites
       if (!res.whiteList || res.whiteList.left < 1) {
         whiteListedSites = [];
@@ -115,7 +115,7 @@ function removeSiteFromLists(type, id) {
         whiteListedSites = JSON.parse(res.whiteList);
       }
       whiteListedSites.splice(id, 1);
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         whiteList: JSON.stringify(whiteListedSites),
       });
     });
@@ -123,7 +123,7 @@ function removeSiteFromLists(type, id) {
   else if (type == "blacklist") {
     let blackListedSites;
     // get blackListed sites from browser storage
-    chrome.storage.local.get("blackList", res => {
+    chrome.storage.sync.get("blackList", res => {
       // check if there are any blacklisted sites
       if (!res.blackList || res.blackList.left < 1) {
         blackListedSites = [];
@@ -132,7 +132,7 @@ function removeSiteFromLists(type, id) {
         blackListedSites = JSON.parse(res.blackList);
       }
       blackListedSites.splice(id, 1);
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         blackList: JSON.stringify(blackListedSites),
       });
     });
@@ -153,7 +153,7 @@ function removeSiteFromLists(type, id) {
 
 function clearBLackList() {
   let empty = [];
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     blackList: JSON.stringify(empty),
   });
   console.log("successfully cleared BlackList");
@@ -169,7 +169,7 @@ function clearBLackList() {
 */
 function clearWhiteList() {
   let empty = [];
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     whiteList: JSON.stringify(empty),
   });
   console.log("successfully cleared whiteList");
@@ -186,7 +186,7 @@ function clearWhiteList() {
 
 function showWhitelistedSites() {
   // get blacklisted sites from browser storage
-  chrome.storage.local.get("whiteList", res => {
+  chrome.storage.sync.get("whiteList", res => {
     // if theres no site being blacklisted
     if (!res.whiteList || res.whiteList.length < 1) {
 
@@ -255,7 +255,7 @@ function addSite() {
       blackListedSites.push(object);
 
       // save blackListed sites to the browser storage
-      chrome.storage.local.set({
+      chrome.storage.sync.set({
         blackList: JSON.stringify(blackListedSites),
       });
 
@@ -278,7 +278,7 @@ function configureThreshold() {
   const object = {green: green.value, orange: orange.value, red: red.value};
 
   // save threshold to the browser storage
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     threshold: JSON.stringify(object)
   });
 }
@@ -291,7 +291,7 @@ function configureThreshold() {
 
 function showThreshold() {
   // get blacklisted sites from browser storage
-  chrome.storage.local.get("threshold", res => {
+  chrome.storage.sync.get("threshold", res => {
     // if theres no site being blacklisted
     if (!res.threshold || res.threshold.length < 1) {
       green.value = 20;
@@ -348,7 +348,7 @@ From ${red.value}% on, the site will be rated as dangerous.
 function addAPIKey() {
   let APIKey = document.querySelector("input[name=\"apikey\"]").value;
   console.log(APIKey);
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     apikey: JSON.stringify(APIKey)
   });
 }

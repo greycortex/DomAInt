@@ -106,7 +106,7 @@ export function changeIcon(modelResult) {
   let orangeThreshold = 0.6;
   let redThreshold = 0.9;
 
-  let resThreshold = chrome.storage.local.get("threshold");
+  let resThreshold = chrome.storage.sync.get("threshold");
   // if theres no site being blacklisted
   if (resThreshold != null && resThreshold.length > 0) {
     let threshold = JSON.parse(resThreshold);

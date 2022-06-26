@@ -124,7 +124,7 @@ async function runCode() {
       .replace("www.", "");
 
 
-    chrome.storage.local.get("blackList", res => {
+    chrome.storage.sync.get("blackList", res => {
       // if blacklist exists
       if (res.blackList) {
         // parse blacklist to object
@@ -139,7 +139,7 @@ async function runCode() {
                         // if accesed site is blacklisted, use close function to close it
           ) {
             // get autoclose function settings from browser storage
-            chrome.storage.local.get("autoClose", res => {
+            chrome.storage.sync.get("autoClose", res => {
               // if autoClose is enabled by the user continue, else stop
               if (res.autoClose == true) {
                 // get array of blacklisted sites
@@ -175,7 +175,7 @@ async function runCode() {
 
 
 
-    chrome.storage.local.get("whiteList", res => {
+    chrome.storage.sync.get("whiteList", res => {
       // if whitelist exists
       if (res.whiteList) {
         // parse blacklist to object

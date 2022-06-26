@@ -106,12 +106,12 @@ function addCurrent() {
             regex: regDom,
           };
 
-          // add it to the blacklisted list and save it to local storage
+          // add it to the blacklisted list and save it to sync storage
           domainList.push(object);
 
           let parsed = JSON.stringify(domainList);
           console.log(parsed);
-          chrome.storage.local.set({
+          chrome.storage.sync.set({
             blackList: parsed,
           });
           console.log("succesfully added site to blacklist");
@@ -133,7 +133,7 @@ function addCurrent() {
 
 function getApiKey() {
   return new Promise(function (resolve, reject) {
-    let getKey = chrome.storage.local.get("apikey");
+    let getKey = chrome.storage.sync.get("apikey");
     getKey.then((res) => {
       if (res.apikey) {
         resolve(res.apikey);
