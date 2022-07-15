@@ -31,6 +31,7 @@ export function genBigrams() {
 *
 * @param {String} Domainname a domain to be formated
 * @returns {Array} 2 dimensional letters of arrays, each containing 2 letters from URL
+* FIXME: i believe the comment is the wrong one here
 * @example example.com -> [[ex], [am], [pl], [e.], [co], [m0]]
 */
 
